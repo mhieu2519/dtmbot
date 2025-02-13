@@ -7,6 +7,7 @@ const fs = require("fs");
 const schedule = require("node-schedule");
 
 const geminiApiKey = process.env["gemini_api_key"]; // Sử dụng biến môi trường
+
 const bot = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -18,6 +19,7 @@ const bot = new Client({
 
 const PREFIX = "d?";
 // Lấy giá trị từ biến môi trường
+
 const REPORT_CHANNEL_ID = process.env.REPORT_CHANNEL_ID;
 const ANNOUNCE_CHANNEL_ID = process.env.ANNOUNCE_CHANNEL_ID;
 const greetings = ["hi", "hello", "heloo", "halo", "hey", "Bonjour"];
@@ -217,7 +219,7 @@ bot.on("messageCreate", async (message) => {
 
 bot.once("ready", async () => {
   console.log("Bot is now online!");
-   scheduleMessages();
+   //scheduleMessages();
 });
 
 //bot.login(config.token);
