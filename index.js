@@ -3,6 +3,8 @@ const xlsx = require("xlsx");
 const keepAlive = require("./server");
 require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy token từ .env
 const axios = require("axios"); // Thêm axios nếu chưa cài đặt
+const fs = require("fs");
+const schedule = require("node-schedule");
 
 const geminiApiKey = process.env["gemini_api_key"]; // Sử dụng biến môi trường
 const bot = new Client({
@@ -107,6 +109,42 @@ async function chatWithGemini(prompt) {
   }
 }
 
+function loadScheduledMessages() {
+  const workbook = xlsx.readFile("schedule.xlsx"); // Tên file Excel chứa thông tin gửi tin nhắn
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  return xlsx.utils.sheet_to_json(sheet);
+}
+
+function scheduleMessages() {
+  const messages = loadScheduledMessages();
+
+  messages.forEach((msg) => {
+    const time = msg["Thời gian"];
+    const channelName = msg["Tên kênh"];
+    const content = msg["Nội dung"];
+
+    const channelId = process.env[channelName]; // Lấy ID kênh từ biến môi trường
+
+    if (!channelId) {
+      console.error(`⚠️ Không tìm thấy kênh "${channelName}" trong biến môi trường.`);
+      return;
+    }
+
+    const date = new Date(`2025-02-13T${time}:00.000Z`); // Chuyển thời gian từ Excel sang dạng chuẩn
+
+    schedule.scheduleJob(date, function () {
+      const channel = bot.channels.cache.get(channelId);
+      if (channel) {
+        channel.send(content);
+        console.log(`📢 Đã gửi tin nhắn vào kênh ${channelName}: ${content}`);
+      } else {
+        console.error(`❌ Không tìm thấy kênh có ID: ${channelId}`);
+      }
+    });
+  });
+}
+
+
 bot.on("guildMemberAdd", async (member) => {
   const channel = member.guild.channels.cache.get(ANNOUNCE_CHANNEL_ID);
   if (channel) {
@@ -179,7 +217,7 @@ bot.on("messageCreate", async (message) => {
 
 bot.once("ready", async () => {
   console.log("Bot is now online!");
-  //checkMissedMessages();
+   scheduleMessages();
 });
 
 //bot.login(config.token);
