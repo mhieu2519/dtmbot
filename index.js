@@ -17,7 +17,7 @@ const bot = new Client({
 const PREFIX = "d?";
 // Lấy giá trị từ biến môi trường
 const REPORT_CHANNEL_ID = process.env.REPORT_CHANNEL_ID;
-const ALLOWED_CHANNELS = process.env.ALLOWED_CHANNELS.split(","); // Chuyển đổi chuỗi thành mảng
+const ANNOUNCE_CHANNEL_ID = process.env.ANNOUNCE_CHANNEL_ID;
 const greetings = ["hi", "hello", "heloo", "halo", "hey", "Bonjour"];
 const cooldowns = new Map();
 
@@ -108,7 +108,7 @@ async function chatWithGemini(prompt) {
 }
 
 bot.on("guildMemberAdd", async (member) => {
-  const channel = member.guild.channels.cache.get("1309892182483931169");
+  const channel = member.guild.channels.cache.get(ANNOUNCE_CHANNEL_ID);
   if (channel) {
     channel.send(
       `🎉 Chào mừng đạo hữu ${member.displayName} đến với tông môn!`,
@@ -116,97 +116,6 @@ bot.on("guildMemberAdd", async (member) => {
   }
 });
 
-async function checkMissedMessages() {
-  const reportChannel = await bot.channels.fetch(REPORT_CHANNEL_ID);
-  if (!reportChannel) return;
-
-  for (const channelId of ALLOWED_CHANNELS) {
-    const channel = await bot.channels.fetch(channelId).catch(() => null);
-    if (!channel) continue;
-
-    // 🔍 Lấy 10 tin gần nhất để tìm tin bot phản hồi gần nhất
-    const recentMessages = await channel.messages
-      .fetch({ limit: 10 })
-      .catch(() => null);
-    if (!recentMessages) continue;
-
-    // 🧐 Tìm tin nhắn bot phản hồi gần nhất
-    let lastBotMessage = recentMessages.find(
-      (m) => m.author.id === bot.user.id,
-    );
-    let lastBotMessageTimestamp = lastBotMessage
-      ? lastBotMessage.createdTimestamp
-      : 0;
-
-    // 📌 Nếu bot chưa từng phản hồi, chỉ lấy 10 tin gần nhất (tránh quét quá nhiều)
-    let messages = await channel.messages
-      .fetch({ limit: 50 })
-      .catch(() => null);
-    if (!messages) continue;
-
-    // 🔥 Chỉ lấy tin mới hơn tin bot đã phản hồi gần nhất
-    messages = messages.filter(
-      (m) => m.createdTimestamp > lastBotMessageTimestamp,
-    );
-
-    for (const msg of messages.values()) {
-      if (msg.author.bot) continue;
-
-      const replied = messages.some(
-        (m) => m.reference?.messageId === msg.id || m.mentions.has(bot.user.id),
-      );
-      if (replied) continue;
-
-      const member = await msg.guild.members
-        .fetch(msg.author.id)
-        .catch(() => null);
-      const nickname = member?.displayName || msg.author.username;
-
-      const shouldReply =
-        greetings.includes(msg.content.toLowerCase()) ||
-        msg.content.startsWith(`${PREFIX}ans`);
-      if (!shouldReply) continue;
-
-      // 🚀 Báo cáo tin nhắn bị lỡ
-      // await reportChannel.send(`📢 **${nickname} đã gửi ở #${msg.channel.name}:** "${msg.content}"`);
-      const timeSent = msg.createdAt.toLocaleString("vi-VN"); // Định dạng thời gian theo tiếng Việt
-      await reportChannel.send(
-        `📢 **${nickname} đã gửi ở #${msg.channel.name} lúc ${timeSent}:** "${msg.content}"`,
-      );
-
-      // Phản hồi tin nhắn bị lỡ ngay dưới báo cáo
-      if (greetings.includes(msg.content.toLowerCase())) {
-        await reportChannel.send(`Xin chào ${nickname} đạo hữu!`);
-      } else if (msg.content.startsWith(`${PREFIX}ans`)) {
-        const args = msg.content.slice(PREFIX.length).trim().split(/ +/);
-        args.shift();
-        const query = args.join(" ").trim().toLowerCase();
-
-        if (!query) {
-          await reportChannel.send(
-            "⚠️ Vui lòng nhập từ khóa. Ví dụ: `d?ans bot`",
-          );
-          continue;
-        }
-
-        const questions = loadQuestions();
-        const matches = findMatches(query, questions);
-
-        if (matches.length > 0) {
-          let response = `🔍 **Các kết quả cho "${query}":**\n`;
-          matches.forEach((q, index) => {
-            response += `\n**${index + 1}.** ❓ ${q["Câu hỏi"]}\n➡️ ${q["Câu trả lời"]}\n`;
-          });
-          await reportChannel.send(response);
-        } else {
-          await reportChannel.send(
-            "❌ Tôi đã cố gắng mà không tìm thấy câu trả lời trùng khớp. ${nickname} đạo hữu có thể liên hệ Mạnh Kỳ đạo hữu!",
-          );
-        }
-      }
-    }
-  }
-}
 
 bot.on("messageCreate", async (message) => {
   if (message.author.bot) return; // Bỏ qua tin nhắn từ bot khác
