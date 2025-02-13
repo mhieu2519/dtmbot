@@ -131,7 +131,9 @@ function scheduleMessages() {
       console.error(`⚠️ Không tìm thấy kênh "${channelName}" trong biến môi trường.`);
       return;
     }
-
+    console.log("Server Timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone);
+    console.log("Current Time:", new Date().toLocaleString());
+    
     const date = new Date(`2025-02-13T${time}:00.000Z`); // Chuyển thời gian từ Excel sang dạng chuẩn
 
     schedule.scheduleJob(date, function () {
@@ -219,10 +221,8 @@ bot.on("messageCreate", async (message) => {
 
 bot.once("ready", async () => {
   console.log("Bot is now online!");
-   //scheduleMessages();
+   scheduleMessages();
 });
-
-//bot.login(config.token);
 
 keepAlive()
 bot.login(process.env.DISCORD_TOKEN); // Sử dụng token từ biến môi trường
