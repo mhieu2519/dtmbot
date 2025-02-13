@@ -13,6 +13,7 @@
     "discord.js": "^14.17.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "moment-timezone": "^0.5.47",
     "node-cron": "^3.0.3",
     "node-schedule": "^2.1.1",
     "openai": "^4.83.0",

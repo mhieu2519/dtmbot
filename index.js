@@ -5,6 +5,7 @@ require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy t
 const axios = require("axios"); // Thêm axios nếu chưa cài đặt
 const fs = require("fs");
 const schedule = require("node-schedule");
+const moment = require("moment-timezone"); // Thêm thư viện này nếu chưa có
 
 const geminiApiKey = process.env["gemini_api_key"]; // Sử dụng biến môi trường
 
@@ -117,11 +118,12 @@ function loadScheduledMessages() {
   return xlsx.utils.sheet_to_json(sheet);
 }
 
+
 function scheduleMessages() {
   const messages = loadScheduledMessages();
 
   messages.forEach((msg) => {
-    const time = msg["Thời gian"];
+    const time = msg["Thời gian"]; // Giả sử định dạng là "HH:mm"
     const channelName = msg["Tên kênh"];
     const content = msg["Nội dung"];
 
@@ -131,12 +133,12 @@ function scheduleMessages() {
       console.error(`⚠️ Không tìm thấy kênh "${channelName}" trong biến môi trường.`);
       return;
     }
-    console.log("Server Timezone:", Intl.DateTimeFormat().resolvedOptions().timeZone);
-    console.log("Current Time:", new Date().toLocaleString());
-    
-    const date = new Date(`2025-02-13T${time}:00.000Z`); // Chuyển thời gian từ Excel sang dạng chuẩn
 
-    schedule.scheduleJob(date, function () {
+    // ✅ Chuyển thời gian từ UTC+7 sang UTC trước khi lập lịch
+    const localTime = moment.tz(`2025-02-14 ${time}`, "Asia/Ho_Chi_Minh"); 
+    const utcTime = localTime.utc(); // Chuyển sang UTC
+
+    schedule.scheduleJob(utcTime.toDate(), function () {
       const channel = bot.channels.cache.get(channelId);
       if (channel) {
         channel.send(content);
@@ -147,6 +149,7 @@ function scheduleMessages() {
     });
   });
 }
+
 
 
 bot.on("guildMemberAdd", async (member) => {
