@@ -170,7 +170,7 @@ function scheduleMessages() {
 
 //Hàm ngắt
 async function sendMessageInChunks(baseMessage, content) {
-  const maxLength = 2000; // Giới hạn ký tự của Discord
+  const maxLength = 1960; // Giới hạn ký tự của Discord
   let remainingText = content;
   let firstMessage = true;
   let lastSentMessage = baseMessage;
