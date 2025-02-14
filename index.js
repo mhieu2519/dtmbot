@@ -181,8 +181,14 @@ bot.on("interactionCreate", async (interaction) => {
 
     let response = "📅 **Danh sách lịch trình đã thiết kế:**\n";
     messages.forEach((msg, index) => {
-      response += `\n**${index + 1}.** 🕒 ${msg["Thời gian"]}\n✉️ ${msg["Nội dung"]}\n`;
+      const timeValue = msg["Thời gian"];
+      const time = new Date((timeValue - 25569) * 86400 * 1000)
+        .toISOString()
+        .substring(11, 16); // Chuyển đổi thời gian
+    
+      response += `\n**${index + 1}.** 🕒 ${time}\n✉️ ${msg["Nội dung"]}\n`;
     });
+    
 
     await interaction.reply(response);
   }
