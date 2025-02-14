@@ -1,7 +1,8 @@
 const { Client, GatewayIntentBits } = require("discord.js");
 const xlsx = require("xlsx");
 const keepAlive = require("./server");
-require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy token từ .env
+//require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy token từ .env
+require("dotenv").config({ path: "/etc/secrets/.env" }); // Render lưu file ở đây
 const axios = require("axios"); // Thêm axios nếu chưa cài đặt
 const fs = require("fs");
 const schedule = require("node-schedule");
@@ -168,7 +169,7 @@ function scheduleMessages() {
 }
 
 
-
+// Command "/" schedule
 bot.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
 
@@ -199,7 +200,7 @@ bot.on("interactionCreate", async (interaction) => {
 });
 
 
-
+// Chào bạn mới
 bot.on("guildMemberAdd", async (member) => {
   const channel = member.guild.channels.cache.get(ANNOUNCE_CHANNEL_ID);
   if (channel) {
