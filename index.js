@@ -166,6 +166,27 @@ function scheduleMessages() {
   });
 }
 
+const { SlashCommandBuilder } = require("discord.js");
+
+bot.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) return;
+
+  if (interaction.commandName === "schedule") {
+    const messages = loadScheduledMessages();
+
+    if (messages.length === 0) {
+      await interaction.reply("📭 Hiện tại không có lịch trình nào.");
+      return;
+    }
+
+    let response = "📅 **Danh sách lịch trình đã thiết kế:**\n";
+    messages.forEach((msg, index) => {
+      response += `\n**${index + 1}.** 🕒 ${msg["Thời gian"]}\n✉️ ${msg["Nội dung"]}\n`;
+    });
+
+    await interaction.reply(response);
+  }
+});
 
 
 bot.on("guildMemberAdd", async (member) => {
