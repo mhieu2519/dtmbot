@@ -27,6 +27,11 @@ const REPORT_CHANNEL_ID = process.env.REPORT_CHANNEL_ID;
 const ANNOUNCE_CHANNEL_ID = process.env.ANNOUNCE_CHANNEL_ID;
 const greetings = ["hi", "hello", "heloo", "halo", "hey", "Bonjour"];
 const cooldowns = new Map();
+const MAX_CONTEXT_MESSAGES = 3; // Giới hạn số câu trong ngữ cảnh
+const conversationHistory = new Map(); // Lưu hội thoại theo ID tin nhắn gốc
+const lastRequestTime = new Map(); // Lưu thời gian gửi request gần nhất
+const REPLY_COOLDOWN = 5000; // 5 giây cooldown
+
 
 function canUseCommand(userId) {
   const now = Date.now();
@@ -302,6 +307,50 @@ bot.on("messageCreate", async (message) => {
     default:
       message.channel.send("⚠️ Lệnh không hợp lệ! Hãy thử `d?a` hoặc `d?r`");
   }
+// tương tác lại với bot
+  if (message.reference) {
+    const lastTime = lastRequestTime.get(message.author.id) || 0;
+    const now = Date.now();
+    
+    if (now - lastTime < REPLY_COOLDOWN) {
+      return message.reply("⏳ Đạo hữu đợi một chút, ta đang suy nghĩ...");
+    }
+  
+    lastRequestTime.set(message.author.id, now);
+    try {
+      const referencedMessage = await message.channel.messages.fetch(message.reference.messageId);
+      // Nếu tin nhắn gốc là của bot
+      if (referencedMessage.author.id === bot.user.id) {
+        const query = message.content.trim();
+        if (!query) return message.reply("🤔 Đạo hữu muốn hỏi gì?");
+  
+        // Lấy lịch sử hội thoại (nếu có)
+        const contextKey = referencedMessage.id;
+        let contextHistory = conversationHistory.get(contextKey) || [];
+        
+        // Thêm tin nhắn cũ vào ngữ cảnh
+        contextHistory.push(referencedMessage.content);
+        
+        // Giới hạn số câu hội thoại
+        if (contextHistory.length > MAX_CONTEXT_MESSAGES) {
+          contextHistory.shift(); // Xóa câu cũ nhất
+        }
+  
+        // Ghi đè lại lịch sử hội thoại
+        conversationHistory.set(contextKey, contextHistory);
+  
+        // Ghép ngữ cảnh lại thành prompt
+        const prompt = contextHistory.join("\n") + `\nUser: ${query}`;
+        const reply = await chatWithGemini(prompt);
+  
+        // Gửi phản hồi
+        await sendMessageInChunks(message, reply);
+      }
+    } catch (error) {
+      console.error("Lỗi khi xử lý phản hồi:", error);
+    }
+  }
+
 });
 
 bot.once("ready", async () => {
