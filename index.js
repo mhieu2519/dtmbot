@@ -167,7 +167,15 @@ function scheduleMessages() {
     });
   });
 }
-
+// Hàm gửi tin ngắt giới hạn trả lời ai
+async function sendMessageInChunks(channel, content) {
+  const maxLength = 2000;
+  while (content.length > 0) {
+    let chunk = content.slice(0, maxLength);
+    content = content.slice(maxLength);
+    await channel.send(chunk);
+  }
+}
 
 // Command "/" schedule
 bot.on("interactionCreate", async (interaction) => {
@@ -199,7 +207,6 @@ bot.on("interactionCreate", async (interaction) => {
   }
 });
 
-
 // Chào bạn mới
 bot.on("guildMemberAdd", async (member) => {
   const channel = member.guild.channels.cache.get(ANNOUNCE_CHANNEL_ID);
@@ -209,7 +216,6 @@ bot.on("guildMemberAdd", async (member) => {
     );
   }
 });
-
 
 bot.on("messageCreate", async (message) => {
   if (message.author.bot) return; // Bỏ qua tin nhắn từ bot khác
@@ -262,7 +268,8 @@ bot.on("messageCreate", async (message) => {
         return message.reply("⚠️ Đạo hữu vui lòng nhập nội dung câu hỏi!");
 
       const reply = await chatWithGemini(query);
-      message.reply(reply);
+      // Gọi hàm để gửi tin nhắn
+      await sendMessageInChunks(message.channel, reply);
       break;
     }
 
