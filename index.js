@@ -6,6 +6,7 @@ const axios = require("axios"); // Thêm axios nếu chưa cài đặt
 const fs = require("fs");
 const schedule = require("node-schedule");
 const moment = require("moment-timezone"); // Thêm thư viện này nếu chưa có
+const { SlashCommandBuilder } = require("discord.js");
 
 const geminiApiKey = process.env["gemini_api_key"]; // Sử dụng biến môi trường
 
@@ -166,33 +167,37 @@ function scheduleMessages() {
   });
 }
 
-const { SlashCommandBuilder } = require("discord.js");
+
 
 bot.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
 
   if (interaction.commandName === "schedule") {
-    const messages = loadScheduledMessages();
+    try {
+      // Trả lời ngay lập tức để tránh lỗi timeout
+      await interaction.deferReply();
 
-    if (messages.length === 0) {
-      await interaction.reply("📭 Hiện tại không có lịch trình nào.");
-      return;
+      const messages = loadScheduledMessages(); // Lấy danh sách lịch trình
+      let response = "📅 **Danh sách lịch trình đã thiết kế:**\n";
+
+      messages.forEach((msg, index) => {
+        const timeValue = msg["Thời gian"];
+        const time = new Date((timeValue - 25569) * 86400 * 1000)
+          .toISOString()
+          .substring(11, 16);
+
+        response += `\n**${index + 1}.** 🕒 ${time}\n✉️ ${msg["Nội dung"]}\n`;
+      });
+
+      // Cập nhật phản hồi sau khi xử lý xong
+      await interaction.editReply(response);
+    } catch (error) {
+      console.error("Lỗi khi xử lý lệnh schedule:", error);
+      await interaction.followUp("❌ Lão phu không thể xử lý yêu cầu này!");
     }
-
-    let response = "📅 **Danh sách lịch trình đã thiết kế:**\n";
-    messages.forEach((msg, index) => {
-      const timeValue = msg["Thời gian"];
-      const time = new Date((timeValue - 25569) * 86400 * 1000)
-        .toISOString()
-        .substring(11, 16); // Chuyển đổi thời gian
-    
-      response += `\n**${index + 1}.** 🕒 ${time}\n✉️ ${msg["Nội dung"]}\n`;
-    });
-    
-
-    await interaction.reply(response);
   }
 });
+
 
 
 bot.on("guildMemberAdd", async (member) => {
