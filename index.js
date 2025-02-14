@@ -167,15 +167,27 @@ function scheduleMessages() {
     });
   });
 }
-// Hàm gửi tin ngắt giới hạn trả lời ai
-async function sendMessageInChunks(channel, content) {
+
+//Hàm ngắt
+async function sendMessageInChunks(baseMessage, content) {
   const maxLength = 2000;
-  while (content.length > 0) {
-    let chunk = content.slice(0, maxLength);
-    content = content.slice(maxLength);
-    await channel.send(chunk);
+  let remainingText = content;
+  let firstMessage = true;
+  let lastSentMessage = baseMessage;
+
+  while (remainingText.length > 0) {
+    let chunk = remainingText.slice(0, maxLength);
+    remainingText = remainingText.slice(maxLength);
+
+    if (firstMessage) {
+      lastSentMessage = await lastSentMessage.edit(chunk); // Sửa tin nhắn đầu tiên
+      firstMessage = false;
+    } else {
+      lastSentMessage = await lastSentMessage.reply(chunk); // Reply tiếp tục
+    }
   }
 }
+
 
 // Command "/" schedule
 bot.on("interactionCreate", async (interaction) => {
@@ -266,10 +278,13 @@ bot.on("messageCreate", async (message) => {
       const query = args.join(" ");
       if (!query)
         return message.reply("⚠️ Đạo hữu vui lòng nhập nội dung câu hỏi!");
-
+      
+      // Phản hồi ngay lập tức để tránh bot có vẻ bị lag
+      const sentMessage = await message.reply("Lão phu đang suy ngẫm...");
+   
       const reply = await chatWithGemini(query);
       // Gọi hàm để gửi tin nhắn
-      await sendMessageInChunks(message.channel, reply);
+      await sendMessageInChunks(sentMessage, reply);
       break;
     }
 
