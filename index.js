@@ -170,14 +170,25 @@ function scheduleMessages() {
 
 //Hàm ngắt
 async function sendMessageInChunks(baseMessage, content) {
-  const maxLength = 2000;
+  const maxLength = 2000; // Giới hạn ký tự của Discord
   let remainingText = content;
   let firstMessage = true;
   let lastSentMessage = baseMessage;
 
   while (remainingText.length > 0) {
     let chunk = remainingText.slice(0, maxLength);
+
+    // Nếu còn phần tiếp theo, thêm dấu "...(còn tiếp)..."
+    if (remainingText.length > maxLength) {
+      chunk += " ...(còn tiếp)...";
+    }
+
     remainingText = remainingText.slice(maxLength);
+
+    // Nếu không phải phần đầu tiên, thêm tiền tố " ...(tiếp)..."
+    if (!firstMessage) {
+      chunk = "...(tiếp)... " + chunk;
+    }
 
     if (firstMessage) {
       lastSentMessage = await lastSentMessage.edit(chunk); // Sửa tin nhắn đầu tiên
