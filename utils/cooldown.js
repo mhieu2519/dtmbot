@@ -1,4 +1,4 @@
-const moment = require("moment-timezone"); // Thêm thư viện này nếu chưa có
+const cooldowns = new Map();
 
 function canUseCommand(userId) {
     const now = Date.now();

@@ -38,6 +38,7 @@ const { sendMessageInChunks} = require('./utils/replybot');
 
 
 
+
 // Command "/" schedule
 bot.on("interactionCreate", async (interaction) => {
   if (!interaction.isCommand()) return;
