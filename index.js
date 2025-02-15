@@ -174,6 +174,7 @@ function scheduleMessages() {
 }
 
 //Hàm ngắt
+/*
 async function sendMessageInChunks(baseMessage, content) {
   const maxLength = 1960; // Giới hạn ký tự của Discord
   let remainingText = content;
@@ -200,6 +201,36 @@ async function sendMessageInChunks(baseMessage, content) {
       firstMessage = false;
     } else {
       lastSentMessage = await lastSentMessage.reply(chunk); // Reply tiếp tục
+    }
+  }
+}
+*/
+
+async function sendMessageInChunks(message, content) {
+  const chunkSize = 2000; // Discord giới hạn 2000 ký tự mỗi tin
+  const chunks = [];
+  
+  while (content.length > 0) {
+    let chunk = content.slice(0, chunkSize);
+    content = content.slice(chunkSize);
+    
+    // Thêm dấu "... còn tiếp" vào cuối đoạn bị cắt
+    if (content.length > 0) {
+      chunk += " ... còn tiếp";
+    }
+
+    chunks.push(chunk);
+  }
+
+  let lastSentMessage = null;
+  
+  for (let i = 0; i < chunks.length; i++) {
+    if (i === 0) {
+      // Đoạn đầu tiên reply vào tin gốc
+      lastSentMessage = await message.reply(chunks[i]);
+    } else {
+      // Các đoạn tiếp theo reply vào đoạn trước đó để tạo chuỗi liên kết
+      lastSentMessage = await lastSentMessage.reply("...( tiếp )... " + chunks[i]);
     }
   }
 }
@@ -308,6 +339,7 @@ bot.on("messageCreate", async (message) => {
       message.channel.send("⚠️ Lệnh không hợp lệ! Hãy thử `d?a` hoặc `d?r`");
   }
 // tương tác lại với bot
+
   if (message.reference) {
     const lastTime = lastRequestTime.get(message.author.id) || 0;
     const now = Date.now();
@@ -350,6 +382,7 @@ bot.on("messageCreate", async (message) => {
       console.error("Lỗi khi xử lý phản hồi:", error);
     }
   }
+
 
 });
 
