@@ -1,4 +1,6 @@
+require('dotenv').config();
 const axios = require("axios"); // Thêm axios nếu chưa cài đặt
+const geminiApiKey = process.env["gemini_api_key"]; // Sử dụng biến môi trường
 
 async function chatWithGemini(prompt) {
     try {

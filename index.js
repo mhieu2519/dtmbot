@@ -5,9 +5,6 @@ require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy t
 //require("dotenv").config({ path: "/etc/secrets/.env" }); // Render lưu file ở đây
 
 
-
-const geminiApiKey = process.env["gemini_api_key"]; // Sử dụng biến môi trường
-
 const bot = new Client({
   intents: [
     GatewayIntentBits.Guilds,
@@ -29,7 +26,7 @@ const conversationHistory = new Map(); // Lưu hội thoại theo ID tin nhắn 
 const lastRequestTime = new Map(); // Lưu thời gian gửi request gần nhất
 const REPLY_COOLDOWN = 5000; // 5 giây cooldown
 
-
+const geminiApiKey = process.env["gemini_api_key"];
 const { loadQuestions, findMatches } = require('./utils/questions');
 const { chatWithGemini } = require('./utils/chat');
 const { loadScheduledMessages, excelTimeToISO, scheduleMessages  } = require('./utils/schedule');
