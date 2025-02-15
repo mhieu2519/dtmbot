@@ -1,2 +1,5 @@
 node_modules/
 .env
+convert.js
+data.txt
+dataOutput.xlsx

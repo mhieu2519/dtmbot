@@ -1,3 +1,5 @@
+const axios = require("axios"); // Thêm axios nếu chưa cài đặt
+
 async function chatWithGemini(prompt) {
     try {
       const response = await axios.post(

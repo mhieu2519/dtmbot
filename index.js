@@ -1,13 +1,10 @@
 const { Client, GatewayIntentBits } = require("discord.js");
-const xlsx = require("xlsx");
+
 const keepAlive = require("./server");
 require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy token từ .env
 //require("dotenv").config({ path: "/etc/secrets/.env" }); // Render lưu file ở đây
-const axios = require("axios"); // Thêm axios nếu chưa cài đặt
-const fs = require("fs");
-const schedule = require("node-schedule");
-const moment = require("moment-timezone"); // Thêm thư viện này nếu chưa có
-const { SlashCommandBuilder } = require("discord.js");
+
+
 
 const geminiApiKey = process.env["gemini_api_key"]; // Sử dụng biến môi trường
 
