@@ -28,10 +28,10 @@ const REPLY_COOLDOWN = 5000; // 5 giây cooldown
 
 const geminiApiKey = process.env["gemini_api_key"];
 const { loadQuestions, findMatches } = require('./utils/questions');
-const { chatWithGemini } = require('./utils/chat');
+const { chatWithGemini,sendMessageInChunks } = require('./utils/chat');
 const { loadScheduledMessages, excelTimeToISO, scheduleMessages  } = require('./utils/schedule');
 const { canUseCommand } = require('./utils/cooldown');
-const { sendMessageInChunks} = require('./utils/replybot');
+
 
 
 

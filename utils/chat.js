@@ -69,6 +69,38 @@ async function chatWithGemini(prompt) {
     }
 }
 
-module.exports= { chatWithGemini };
+
+async function sendMessageInChunks(message, content) {
+  const chunkSize = 2000; // Discord giới hạn 2000 ký tự mỗi tin
+  const chunks = [];
+  
+  while (content.length > 0) {
+    let chunk = content.slice(0, chunkSize);
+    content = content.slice(chunkSize);
+    
+    // Thêm dấu "... còn tiếp" vào cuối đoạn bị cắt nếu còn phần tiếp theo
+    if (content.length > 0) {
+      chunk += " ... còn tiếp";
+    }
+
+    chunks.push(chunk);
+  }
+
+  let lastSentMessage = null;
+
+  for (let i = 0; i < chunks.length; i++) {
+    if (i === 0) {
+      // Đoạn đầu tiên reply vào tin gốc
+      lastSentMessage = await message.reply(chunks[i]);
+    } else {
+      // Các đoạn tiếp theo reply vào đoạn trước đó để tạo chuỗi liên kết
+      lastSentMessage = await lastSentMessage.reply(chunks[i]);
+    }
+  }
+}
+
+
+
+module.exports= { chatWithGemini, sendMessageInChunks };
 
 
