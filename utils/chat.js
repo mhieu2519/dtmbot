@@ -71,7 +71,7 @@ async function chatWithGemini(prompt) {
 
 
 async function sendMessageInChunks(message, content) {
-  const chunkSize = 2000; // Discord giới hạn 2000 ký tự mỗi tin
+  const chunkSize = 1975; // Discord giới hạn 2000 ký tự mỗi tin
   const chunks = [];
   
   while (content.length > 0) {
