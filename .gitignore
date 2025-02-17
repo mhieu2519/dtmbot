@@ -3,3 +3,6 @@ node_modules/
 convert.js
 data.txt
 dataOutput.xlsx
+key.js
+encrypt.js
+questions.xlsx
