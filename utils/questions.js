@@ -6,7 +6,7 @@ const SECRET_KEY = process.env.SECRET_KEY ;
 
 function decryptData(encrypted) {
   const iv = Buffer.from(encrypted.iv, "hex");
-  const decipher = crypto.createDecipheriv(ALGORITHM, SECRET_KEY, iv);
+  const decipher = crypto.createDecipheriv("aes-256-cbc", Buffer.from(process.env.SECRET_KEY, "hex"), iv);
   let decrypted = decipher.update(encrypted.data, "hex", "utf8");
   decrypted += decipher.final("utf8");
   return JSON.parse(decrypted);
