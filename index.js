@@ -90,6 +90,43 @@ bot.on("messageCreate", async (message) => {
     return;
   }
 
+    // 📌 Nếu là tin nhắn reply của bot, tự động xử lý như "d?r"
+  if (message.reference) {
+    try {
+      const referencedMessage = await message.channel.messages.fetch(message.reference.messageId);
+
+      if (referencedMessage.author.id === bot.user.id) {
+        const query = message.content.trim();
+        if (!query) return message.reply("🤔 Đạo hữu muốn hỏi gì?");
+
+        // Lấy lịch sử hội thoại (nếu có)
+        const contextKey = referencedMessage.id;
+        let contextHistory = conversationHistory.get(contextKey) || [];
+        
+        // Thêm tin nhắn cũ vào ngữ cảnh
+        contextHistory.push(referencedMessage.content);
+
+        // Giới hạn số câu hội thoại
+        if (contextHistory.length > MAX_CONTEXT_MESSAGES) {
+          contextHistory.shift(); // Xóa câu cũ nhất
+        }
+
+        // Ghi đè lại lịch sử hội thoại
+        conversationHistory.set(contextKey, contextHistory);
+
+        // Ghép ngữ cảnh lại thành prompt
+        const prompt = contextHistory.join("\n") + `\nUser: ${query}`;
+        const reply = await chatWithGemini(prompt);
+
+        // Gửi phản hồi
+        await sendMessageInChunks(message, reply);
+        return; // Tránh xử lý tiếp
+      }
+    } catch (error) {
+      console.error("Lỗi khi xử lý phản hồi:", error);
+    }
+  }
+
   // 📌 Chỉ xử lý các lệnh bắt đầu bằng PREFIX
   if (!message.content.startsWith(PREFIX)) return;
 
