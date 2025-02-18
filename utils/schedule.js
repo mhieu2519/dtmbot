@@ -51,16 +51,13 @@ function scheduleMessages(bot) {
       return;
     }
 
-    // Chuyển sang múi giờ Việt Nam
-    const localTime = moment.tz(`2025-02-18 ${formattedTime}`, "Asia/Ho_Chi_Minh");
-    const utcTime = localTime.utc(); // Chuyển sang UTC
-    
+     // Lấy giờ, phút từ formattedTime
+    const [hour, minute, second] = formattedTime.split(":").map(Number);  
     
 
     // Kiểm tra và lên lịch gửi tin nhắn
-    //console.log(`📅 Đã lên lịch gửi tin nhắn vào ${localTime.format("YYYY-MM-DD HH:mm:ss")}`);
-
-    schedule.scheduleJob(utcTime.toDate(), function () {
+    
+    schedule.scheduleJob({ hour, minute, second, tz: "Asia/Ho_Chi_Minh" }, function () {
       //console.log(`⏰ Đến giờ gửi: ${localTime.format("YYYY-MM-DD HH:mm:ss")}`);
       const channel = bot.channels.cache.get(channelId);
       if (channel) {
@@ -70,6 +67,7 @@ function scheduleMessages(bot) {
         console.error(`❌ Không tìm thấy kênh có ID: ${channelId}`);
       }
     });
+ console.log(`📅 Đã lên lịch gửi hàng ngày vào ${hour}:${minute}:${second}`);    
   });
 }
 
