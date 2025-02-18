@@ -188,7 +188,7 @@ bot.on("messageCreate", async (message) => {
 
 bot.once("ready", async () => {
   console.log("Bot is now online!");
-   scheduleMessages();
+   scheduleMessages(bot);
 });
 
 keepAlive()

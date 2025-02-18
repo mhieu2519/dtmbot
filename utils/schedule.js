@@ -28,7 +28,7 @@ function excelTimeToISO(time) {
   return time; // Nếu đã là chuỗi đúng, giữ nguyên
 }
 
-function scheduleMessages() {
+function scheduleMessages(bot) {
   const messages = loadScheduledMessages();
   if (messages.length === 0) return;
 
@@ -52,11 +52,16 @@ function scheduleMessages() {
     }
 
     // Chuyển sang múi giờ Việt Nam
-    const localTime = moment.tz(`2025-02-14 ${formattedTime}`, "Asia/Ho_Chi_Minh");
-    const utcTime = localTime.utc(); // Chuyển đổi sang UTC
+    const today = moment().format("YYYY-MM-DD"); // Lấy ngày hôm nay
+    const localTime = moment.tz(`${today} ${formattedTime}`, "Asia/Ho_Chi_Minh");
+    const utcTime = localTime.utc();
+    
 
     // Kiểm tra và lên lịch gửi tin nhắn
+    console.log(`📅 Đã lên lịch gửi tin nhắn vào ${localTime.format("YYYY-MM-DD HH:mm:ss")}`);
+
     schedule.scheduleJob(utcTime.toDate(), function () {
+      console.log(`⏰ Đến giờ gửi: ${localTime.format("YYYY-MM-DD HH:mm:ss")}`);
       const channel = bot.channels.cache.get(channelId);
       if (channel) {
         channel.send(content);
