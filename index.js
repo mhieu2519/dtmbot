@@ -3,7 +3,7 @@ const { Client, GatewayIntentBits } = require("discord.js");
 const keepAlive = require("./server");
 require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy token từ .env
 //require("dotenv").config({ path: "/etc/secrets/.env" }); // Render lưu file ở đây
-
+const { getSheetData } = require("./readSheet");
 
 const bot = new Client({
   intents: [
@@ -134,11 +134,12 @@ bot.on("messageCreate", async (message) => {
     // 📌 Lệnh hiển thị danh sách lệnh
     case "help": {
       const helpMessage = `
-      **📜 Danh sách lệnh của bot:**
+      **📜 Danh sách lệnh của lão phu:**
       🔹 \`d?a [Từ khóa]\` → Tìm câu trả lời theo dữ liệu đã học.
       🔹 \`d?r [Từ khóa]\` → Tra cứu cùng Thái Ất Chân Nhân.
       🔹 \`d?roc\` → Đọc dữ liệu từ Google Sheets (tab Đặt Đá).
-      🔹 \`d?help\` → Hiển thị danh sách lệnh này.
+      🔹 \`d?help\` → Hiển thị danh sách lệnh.
+      🔹\'/schedule\' → Lịch trình lão Mạnh đã lên.
 
       🚀 **Ví dụ:**
       - \`d?a man hoang\`
@@ -153,7 +154,7 @@ bot.on("messageCreate", async (message) => {
       const query = args.join(" ").trim();
       if (!query)
         return message.channel.send(
-          "⚠️ Vui lòng nhập từ khóa. Ví dụ: `d?a bot`",
+          "⚠️ Vui lòng nhập từ khóa. Ví dụ: `d?a tần mục`",
         );
 
       const matches = findMatches(query, loadQuestions());
@@ -192,7 +193,9 @@ bot.on("messageCreate", async (message) => {
 
     // 📌 Lệnh đọc dữ liệu từ Google Sheets
     case "roc": {
-      message.channel.send("⏳ Đang tải dữ liệu, vui lòng chờ...");
+      message.channel.send(
+        '⏳ Đang tải dữ liệu, ${nickname} đạo hữu vui lòng chờ...'
+      );
 
       getSheetData().then((data) => {
           if (data.length === 0) {
