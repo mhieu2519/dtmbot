@@ -37,12 +37,19 @@ async function getSheetData() {
 
 
 
-
-function drawScatterPlot(data) {
-    if (!data || data.length === 0) {
+function drawScatterPlot(rawData) {
+    if (!rawData || rawData.length === 0) {
         console.error("❌ Không có dữ liệu để vẽ biểu đồ!");
         return null;
     }
+
+    // Chuyển đổi dữ liệu từ dạng ["Ngày", "Giờ", "Loại đá", "Kết quả"]
+    const data = rawData.map(row => ({
+        date: row[0],        // Cột A: Ngày
+        time: row[1],        // Cột B: Thời gian (13h, 18h)
+        material: row[2],    // Cột C: Loại đá
+        result: row[3] || 0  // Cột D: Giá trị (mặc định 0 nếu rỗng)
+    }));
 
     const width = 800;
     const height = 600;
@@ -99,6 +106,7 @@ function drawScatterPlot(data) {
 
     return canvas.toBuffer("image/png");
 }
+
 
 // Xuất hàm để dùng trong bot
 module.exports = { getSheetData, drawScatterPlot };
