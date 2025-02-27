@@ -205,7 +205,7 @@ bot.on("messageCreate", async (message) => {
         }
 
         // Xác định kích thước bảng theo form ảnh gốc
-        const colWidths = [120, 100, 150, 150, 150, 150, 150, 150, 100]; // Chiều rộng các cột
+        const colWidths = [120, 100, 150, 150, 150, 150, 150, 150, 120]; // Chiều rộng các cột
         const rowHeight = 40; // Chiều cao từng hàng
         const width = colWidths.reduce((a, b) => a + b, 0);
         const height = rowHeight * (data.length + 1);
@@ -224,7 +224,7 @@ bot.on("messageCreate", async (message) => {
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const headers = ["Ngày", "Thời gian", "Dữ liệu", "", "", "", "", "", "Kết quả"];
+        const headers = ["Ngày", "Thời gian", " ", " ", " ", "Dữ liệu", " ", " ", "Kết quả"];
         
         let x = 0;
         headers.forEach((header, i) => {
