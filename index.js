@@ -270,6 +270,96 @@ bot.on("messageCreate", async (message) => {
       break;
     }
 
+    case "roc_chart": {
+      message.channel.send(
+          `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
+      );
+  
+      getSheetData().then((data) => {
+          if (data.length === 0) {
+              message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
+              return;
+          }
+  
+          // Trích xuất danh sách vật liệu từ dữ liệu
+          let materials = new Set();
+          let chartData = {};
+          data.forEach((row) => {
+              let date = row[0];
+              let time = row[1];
+              for (let i = 2; i < row.length - 1; i += 2) {
+                  let material = row[i];
+                  let value = parseInt(row[i + 1].replace('x', '')) || 0;
+                  materials.add(material);
+                  if (!chartData[date]) chartData[date] = { "13h00": {}, "21h00": {} };
+                  chartData[date][time][material] = value;
+              }
+          });
+  
+          materials = Array.from(materials);
+          let dates = Object.keys(chartData);
+  
+          // Tạo canvas
+          const width = 800;
+          const height = 600;
+          const padding = 60;
+          const canvas = createCanvas(width, height);
+          const ctx = canvas.getContext("2d");
+  
+          // Vẽ nền
+          ctx.fillStyle = "#ffffff";
+          ctx.fillRect(0, 0, width, height);
+  
+          // Vẽ trục
+          ctx.strokeStyle = "#000";
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.moveTo(padding, padding);
+          ctx.lineTo(padding, height - padding);
+          ctx.lineTo(width - padding, height - padding);
+          ctx.stroke();
+  
+          // Vẽ nhãn trục Y (Vật liệu)
+          ctx.fillStyle = "#000";
+          ctx.font = "14px Arial";
+          materials.forEach((mat, i) => {
+              let y = height - padding - (i + 1) * ((height - 2 * padding) / materials.length);
+              ctx.fillText(mat, padding - 50, y);
+          });
+  
+          // Vẽ nhãn trục X (Ngày)
+          dates.forEach((date, i) => {
+              let x = padding + (i + 1) * ((width - 2 * padding) / dates.length);
+              ctx.fillText(date, x, height - padding + 20);
+          });
+  
+          // Vẽ dữ liệu (các điểm)
+          ctx.fillStyle = "red";
+          dates.forEach((date, i) => {
+              ["13h00", "21h00"].forEach((time, j) => {
+                  Object.entries(chartData[date][time]).forEach(([mat, val]) => {
+                      let x = padding + (i + 1) * ((width - 2 * padding) / dates.length) + (j * 10);
+                      let y = height - padding - (materials.indexOf(mat) + 1) * ((height - 2 * padding) / materials.length);
+                      ctx.beginPath();
+                      ctx.arc(x, y, 5, 0, 2 * Math.PI);
+                      ctx.fill();
+                      ctx.fillText(`x${val}`, x + 10, y - 5);
+                  });
+              });
+          });
+  
+          // Xuất ảnh và gửi vào Discord
+          const buffer = canvas.toBuffer("image/png");
+          const attachment = new AttachmentBuilder(buffer, { name: "chart.png" });
+          message.channel.send({ files: [attachment] });
+      }).catch((error) => {
+          console.error("Lỗi khi đọc Google Sheets:", error);
+          message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
+      });
+  
+      break;
+  }
+  
     default:
       message.channel.send("⚠️ Lệnh không hợp lệ! Hãy thử `d?help` để xem danh sách lệnh.");
   }
