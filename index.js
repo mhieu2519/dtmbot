@@ -291,7 +291,7 @@ bot.on("messageCreate", async (message) => {
         }
 
           // Tạo attachment từ buffer
-          const attachment = new AttachmentBuilder(buffer, { name: 'chart.png' });
+          const attachment = new AttachmentBuilder(buffer, { name: "chart.png" });
 
           // Gửi ảnh vào kênh Discord
           message.channel.send({ files: [attachment] });

@@ -1,6 +1,7 @@
 const { google } = require("googleapis");
 const fs = require("fs");
 require("dotenv").config();
+const { createCanvas } = require("canvas");
 const credentials = JSON.parse(process.env.GOOGLE_CREDENTIALS);
 
 const auth = new google.auth.GoogleAuth({
@@ -35,9 +36,14 @@ async function getSheetData() {
 }
 
 
-const { createCanvas } = require("canvas");
 
-async function drawScatterPlot(data) {
+
+function drawScatterPlot(data) {
+    if (!data || data.length === 0) {
+        console.error("❌ Không có dữ liệu để vẽ biểu đồ!");
+        return null;
+    }
+
     const width = 800;
     const height = 600;
     const canvas = createCanvas(width, height);
