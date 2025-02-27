@@ -31,7 +31,8 @@ const { loadQuestions, findMatches } = require('./utils/questions');
 const { chatWithGemini,sendMessageInChunks } = require('./utils/chat');
 const { loadScheduledMessages, excelTimeToISO, scheduleMessages  } = require('./utils/schedule');
 const { canUseCommand } = require('./utils/cooldown');
-
+const { createCanvas, loadImage } = require("canvas");
+const { AttachmentBuilder } = require("discord.js");
 
 
 
@@ -139,7 +140,7 @@ bot.on("messageCreate", async (message) => {
       🔹 \`d?r [Từ khóa]\` → Tra cứu cùng Thái Ất Chân Nhân.
       🔹 \`d?roc\` → Đọc dữ liệu từ Google Sheets (tab Đặt Đá).
       🔹 \`d?help\` → Hiển thị danh sách lệnh.
-      🔹\'/schedule\' → Lịch trình lão Mạnh đã lên.
+      🔹\`/schedule\` → Lịch trình lão Mạnh đã lên.
 
       🚀 **Ví dụ:**
       - \`d?a man hoang\`
@@ -194,25 +195,51 @@ bot.on("messageCreate", async (message) => {
     // 📌 Lệnh đọc dữ liệu từ Google Sheets
     case "roc": {
       message.channel.send(
-        '⏳ Đang tải dữ liệu, ${nickname} đạo hữu vui lòng chờ...'
+        `⏳ Đang tải dữ liệu, ${nickname} đạo hữu vui lòng chờ...`
       );
 
       getSheetData().then((data) => {
-          if (data.length === 0) {
-              message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
-              return;
-          }
+        if (data.length === 0) {
+            message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
+            return;
+        }
 
-          let response = "**📊 Dữ liệu Đặt Đá:**\n";
-          data.forEach((row) => {
-              response += row.join(" | ") + "\n";
-          });
+        // 📌 Tạo ảnh từ dữ liệu
+        const width = 800;
+        const rowHeight = 30;
+        const height = rowHeight * (data.length + 2);
+        const canvas = createCanvas(width, height);
+        const ctx = canvas.getContext("2d");
 
-          message.channel.send(response);
-      }).catch((error) => {
-          console.error("Lỗi khi đọc Google Sheets:", error);
-          message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
-      });
+        // Vẽ nền
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, width, height);
+
+        // Vẽ header
+        ctx.fillStyle = "#000000";
+        ctx.font = "bold 20px Arial";
+        ctx.fillText("📊 Dữ liệu Đặt Đá", 20, 30);
+
+        // Vẽ bảng dữ liệu
+        ctx.font = "16px Arial";
+        let y = 60;
+        data.forEach((row) => {
+            ctx.fillStyle = "#333333";
+            ctx.fillText(row.join(" | "), 20, y);
+            y += rowHeight;
+        });
+
+        // Chuyển canvas thành buffer ảnh
+        const buffer = canvas.toBuffer("image/png");
+        const attachment = new AttachmentBuilder(buffer, { name: "dat-da.png" });
+
+        // Gửi ảnh vào Discord
+        message.channel.send({ files: [attachment] });
+
+    }).catch((error) => {
+        console.error("Lỗi khi đọc Google Sheets:", error);
+        message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
+    });
 
       break;
     }
