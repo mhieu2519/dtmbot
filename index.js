@@ -203,49 +203,19 @@ bot.on("messageCreate", async (message) => {
             message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
             return;
         }
-    
+
+        // Xác định kích thước bảng theo form ảnh gốc
         const colWidths = [120, 100, 150, 150, 150, 150, 150, 150, 100]; // Chiều rộng các cột
         const rowHeight = 40; // Chiều cao từng hàng
         const width = colWidths.reduce((a, b) => a + b, 0);
-    
-        // Xác định chiều cao của bảng dựa trên dữ liệu
-        let mergedRows = [];
-        let lastDate = "";
-        let lastTime = "";
-        let dateRowSpan = 0;
-        let timeRowSpan = 0;
-    
-        data.forEach((row, index) => {
-            let currentDate = row[0];
-            let currentTime = row[1];
-    
-            // Xác định số hàng cần gộp cho cột Ngày
-            if (currentDate !== lastDate) {
-                dateRowSpan = data.filter(r => r[0] === currentDate).length;
-                lastDate = currentDate;
-            } else {
-                dateRowSpan = 0;
-            }
-    
-            // Xác định số hàng cần gộp cho cột Thời gian
-            if (currentTime !== lastTime) {
-                timeRowSpan = data.filter(r => r[1] === currentTime && r[0] === currentDate).length;
-                lastTime = currentTime;
-            } else {
-                timeRowSpan = 0;
-            }
-    
-            mergedRows.push({ row, dateRowSpan, timeRowSpan });
-        });
-    
-        const height = rowHeight * (mergedRows.length + 1);
+        const height = rowHeight * (data.length + 1);
         const canvas = createCanvas(width, height);
         const ctx = canvas.getContext("2d");
-    
+
         // Vẽ nền bảng
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, width, height);
-    
+
         // Vẽ tiêu đề
         ctx.fillStyle = "#222";
         ctx.fillRect(0, 0, width, rowHeight);
@@ -253,66 +223,49 @@ bot.on("messageCreate", async (message) => {
         ctx.font = "bold 16px Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-    
+
         const headers = ["Ngày", "Thời gian", "Dữ liệu", "", "", "", "", "", "Kết quả"];
-    
+        
         let x = 0;
         headers.forEach((header, i) => {
+          let colspan = i === 2 ? 6 : 1; // Merge 6 cột con của "Dữ liệu"
             ctx.fillText(header, x + colWidths[i] / 2, rowHeight / 2);
-            x += colWidths[i];
+            x += colWidths[i]*colspan ;
         });
-    
-        // Vẽ từng hàng dữ liệu với gộp ô
-        let y = rowHeight;
-        mergedRows.forEach(({ row, dateRowSpan, timeRowSpan }, rowIndex) => {
+
+        // Vẽ từng hàng dữ liệu
+        data.forEach((row, rowIndex) => {
             let x = 0;
-    
+            let y = (rowIndex + 1) * rowHeight;
+
             // Màu nền xen kẽ giống bảng gốc
             ctx.fillStyle = rowIndex % 2 === 0 ? "#F8F9FA" : "#E3E6E8";
             ctx.fillRect(0, y, width, rowHeight);
-    
-            // Viền bảng
+
+            // Viền
             ctx.strokeStyle = "#000";
             ctx.lineWidth = 1;
             ctx.strokeRect(0, y, width, rowHeight);
-    
+
+            // Vẽ nội dung
             ctx.fillStyle = "#000000";
             ctx.font = "16px Arial";
-    
-            // Gộp ô cột "Ngày"
-            if (dateRowSpan > 0) {
-                ctx.fillText(row[0], x + colWidths[0] / 2, y + (rowHeight * dateRowSpan) / 2);
-                ctx.strokeRect(x, y, colWidths[0], rowHeight * dateRowSpan);
-            }
-            x += colWidths[0];
-    
-            // Gộp ô cột "Thời gian"
-            if (timeRowSpan > 0) {
-                ctx.fillText(row[1], x + colWidths[1] / 2, y + (rowHeight * timeRowSpan) / 2);
-                ctx.strokeRect(x, y, colWidths[1], rowHeight * timeRowSpan);
-            }
-            x += colWidths[1];
-    
-            // Vẽ phần "Dữ liệu"
-            for (let i = 2; i < row.length; i++) {
-                ctx.fillText(row[i], x + colWidths[i] / 2, y + rowHeight / 2);
-                ctx.strokeRect(x, y, colWidths[i], rowHeight);
+            x = 0;
+            row.forEach((cell, i) => {
+                ctx.fillText(cell, x + colWidths[i] / 2, y + rowHeight / 2);
                 x += colWidths[i];
-            }
-    
-            y += rowHeight;
+            });
         });
-    
+
         // Xuất ảnh và gửi vào Discord
         const buffer = canvas.toBuffer("image/png");
         const attachment = new AttachmentBuilder(buffer, { name: "dat-da.png" });
         message.channel.send({ files: [attachment] });
-    
+
     }).catch((error) => {
         console.error("Lỗi khi đọc Google Sheets:", error);
         message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
     });
-    
 
       break;
     }
