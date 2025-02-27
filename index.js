@@ -131,6 +131,23 @@ bot.on("messageCreate", async (message) => {
   if (!message.content.startsWith(PREFIX)) return;
 
   switch (command) {
+    // 📌 Lệnh hiển thị danh sách lệnh
+    case "help": {
+      const helpMessage = `
+      **📜 Danh sách lệnh của bot:**
+      🔹 \`d?a [Từ khóa]\` → Tìm câu trả lời theo dữ liệu đã học.
+      🔹 \`d?r [Từ khóa]\` → Tra cứu cùng Thái Ất Chân Nhân.
+      🔹 \`d?roc\` → Đọc dữ liệu từ Google Sheets (tab Đặt Đá).
+      🔹 \`d?help\` → Hiển thị danh sách lệnh này.
+
+      🚀 **Ví dụ:**
+      - \`d?a man hoang\`
+      - \`d?roc\`
+      `;
+      message.channel.send(helpMessage);
+      break;
+    }
+
     // 📌 Lệnh hỏi đáp theo Excel
     case "a": {
       const query = args.join(" ").trim();
@@ -172,8 +189,33 @@ bot.on("messageCreate", async (message) => {
       break;
     }
 
+
+    // 📌 Lệnh đọc dữ liệu từ Google Sheets
+    case "roc": {
+      message.channel.send("⏳ Đang tải dữ liệu, vui lòng chờ...");
+
+      getSheetData().then((data) => {
+          if (data.length === 0) {
+              message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
+              return;
+          }
+
+          let response = "**📊 Dữ liệu Đặt Đá:**\n";
+          data.forEach((row) => {
+              response += row.join(" | ") + "\n";
+          });
+
+          message.channel.send(response);
+      }).catch((error) => {
+          console.error("Lỗi khi đọc Google Sheets:", error);
+          message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
+      });
+
+      break;
+    }
+
     default:
-      message.channel.send("⚠️ Lệnh không hợp lệ! Hãy thử `d?a` hoặc `d?r`");
+      message.channel.send("⚠️ Lệnh không hợp lệ! Hãy thử `d?help` để xem danh sách lệnh.");
   }
 // tương tác lại với bot
 
