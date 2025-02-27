@@ -284,6 +284,12 @@ bot.on("messageCreate", async (message) => {
                 // Gọi hàm để vẽ biểu đồ
           const buffer = drawScatterPlot(data);
 
+          if (!Buffer.isBuffer(buffer)) {
+            console.error("Lỗi: drawScatterPlot không trả về Buffer!");
+            message.channel.send("❌ Lỗi khi tạo biểu đồ!");
+            return;
+        }
+
           // Tạo attachment từ buffer
           const attachment = new AttachmentBuilder(buffer, { name: 'chart.png' });
 
