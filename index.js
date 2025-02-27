@@ -204,23 +204,23 @@ bot.on("messageCreate", async (message) => {
             return;
         }
 
-        // Thiết lập kích thước ảnh
-        const colWidths = [150, 120, 500, 100]; // Chiều rộng từng cột
-        const rowHeight = 40; // Chiều cao mỗi hàng
+        // Xác định kích thước bảng theo form ảnh gốc
+        const colWidths = [120, 100, 600, 100]; // Chiều rộng các cột
+        const rowHeight = 40; // Chiều cao từng hàng
         const width = colWidths.reduce((a, b) => a + b, 0);
         const height = rowHeight * (data.length + 1);
         const canvas = createCanvas(width, height);
         const ctx = canvas.getContext("2d");
 
-        // Vẽ nền
+        // Vẽ nền bảng
         ctx.fillStyle = "#ffffff";
         ctx.fillRect(0, 0, width, height);
 
-        // Vẽ header
-        ctx.fillStyle = "#333";
+        // Vẽ tiêu đề
+        ctx.fillStyle = "#222";
         ctx.fillRect(0, 0, width, rowHeight);
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 20px Arial";
+        ctx.font = "bold 18px Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
@@ -234,13 +234,13 @@ bot.on("messageCreate", async (message) => {
         // Vẽ từng hàng dữ liệu
         data.forEach((row, rowIndex) => {
             const y = (rowIndex + 1) * rowHeight;
-            
-            // Nền xen kẽ
-            ctx.fillStyle = rowIndex % 2 === 0 ? "#f0f0f0" : "#ffffff";
+
+            // Màu nền xen kẽ giống bảng gốc
+            ctx.fillStyle = rowIndex % 2 === 0 ? "#F8F9FA" : "#E3E6E8";
             ctx.fillRect(0, y, width, rowHeight);
 
-            // Viền ô
-            ctx.strokeStyle = "#cccccc";
+            // Viền
+            ctx.strokeStyle = "#000";
             ctx.lineWidth = 1;
             ctx.strokeRect(0, y, width, rowHeight);
 
@@ -263,6 +263,7 @@ bot.on("messageCreate", async (message) => {
         console.error("Lỗi khi đọc Google Sheets:", error);
         message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
     });
+    
       break;
     }
 
