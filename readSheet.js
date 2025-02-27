@@ -13,8 +13,8 @@ async function getSheetData() {
     const client = await auth.getClient();
     const sheets = google.sheets({ version: "v4", auth: client });
 
-    const spreadsheetId = process.env.SPREADSHEET_ID; // ID của Google Sheets
-    const range = "Đặt đá!A22:I100"; // Lấy dữ liệu từ tab "Đặt đá"
+    const spreadsheetId = process.env.SPREADSHEET_ID;
+    const range = "Đặt đá!A2:I100"; // Dữ liệu từ A đến I (bao gồm ngày, giờ và dữ liệu)
 
     try {
         const res = await sheets.spreadsheets.values.get({
@@ -28,58 +28,59 @@ async function getSheetData() {
             return [];
         }
 
-        return rows;
+        let data = [];
+        for (let row of rows) {
+            const date = row[0]; // Cột A: Ngày
+            const time = row[1]; // Cột B: Thời gian (13h, 21h)
+            
+            // Cột C đến G: Danh sách vật liệu + số lượng
+            for (let i = 2; i < row.length; i++) {
+                if (row[i] && row[i].includes("x")) {
+                    const parts = row[i].split("x");
+                    const material = parts[0].trim();
+                    const value = parseInt(parts[1].trim(), 10);
+                    
+                    data.push({ date, time, material, result: value });
+                }
+            }
+        }
+
+        return data;
     } catch (error) {
         console.error("Lỗi đọc dữ liệu:", error);
         return [];
     }
 }
-
-
-
-function drawScatterPlot(rawData) {
-    if (!rawData || rawData.length === 0) {
+function drawScatterPlot(data) {
+    if (!data || data.length === 0) {
         console.error("❌ Không có dữ liệu để vẽ biểu đồ!");
         return null;
     }
 
-    // Chuyển đổi dữ liệu từ dạng ["Ngày", "Giờ", "Loại đá", "Kết quả"]
-    const data = rawData.map(row => ({
-        date: row[0],        // Cột A: Ngày
-        time: row[1],        // Cột B: Thời gian (13h, 18h)
-        material: row[2],    // Cột C: Loại đá
-        result: row[3] || 0  // Cột D: Giá trị (mặc định 0 nếu rỗng)
-    }));
-
     const width = 800;
-    const height = 600;
+    const height = 500;
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext("2d");
 
-    // Danh sách loại đá
-    const materials = [
-        "Huyết Viêm Thạch", "Tử Huyễn Thạch",
-        "Bích Tinh Thạch", "Địa Tinh Thạch",
-        "Hoàng Kim Thạch", "Lam Thủy Thạch",
-        "Tử Tinh Thạch", "Hồng Nhưỡng Thạch",
-        "Lục Lân Thạch"
-    ];
+    // Danh sách loại đá (tự động lấy từ dữ liệu)
+    const materials = [...new Set(data.map(d => d.material))];
 
-    // Lấy danh sách ngày
-    const days = [...new Set(data.map(row => row.date))];
-    const xStep = width / (days.length * 2);
+    // Danh sách ngày (để làm trục X)
+    const days = [...new Set(data.map(d => d.date))];
+
+    const xStep = width / (days.length * 2 + 1); // *2 vì mỗi ngày có 2 mốc giờ
     const yStep = height / (materials.length + 1);
 
-    // Vẽ trục
+    // Vẽ trục X, Y
     ctx.strokeStyle = "black";
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.moveTo(50, 50);
+    ctx.moveTo(50, 20);
     ctx.lineTo(50, height - 50);
     ctx.lineTo(width - 50, height - 50);
     ctx.stroke();
 
-    // Vẽ nhãn trục tung (loại đá)
+    // Vẽ nhãn trục Y (tên loại đá)
     ctx.font = "14px Arial";
     ctx.textAlign = "right";
     ctx.fillStyle = "black";
@@ -87,21 +88,25 @@ function drawScatterPlot(rawData) {
         ctx.fillText(material, 45, height - 50 - yStep * (index + 1));
     });
 
-    // Vẽ nhãn trục hoành (ngày)
+    // Vẽ nhãn trục X (ngày + giờ)
     ctx.textAlign = "center";
     days.forEach((day, index) => {
-        ctx.fillText(day, 50 + xStep * (index * 2 + 1), height - 30);
+        ctx.fillText(`${day} 13h`, 50 + xStep * (index * 2 + 1), height - 30);
+        ctx.fillText(`${day} 21h`, 50 + xStep * (index * 2 + 2), height - 30);
     });
 
     // Vẽ điểm dữ liệu
     ctx.fillStyle = "red";
     data.forEach(row => {
-        const x = 50 + xStep * (days.indexOf(row.date) * 2 + (row.time === "13h" ? 0 : 1));
+        const x = 50 + xStep * (days.indexOf(row.date) * 2 + (row.time === "13h" ? 1 : 2));
         const y = height - 50 - yStep * (materials.indexOf(row.material) + 1);
+
         ctx.beginPath();
         ctx.arc(x, y, 5, 0, Math.PI * 2);
         ctx.fill();
-        ctx.fillText(row.result, x, y - 10);
+
+        // Vẽ số lượng
+        ctx.fillText(`x${row.result}`, x, y - 10);
     });
 
     return canvas.toBuffer("image/png");
