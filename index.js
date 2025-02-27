@@ -205,7 +205,7 @@ bot.on("messageCreate", async (message) => {
         }
 
         // Xác định kích thước bảng theo form ảnh gốc
-        const colWidths = [120, 100, 600, 100]; // Chiều rộng các cột
+        const colWidths = [120, 100, 150, 150, 150, 150, 150, 150, 100]; // Chiều rộng các cột
         const rowHeight = 40; // Chiều cao từng hàng
         const width = colWidths.reduce((a, b) => a + b, 0);
         const height = rowHeight * (data.length + 1);
@@ -220,20 +220,24 @@ bot.on("messageCreate", async (message) => {
         ctx.fillStyle = "#222";
         ctx.fillRect(0, 0, width, rowHeight);
         ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 18px Arial";
+        ctx.font = "bold 16px Arial";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
 
-        const headers = ["Ngày", "Thời gian", "Dữ liệu", "Kết quả"];
+        const headers = ["Ngày", "Thời gian", "Dữ liệu", "", "", "", "", "", "Kết quả"];
+        const subHeaders = ["", "", "Tài nguyên 1", "Tài nguyên 2", "Tài nguyên 3", "Tài nguyên 4", "Tài nguyên 5", "Tài nguyên 6", ""];
+
         let x = 0;
         headers.forEach((header, i) => {
+          let colspan = i === 2 ? 6 : 1; // Merge 6 cột con của "Dữ liệu"
             ctx.fillText(header, x + colWidths[i] / 2, rowHeight / 2);
-            x += colWidths[i];
+            x += colWidths[i]*colspan ;
         });
 
         // Vẽ từng hàng dữ liệu
         data.forEach((row, rowIndex) => {
-            const y = (rowIndex + 1) * rowHeight;
+            let x = 0;
+            let y = (rowIndex + 1) * rowHeight;
 
             // Màu nền xen kẽ giống bảng gốc
             ctx.fillStyle = rowIndex % 2 === 0 ? "#F8F9FA" : "#E3E6E8";
@@ -263,7 +267,7 @@ bot.on("messageCreate", async (message) => {
         console.error("Lỗi khi đọc Google Sheets:", error);
         message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
     });
-    
+
       break;
     }
 
