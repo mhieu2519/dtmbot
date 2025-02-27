@@ -204,10 +204,11 @@ bot.on("messageCreate", async (message) => {
             return;
         }
 
-        // 📌 Tạo ảnh từ dữ liệu
-        const width = 800;
-        const rowHeight = 30;
-        const height = rowHeight * (data.length + 2);
+        // Thiết lập kích thước ảnh
+        const colWidths = [150, 120, 500, 100]; // Chiều rộng từng cột
+        const rowHeight = 40; // Chiều cao mỗi hàng
+        const width = colWidths.reduce((a, b) => a + b, 0);
+        const height = rowHeight * (data.length + 1);
         const canvas = createCanvas(width, height);
         const ctx = canvas.getContext("2d");
 
@@ -216,39 +217,61 @@ bot.on("messageCreate", async (message) => {
         ctx.fillRect(0, 0, width, height);
 
         // Vẽ header
-        ctx.fillStyle = "#000000";
+        ctx.fillStyle = "#333";
+        ctx.fillRect(0, 0, width, rowHeight);
+        ctx.fillStyle = "#ffffff";
         ctx.font = "bold 20px Arial";
-        ctx.fillText("📊 Dữ liệu Đặt Đá", 20, 30);
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
 
-        // Vẽ bảng dữ liệu
-        ctx.font = "16px Arial";
-        let y = 60;
-        data.forEach((row) => {
-            ctx.fillStyle = "#333333";
-            ctx.fillText(row.join(" | "), 20, y);
-            y += rowHeight;
+        const headers = ["Ngày", "Thời gian", "Dữ liệu", "Kết quả"];
+        let x = 0;
+        headers.forEach((header, i) => {
+            ctx.fillText(header, x + colWidths[i] / 2, rowHeight / 2);
+            x += colWidths[i];
         });
 
-        // Chuyển canvas thành buffer ảnh
+        // Vẽ từng hàng dữ liệu
+        data.forEach((row, rowIndex) => {
+            const y = (rowIndex + 1) * rowHeight;
+            
+            // Nền xen kẽ
+            ctx.fillStyle = rowIndex % 2 === 0 ? "#f0f0f0" : "#ffffff";
+            ctx.fillRect(0, y, width, rowHeight);
+
+            // Viền ô
+            ctx.strokeStyle = "#cccccc";
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0, y, width, rowHeight);
+
+            // Vẽ nội dung
+            ctx.fillStyle = "#000000";
+            ctx.font = "16px Arial";
+            x = 0;
+            row.forEach((cell, i) => {
+                ctx.fillText(cell, x + colWidths[i] / 2, y + rowHeight / 2);
+                x += colWidths[i];
+            });
+        });
+
+        // Xuất ảnh và gửi vào Discord
         const buffer = canvas.toBuffer("image/png");
         const attachment = new AttachmentBuilder(buffer, { name: "dat-da.png" });
-
-        // Gửi ảnh vào Discord
         message.channel.send({ files: [attachment] });
 
     }).catch((error) => {
         console.error("Lỗi khi đọc Google Sheets:", error);
         message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
     });
-
       break;
     }
 
     default:
       message.channel.send("⚠️ Lệnh không hợp lệ! Hãy thử `d?help` để xem danh sách lệnh.");
   }
-// tương tác lại với bot
 
+
+// tương tác lại với bot
   if (message.reference) {
     const lastTime = lastRequestTime.get(message.author.id) || 0;
     const now = Date.now();
