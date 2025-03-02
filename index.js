@@ -138,13 +138,13 @@ bot.on("messageCreate", async (message) => {
       **📜 Danh sách lệnh của lão phu:**
       🔹 \`d?a [Từ khóa]\` → Tìm câu trả lời theo dữ liệu đã học.
       🔹 \`d?r [Từ khóa]\` → Tra cứu cùng Thái Ất Chân Nhân.
-      🔹 \`d?roc\` → Đọc dữ liệu từ Google Sheets (tab Đặt Đá).
+      🔹 \`d?cha\` → Đọc dữ liệu từ đá gần đây.
       🔹 \`d?help\` → Hiển thị danh sách lệnh.
       🔹\`/schedule\` → Lịch trình lão Mạnh đã lên.
 
       🚀 **Ví dụ:**
       - \`d?a man hoang\`
-      - \`d?roc\`
+      - \`d?cha\`
       `;
       message.channel.send(helpMessage);
       break;
@@ -191,7 +191,7 @@ bot.on("messageCreate", async (message) => {
       break;
     }
 
-
+/*
     // 📌 Lệnh đọc dữ liệu từ Google Sheets
     case "tab": {
       message.channel.send(
@@ -269,8 +269,9 @@ bot.on("messageCreate", async (message) => {
 
       break;
     }
-
-    case "cha": {
+*/
+    
+  case "cha": {
       message.channel.send(
           `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
       );
