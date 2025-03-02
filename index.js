@@ -3,7 +3,7 @@ const { Client, GatewayIntentBits } = require("discord.js");
 const keepAlive = require("./server");
 require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy token từ .env
 //require("dotenv").config({ path: "/etc/secrets/.env" }); // Render lưu file ở đây
-const { getSheetData,drawScatterPlot } = require("./readSheet");
+const { getSheetData,processData,drawChart } = require("./readSheet");
 
 const bot = new Client({
   intents: [
@@ -193,7 +193,7 @@ bot.on("messageCreate", async (message) => {
 
 
     // 📌 Lệnh đọc dữ liệu từ Google Sheets
-    case "roc": {
+    case "tab": {
       message.channel.send(
         `⏳ Đang tải dữ liệu, ${nickname} đạo hữu vui lòng chờ...`
       );
@@ -270,19 +270,20 @@ bot.on("messageCreate", async (message) => {
       break;
     }
 
-    case "roc_chart": {
+    case "cha": {
       message.channel.send(
           `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
       );
-  
-      getSheetData().then((data) => {
+      //const datatest = await processData();
+     // console.log("Dữ liệu từ Google Sheets:", JSON.stringify(datatest, null, 2));
+      processData().then((data) => {
           if (data.length === 0) {
               message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
               return;
           }
   
                 // Gọi hàm để vẽ biểu đồ
-          const buffer = drawScatterPlot(data);
+          const buffer = drawChart(data);
 
           if (!Buffer.isBuffer(buffer)) {
             console.error("Lỗi: drawScatterPlot không trả về Buffer!");
