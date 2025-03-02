@@ -1,9 +1,8 @@
 const { Client, GatewayIntentBits } = require("discord.js");
-
 const keepAlive = require("./server");
 require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy token từ .env
 //require("dotenv").config({ path: "/etc/secrets/.env" }); // Render lưu file ở đây
-const { getSheetData,processData,drawChart } = require("./readSheet");
+const { processData, drawTable, drawChart } = require("./readSheet");
 
 const bot = new Client({
   intents: [
@@ -15,8 +14,8 @@ const bot = new Client({
 });
 
 const PREFIX = "d?";
-// Lấy giá trị từ biến môi trường
 
+// Lấy giá trị từ biến môi trường
 const REPORT_CHANNEL_ID = process.env.REPORT_CHANNEL_ID;
 const ANNOUNCE_CHANNEL_ID = process.env.ANNOUNCE_CHANNEL_ID;
 const greetings = ["hi", "hello", "heloo", "halo", "hey", "Bonjour"];
@@ -33,9 +32,6 @@ const { loadScheduledMessages, excelTimeToISO, scheduleMessages  } = require('./
 const { canUseCommand } = require('./utils/cooldown');
 const { createCanvas, loadImage } = require("canvas");
 const { AttachmentBuilder } = require("discord.js");
-
-
-
 
 // Command "/" schedule
 bot.on("interactionCreate", async (interaction) => {
@@ -77,6 +73,7 @@ bot.on("guildMemberAdd", async (member) => {
   }
 });
 
+// Lệnh
 bot.on("messageCreate", async (message) => {
   if (message.author.bot) return; // Bỏ qua tin nhắn từ bot khác
 
@@ -138,13 +135,14 @@ bot.on("messageCreate", async (message) => {
       **📜 Danh sách lệnh của lão phu:**
       🔹 \`d?a [Từ khóa]\` → Tìm câu trả lời theo dữ liệu đã học.
       🔹 \`d?r [Từ khóa]\` → Tra cứu cùng Thái Ất Chân Nhân.
-      🔹 \`d?cha\` → Đọc dữ liệu từ đá gần đây.
+      🔹 \`d?t\` → Xem bảng dữ liệu đặt đá gần đây.
+      🔹 \`d?c\` → Xem biểu đồ kết quả dữ liệu gần đây.
       🔹 \`d?help\` → Hiển thị danh sách lệnh.
-      🔹\`/schedule\` → Lịch trình lão Mạnh đã lên.
+      🔹 \`/schedule\` → Lịch trình lão Mạnh đã lên.
 
       🚀 **Ví dụ:**
       - \`d?a man hoang\`
-      - \`d?cha\`
+      - \`d?c\`
       `;
       message.channel.send(helpMessage);
       break;
@@ -172,6 +170,7 @@ bot.on("messageCreate", async (message) => {
       }
       break;
     }
+
     // 📌 Lệnh hỏi AI
     case "r": {
       if (!canUseCommand(message.author.id)) {
@@ -191,92 +190,11 @@ bot.on("messageCreate", async (message) => {
       break;
     }
 
-/*
-    // 📌 Lệnh đọc dữ liệu từ Google Sheets
-    case "tab": {
-      message.channel.send(
-        `⏳ Đang tải dữ liệu, ${nickname} đạo hữu vui lòng chờ...`
-      );
-
-      getSheetData().then((data) => {
-        if (data.length === 0) {
-            message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
-            return;
-        }
-
-        // Xác định kích thước bảng theo form ảnh gốc
-        const colWidths = [120, 100, 150, 150, 150, 150, 150, 150, 120]; // Chiều rộng các cột
-        const rowHeight = 40; // Chiều cao từng hàng
-        const width = colWidths.reduce((a, b) => a + b, 0);
-        const height = rowHeight * (data.length + 1);
-        const canvas = createCanvas(width, height);
-        const ctx = canvas.getContext("2d");
-
-        // Vẽ nền bảng
-        ctx.fillStyle = "#ffffff";
-        ctx.fillRect(0, 0, width, height);
-
-        // Vẽ tiêu đề
-        ctx.fillStyle = "#222";
-        ctx.fillRect(0, 0, width, rowHeight);
-        ctx.fillStyle = "#ffffff";
-        ctx.font = "bold 16px Arial";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-
-        const headers = ["Ngày", "Thời gian", " ", " ", " ", "Dữ liệu", " ", " ", "Kết quả"];
-        
-        let x = 0;
-        headers.forEach((header, i) => {
-          let colspan = i === 2 ? 6 : 1; // Merge 6 cột con của "Dữ liệu"
-            ctx.fillText(header, x + colWidths[i] / 2, rowHeight / 2);
-            x += colWidths[i]*colspan ;
-        });
-
-        // Vẽ từng hàng dữ liệu
-        data.forEach((row, rowIndex) => {
-            let x = 0;
-            let y = (rowIndex + 1) * rowHeight;
-
-            // Màu nền xen kẽ giống bảng gốc
-            ctx.fillStyle = rowIndex % 2 === 0 ? "#F8F9FA" : "#E3E6E8";
-            ctx.fillRect(0, y, width, rowHeight);
-
-            // Viền
-            ctx.strokeStyle = "#000";
-            ctx.lineWidth = 1;
-            ctx.strokeRect(0, y, width, rowHeight);
-
-            // Vẽ nội dung
-            ctx.fillStyle = "#000000";
-            ctx.font = "16px Arial";
-            x = 0;
-            row.forEach((cell, i) => {
-                ctx.fillText(cell, x + colWidths[i] / 2, y + rowHeight / 2);
-                x += colWidths[i];
-            });
-        });
-
-        // Xuất ảnh và gửi vào Discord
-        const buffer = canvas.toBuffer("image/png");
-        const attachment = new AttachmentBuilder(buffer, { name: "dat-da.png" });
-        message.channel.send({ files: [attachment] });
-
-    }).catch((error) => {
-        console.error("Lỗi khi đọc Google Sheets:", error);
-        message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
-    });
-
-      break;
-    }
-*/
-    
-  case "cha": {
+    // 📌 Lệnh xem bảng dữ liệu 
+    case "t": {
       message.channel.send(
           `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
       );
-      //const datatest = await processData();
-     // console.log("Dữ liệu từ Google Sheets:", JSON.stringify(datatest, null, 2));
       processData().then((data) => {
           if (data.length === 0) {
               message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
@@ -284,7 +202,7 @@ bot.on("messageCreate", async (message) => {
           }
   
                 // Gọi hàm để vẽ biểu đồ
-          const buffer = drawChart(data);
+          const buffer = drawTable(data);
 
           if (!Buffer.isBuffer(buffer)) {
             console.error("Lỗi: drawScatterPlot không trả về Buffer!");
@@ -293,10 +211,44 @@ bot.on("messageCreate", async (message) => {
         }
 
           // Tạo attachment từ buffer
-          const attachment = new AttachmentBuilder(buffer, { name: "chart.png" });
+          const attachment = new AttachmentBuilder(buffer, { name: "table.png" });
 
           // Gửi ảnh vào kênh Discord
           message.channel.send({ files: [attachment] });
+
+      }).catch((error) => {
+          console.error("Lỗi khi đọc Google Sheets:", error);
+          message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
+      });
+  
+      break;
+    }
+
+    // 📌 Lệnh xem biểu đồ kết quả
+    case "c": {
+      message.channel.send(
+          `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
+      );
+      processData().then((data) => {
+        if (data.length === 0) {
+            message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
+            return;
+        }
+
+        // Gọi hàm để vẽ biểu đồ
+        const buffer = drawChart(data);
+
+        if (!Buffer.isBuffer(buffer)) {
+          console.error("Lỗi: drawScatterPlot không trả về Buffer!");
+          message.channel.send("❌ Lỗi khi tạo biểu đồ!");
+          return;
+        }
+
+        // Tạo attachment từ buffer
+        const attachment = new AttachmentBuilder(buffer, { name: "chart.png" });
+
+        // Gửi ảnh vào kênh Discord
+        message.channel.send({ files: [attachment] });
 
       }).catch((error) => {
           console.error("Lỗi khi đọc Google Sheets:", error);
