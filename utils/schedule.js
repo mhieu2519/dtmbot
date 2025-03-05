@@ -62,12 +62,12 @@ function scheduleMessages(bot) {
       const channel = bot.channels.cache.get(channelId);
       if (channel) {
         channel.send(content);
-        console.log(`📢 Đã gửi tin nhắn vào kênh ${channelName}: ${content}`);
+        //console.log(`📢 Đã gửi tin nhắn vào kênh ${channelName}: ${content}`);
       } else {
         console.error(`❌ Không tìm thấy kênh có ID: ${channelId}`);
       }
     });
- console.log(`📅 Đã lên lịch gửi hàng ngày vào ${hour}:${minute}:${second}`);    
+ //console.log(`📅 Đã lên lịch gửi hàng ngày vào ${hour}:${minute}:${second}`);    
   });
 }
 
