@@ -137,6 +137,7 @@ bot.on("messageCreate", async (message) => {
       🔹 \`d?r [Từ khóa]\` → Tra cứu cùng Thái Ất Chân Nhân.
       🔹 \`d?t\` → Xem bảng dữ liệu đặt đá gần đây.
       🔹 \`d?c\` → Xem biểu đồ kết quả dữ liệu gần đây.
+      🔹 \`d?cr\` → Xem biểu đồ kết quả dữ liệu gần đây.
       🔹 \`d?help\` → Hiển thị danh sách lệnh.
       🔹 \`/schedule\` → Lịch trình lão Mạnh đã lên.
 
