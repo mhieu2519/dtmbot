@@ -2,7 +2,7 @@ const { Client, GatewayIntentBits } = require("discord.js");
 const keepAlive = require("./server");
 require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy token từ .env
 //require("dotenv").config({ path: "/etc/secrets/.env" }); // Render lưu file ở đây
-const { processData, drawTable, drawChart } = require("./readSheet");
+const { processData, drawTable, drawChart, drawRatioChart } = require("./utils/readSheet");
 
 const bot = new Client({
   intents: [
@@ -257,7 +257,39 @@ bot.on("messageCreate", async (message) => {
   
       break;
     }
+    // 📌 Lệnh xem biểu đồ kết quả 2
+    case "cr": {
+      message.channel.send(
+          `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
+      );
+      processData().then((data) => {
+        if (data.length === 0) {
+            message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
+            return;
+        }
+
+        // Gọi hàm để vẽ biểu đồ
+        const buffer = drawRatioChart(data);
+
+        if (!Buffer.isBuffer(buffer)) {
+          console.error("Lỗi: drawScatterPlot không trả về Buffer!");
+          message.channel.send("❌ Lỗi khi tạo biểu đồ!");
+          return;
+        }
+
+        // Tạo attachment từ buffer
+        const attachment = new AttachmentBuilder(buffer, { name: "chart.png" });
+
+        // Gửi ảnh vào kênh Discord
+        message.channel.send({ files: [attachment] });
+
+      }).catch((error) => {
+          console.error("Lỗi khi đọc Google Sheets:", error);
+          message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
+      });
   
+      break;
+    }
     default:
       message.channel.send("⚠️ Lệnh không hợp lệ! Hãy thử `d?help` để xem danh sách lệnh.");
   }

@@ -52,7 +52,7 @@ async function processData() {
             result.push({ date, time, materials, result: finalResult });
         }
 
-       // console.dir(result, { depth: null }); // Hiển thị đầy đủ
+       //console.dir(result, { depth: null }); // Hiển thị đầy đủ
         return result;
     } catch (error) {
         console.error("Lỗi khi lấy dữ liệu:", error);
@@ -168,6 +168,7 @@ function drawChart(data){
 
     // Vẽ đường nối các điểm của vật liệu này
     if (points.length > 1) {
+        ctx.setLineDash([5, 5]); // Cấu hình nét đứt
         ctx.strokeStyle = "blue";  // Màu đường
         ctx.lineWidth = 1.5;
         ctx.beginPath();
@@ -178,6 +179,7 @@ function drawChart(data){
         }
 
         ctx.stroke();
+        ctx.setLineDash([]); 
     }
     });
    
@@ -205,7 +207,7 @@ function drawChart(data){
 
     // Vẽ đường nối tất cả điểm theo thứ tự thời gian
     if (allPoints.length > 1) {
-        ctx.strokeStyle = "red"; // Màu xanh cho đường nối tổng thể
+        ctx.strokeStyle = "red"; // Màu đỏ cho đường nối tổng thể
         ctx.lineWidth = 2.5;
         ctx.beginPath();
         ctx.moveTo(allPoints[0].x, allPoints[0].y);
@@ -319,5 +321,165 @@ function drawTable(data) {
     return canvas.toBuffer();
 }
 
+// Vẽ trả lại đồ thị mật độ mới
 
-module.exports = {processData, drawTable, drawChart};
+function drawRatioChart(data) {
+    const width = 2000;
+    const height = 650;
+    const xpoint =50;
+    const ypoint = 80;
+    const canvas = createCanvas(width, height);
+    const ctx = canvas.getContext("2d");
+
+    // Danh sách tỷ lệ cược (trục Y)
+    const ratios = ["x20", "x19", "x18", "x17", "x16", "x15", "x14", "x13", "x12", "x11", "x10", "x9", "x8", "x7", "x6", "x5", "x4", "x3", "x2", "x0"];
+    
+    // Danh sách thời gian (trục X)
+    const timeSlots = [...new Set(data.map(d => d.time))]; // ["13h00", "21h00"]
+    const dates = [...new Set(data.map(d => d.date))]; // ["10/03/2025", "11/03/2025", ...]
+    
+    const numXPoints = dates.length * timeSlots.length;
+    const xStep = (width - xpoint) / numXPoints;
+
+    // Màu sắc đại diện cho 9 loại đá
+    const materialColors = {
+        "Huyết Viêm Thạch": "red",
+        "Tử Huyễn Thạch": "purple",
+        "Bích Tinh Thạch": "blue",
+        "Địa Tinh Thạch": "brown",
+        "Hoàng Kim Thạch": "gold",
+        "Lam Thủy Thạch": "cyan",
+        "Tử Tinh Thạch": "darkviolet",
+        "Hồng Nhưỡng Thạch": "pink",
+        "Lục Lân Thạch": "green",
+    };
+
+    // Vẽ nền trắng
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, width, height);
+
+    // Vẽ trục tọa độ
+    ctx.strokeStyle = "black";
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(xpoint, ypoint);
+    ctx.lineTo(xpoint, height - 50);
+    ctx.lineTo(width - 50, height - 50);
+    ctx.stroke();
+    // Tạo các đường kẻ ngang
+    ctx.strokeStyle = "gray"; // Màu xám nhạt cho đường kẻ ngang
+    ctx.lineWidth = 0.5;
+    ctx.setLineDash([5, 5]); // Định dạng nét đứt
+
+    ratios.forEach((ratio, i) => {
+        let y = (height - 150) / (ratios.length - 1) * i + 100; 
+        ctx.beginPath();
+        ctx.moveTo( xpoint , y);
+        ctx.lineTo(width - 50, y);
+        ctx.stroke();
+    });     
+    ctx.setLineDash([]); // Reset về nét liền
+
+    // Vẽ nhãn trục Y (tỷ lệ cược)
+    ctx.font = "bold 14px Arial";
+    ctx.fillStyle = "black";
+    ctx.textAlign = "center";
+    ratios.forEach((ratio, i) => {
+        let y = (height - 150) / (ratios.length - 1) * i + 100;
+        ctx.fillText(ratio, 20, y);
+    });
+
+    // Vẽ nhãn trục X (ngày + thời gian)
+    dates.forEach((date, i) => {
+        timeSlots.forEach((time, j) => {
+            let x = xpoint + 10 + (i * timeSlots.length + j) * xStep;
+            // Hiển thị nhãn mỗi 5 ngày một lần (để tránh chồng chéo)
+            if (i % 5 === 0 && j === 0) {
+                ctx.fillText(date, x, height - 10);
+            } 
+            if (i % 2 === 0 && j === 0){
+            ctx.fillText(time, x, height - 30);
+            }
+
+        });
+    });
+
+    // Danh sách lưu vị trí của các kết quả để nối đường nét đứt
+    let resultPoints = [];
+
+    // Vẽ dữ liệu lên biểu đồ
+    data.forEach((item) => {
+        let xIndex = dates.indexOf(item.date) * timeSlots.length + timeSlots.indexOf(item.time);
+
+        item.materials.forEach((material) => {
+            let materialName = material.name;
+            let yIndex = ratios.indexOf(material.ratio); // Vị trí của tỷ lệ trên trục Y
+
+            if (xIndex !== -1 && yIndex !== -1) {
+                let x = xpoint + 20 + xIndex * xStep;
+                let y = (height - 150) / (ratios.length - 1) * yIndex + 100;
+
+                // Vẽ chấm tròn
+                ctx.fillStyle = materialColors[materialName] || "gray";
+                ctx.beginPath();
+                ctx.arc(x, y, 6, 0, 2 * Math.PI);
+                ctx.fill();
+            }
+        });
+
+        // Xác định vị trí của kết quả để nối đường nét đứt
+        let resultMaterial = item.materials.find(m => m.ratio === item.result);
+        if (resultMaterial) {
+            let yIndex = ratios.indexOf(item.result);
+            if (yIndex !== -1) {
+                let x = xpoint + 20 + xIndex * xStep;
+                let y = (height - 150) / (ratios.length - 1) * yIndex + 100;
+
+                // Lưu vị trí kết quả
+                resultPoints.push({ x, y });
+
+                // Vẽ dấu * cho kết quả
+                ctx.fillStyle = "black";
+                ctx.font = "bold 16px Arial";
+                ctx.fillText("*", x - 5, y - 8);
+            }
+        }
+    });
+
+    // Vẽ đường nét đứt giữa các kết quả
+    ctx.strokeStyle = "black";
+    ctx.setLineDash([5, 5]); // Cấu hình nét đứt
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i = 0; i < resultPoints.length - 1; i++) {
+        ctx.moveTo(resultPoints[i].x, resultPoints[i].y);
+        ctx.lineTo(resultPoints[i + 1].x, resultPoints[i + 1].y);
+    }
+    ctx.stroke();
+    ctx.setLineDash([]); // Reset về nét liền
+    // Vẽ chú thích đá
+    let legendX = xpoint+20;
+    let legendY = ypoint-50;
+    let legendSpacing = (width - xpoint*4) / Object.keys(materialColors).length;
+    
+    Object.keys(materialColors).forEach((material, index) => {
+        let x = legendX + index * legendSpacing;
+        let x1= legendX + index * legendSpacing + material.length*6;
+        // Vẽ ô màu
+        ctx.fillStyle = materialColors[material];
+        ctx.fillRect(x, legendY,  20, 20);
+
+        // Tên đá
+        ctx.fillStyle = "black";
+        ctx.font = "14px Arial";
+        ctx.fillText(material, x1 , legendY + 15);
+        //console.dir(material.length);
+    });
+
+    // Xuất hình ảnh ra file
+    return canvas.toBuffer("image/png");
+}
+
+
+
+module.exports = {processData, drawTable, drawChart, drawRatioChart};
