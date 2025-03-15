@@ -24,7 +24,7 @@ async function getSheetData(range) {
 // Đọc dữ liệu chỉ định từ sheet
 async function processData() {
     try {
-        const data = await getSheetData("Đặt đá!A22:I100"); // Đọc dữ liệu
+        const data = await getSheetData("Đặt đá!A11:I200"); // Đọc dữ liệu
 
         let result = [];
         const startIndex = data[0][0].toLowerCase().includes("ngày") ? 1 : 0;
