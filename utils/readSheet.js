@@ -352,6 +352,7 @@ function drawRatioChart(data) {
         "Tử Tinh Thạch": "darkviolet",
         "Hồng Nhưỡng Thạch": "pink",
         "Lục Lân Thạch": "green",
+        "N/A": "gray",
     };
 
     // Vẽ nền trắng
@@ -460,11 +461,12 @@ function drawRatioChart(data) {
     // Vẽ chú thích đá
     let legendX = xpoint+20;
     let legendY = ypoint-50;
-    let legendSpacing = (width - xpoint*4) / Object.keys(materialColors).length;
+    let legendSpacing = (width - xpoint*3.5) / Object.keys(materialColors).length;
     
     Object.keys(materialColors).forEach((material, index) => {
         let x = legendX + index * legendSpacing;
         let x1= legendX + index * legendSpacing + material.length*6;
+        let x2= legendX + index * legendSpacing + material.length*12;
         // Vẽ ô màu
         ctx.fillStyle = materialColors[material];
         ctx.fillRect(x, legendY,  20, 20);
@@ -472,7 +474,10 @@ function drawRatioChart(data) {
         // Tên đá
         ctx.fillStyle = "black";
         ctx.font = "14px Arial";
-        ctx.fillText(material, x1 , legendY + 15);
+        if (material!== "N/A")
+            ctx.fillText(material, x1 , legendY + 15);
+        else  
+            ctx.fillText(material, x2 , legendY + 15);
         //console.dir(material.length);
     });
 
