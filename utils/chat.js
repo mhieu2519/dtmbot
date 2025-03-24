@@ -5,7 +5,7 @@ const geminiApiKey = process.env["gemini_api_key"]; // Sử dụng biến môi t
 async function chatWithGemini(prompt) {
     try {
       const response = await axios.post(
-        "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent",
+        "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent",
         {
           contents: [
             {
