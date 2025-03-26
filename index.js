@@ -76,11 +76,15 @@ bot.on("guildMemberAdd", async (member) => {
 // Lệnh
 bot.on("messageCreate", async (message) => {
   if (message.author.bot) return; // Bỏ qua tin nhắn từ bot khác
-
-  const args = message.content.slice(PREFIX.length).trim().split(/ +/);
-  const command = args.shift()?.toLowerCase() || "";
   const nickname = message.member?.displayName || message.author.username;
-  const content = message.content.trim().toLowerCase(); // Chuẩn hóa nội dung tin nhắn
+  const content = message.content.trim(); // Lấy nội dung tin nhắn
+  const lowerContent = content.toLowerCase(); // Chuyển về chữ thường để kiểm tra PREFIX
+  
+  //console.dir(lowerContent);
+  // Cắt bỏ phần PREFIX mà không phân biệt hoa/thường
+  const commandBody = content.slice(PREFIX.length).trim();
+  const args = commandBody.split(/ +/);
+  const command = args.shift()?.toLowerCase() || ""; // Lấy lệnh và chuyển về chữ thường
 
   // 📌 Kiểm tra lời chào (nếu tin nhắn không phải lệnh)
   if (greetings.includes(content)) {
@@ -124,9 +128,10 @@ bot.on("messageCreate", async (message) => {
       console.error("Lỗi khi xử lý phản hồi:", error);
     }
   }
-
+  
   // 📌 Chỉ xử lý các lệnh bắt đầu bằng PREFIX
-  if (!message.content.startsWith(PREFIX)) return;
+
+ if (!lowerContent.startsWith(PREFIX.toLowerCase())) return; // Kiểm tra tiền tố bất kể hoa/thường
 
   switch (command) {
     // 📌 Lệnh hiển thị danh sách lệnh
