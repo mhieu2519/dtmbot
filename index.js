@@ -206,9 +206,9 @@ bot.on("messageCreate", async (message) => {
               message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
               return;
           }
-  
+          const recentData = data.slice(-30); // Lấy 30 dòng cuối cùng
                 // Gọi hàm để vẽ biểu đồ
-          const buffer = drawTable(data);
+          const buffer = drawTable(recentData);
 
           if (!Buffer.isBuffer(buffer)) {
             console.error("Lỗi: drawScatterPlot không trả về Buffer!");
@@ -275,7 +275,9 @@ bot.on("messageCreate", async (message) => {
         }
 
         // Gọi hàm để vẽ biểu đồ
-        const buffer = drawRatioChart(data);
+
+        const recentData = data.slice(-50);
+        const buffer = drawRatioChart(recentData);
 
         if (!Buffer.isBuffer(buffer)) {
           console.error("Lỗi: drawScatterPlot không trả về Buffer!");

@@ -325,9 +325,9 @@ function drawTable(data) {
 
 function drawRatioChart(data) {
     const width = 2000;
-    const height = 650;
-    const xpoint =50;
-    const ypoint = 80;
+    const height = 750; //tanwg 100
+    const xpoint =50; // Điểm bắt đầu trục X
+    const ypoint = 180;
     const canvas = createCanvas(width, height);
     const ctx = canvas.getContext("2d");
 
@@ -373,7 +373,7 @@ function drawRatioChart(data) {
     ctx.setLineDash([5, 5]); // Định dạng nét đứt
 
     ratios.forEach((ratio, i) => {
-        let y = (height - 150) / (ratios.length - 1) * i + 100; 
+        let y = (height - 250) / (ratios.length - 1) * i + 200; 
         ctx.beginPath();
         ctx.moveTo( xpoint , y);
         ctx.lineTo(width - 50, y);
@@ -386,7 +386,7 @@ function drawRatioChart(data) {
     ctx.fillStyle = "black";
     ctx.textAlign = "center";
     ratios.forEach((ratio, i) => {
-        let y = (height - 150) / (ratios.length - 1) * i + 100;
+        let y = (height - 250) / (ratios.length - 1) * i + 200;
         ctx.fillText(ratio, 20, y);
     });
 
@@ -418,7 +418,7 @@ function drawRatioChart(data) {
 
             if (xIndex !== -1 && yIndex !== -1) {
                 let x = xpoint + 20 + xIndex * xStep;
-                let y = (height - 150) / (ratios.length - 1) * yIndex + 100;
+                let y = (height - 250) / (ratios.length - 1) * yIndex + 200;
 
                 // Vẽ chấm tròn
                 ctx.fillStyle = materialColors[materialName] || "gray";
@@ -434,7 +434,7 @@ function drawRatioChart(data) {
             let yIndex = ratios.indexOf(item.result);
             if (yIndex !== -1) {
                 let x = xpoint + 20 + xIndex * xStep;
-                let y = (height - 150) / (ratios.length - 1) * yIndex + 100;
+                let y = (height - 250) / (ratios.length - 1) * yIndex + 200;
 
                 // Lưu vị trí kết quả
                 resultPoints.push({ x, y });
@@ -458,6 +458,13 @@ function drawRatioChart(data) {
     }
     ctx.stroke();
     ctx.setLineDash([]); // Reset về nét liền
+    // Vẽ tên biểu đồ
+    ctx.fillStyle = "black";
+    ctx.font = "bold 28px Arial";
+    ctx.fillText("Biểu đồ thống kê kết quả đặt đá", width / 2, 80);
+    ctx.font = " italic 13px Arial";
+    ctx.fillText("( 50 kết quả gần nhất)", width / 2, 100);
+    ctx.fillText("( by ManhKy0)", width*15 / 16, 95);
     // Vẽ chú thích đá
     let legendX = xpoint+20;
     let legendY = ypoint-50;
