@@ -6,6 +6,12 @@ const commands = [
   new SlashCommandBuilder()
     .setName("schedule")
     .setDescription("📅 Kiểm tra lịch trình đã được lên"),
+  new SlashCommandBuilder()
+    .setName('profile')
+    .setDescription('Xem thông tin cá nhân của bạn'),
+  new SlashCommandBuilder()
+    .setName('leaderboard')
+    .setDescription('Xem bảng xếp hạng XP của server')
 ].map((command) => command.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);

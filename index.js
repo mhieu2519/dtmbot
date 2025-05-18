@@ -32,6 +32,18 @@ const { loadScheduledMessages, excelTimeToISO, scheduleMessages  } = require('./
 const { canUseCommand } = require('./utils/cooldown');
 const { createCanvas, loadImage } = require("canvas");
 const { AttachmentBuilder } = require("discord.js");
+const { handleXP } = require("./utils/xpSystem");
+const { showRank } = require("./commands/rank");
+const { showLeaderboard } = require("./commands/leaderboard");
+const mongoose = require("mongoose");
+
+// Kết nối đến MongoDB Atlas
+mongoose.connect(process.env.MONGODB_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+.then(() => console.log("✅ Connected to MongoDB Atlas"))
+.catch((err) => console.error("❌ MongoDB connection error:", err));
 
 // Command "/" schedule
 bot.on("interactionCreate", async (interaction) => {
@@ -61,6 +73,15 @@ bot.on("interactionCreate", async (interaction) => {
       await interaction.followUp("❌ Lão phu không thể xử lý yêu cầu này!");
     }
   }
+
+  if (interaction.commandName === "profile") {
+    await showRank(interaction);
+  }
+
+  if (interaction.commandName === "leaderboard") {
+    await showLeaderboard(interaction);
+  }
+
 });
 
 // Chào bạn mới
@@ -75,7 +96,11 @@ bot.on("guildMemberAdd", async (member) => {
 
 // Lệnh
 bot.on("messageCreate", async (message) => {
+
   if (message.author.bot) return; // Bỏ qua tin nhắn từ bot khác
+  const xpToAdd = Math.floor(Math.random() * 8) + 2; // Tạo XP ngẫu nhiên từ 1 đến 10
+  handleXP(message.author.id, message.guild.id, xpToAdd);
+  
   const nickname = message.member?.displayName || message.author.username;
   const content = message.content.trim(); // Lấy nội dung tin nhắn
   const lowerContent = content.toLowerCase(); // Chuyển về chữ thường để kiểm tra PREFIX
