@@ -51,22 +51,7 @@ function setFont(level) {
 } 
 
 async function showRank(interaction) {
-    try {
-    await interaction.deferReply(); // Giữ interaction mở
 
-    const buffer = await generateRankImage(interaction.user.id); // tạo ảnh canvas
-
-    const attachment = new AttachmentBuilder(buffer, { name: 'rank.png' });
-
-    await interaction.editReply({
-      files: [attachment]
-    });
-  } catch (err) {
-    console.error("Lỗi khi xử lý rank:", err);
-    if (!interaction.replied) {
-      await interaction.reply("Có lỗi xảy ra khi tạo ảnh cấp bậc.");
-    }
-  }
   const guildId = interaction.guild.id;
   const userId = interaction.user.id;
 
