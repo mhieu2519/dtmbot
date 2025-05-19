@@ -162,11 +162,13 @@ bot.on("messageCreate", async (message) => {
       **📜 Danh sách lệnh của lão phu:**
       🔹 \`d?a [Từ khóa]\` → Tìm câu trả lời theo dữ liệu đã học.
       🔹 \`d?r [Từ khóa]\` → Tra cứu cùng Thái Ất Chân Nhân.
-      🔹 \`d?t\` → Xem bảng dữ liệu đặt đá gần đây.
-      🔹 \`d?c\` → Xem biểu đồ kết quả dữ liệu gần đây.
-      🔹 \`d?cr\` → Xem biểu đồ kết quả dữ liệu gần đây.
-      🔹 \`d?help\` → Hiển thị danh sách lệnh.
+      🔹 \`/profile\` → Thông tin cá nhân.
+      🔹 \`/leaderboard\` →  Bảng xếp hạng tông môn.
+      🔹 \`d?t\` → Xem bảng dữ liệu đặt đá gần đây( tạm ngừng update).
+      🔹 \`d?c\` → Xem biểu đồ kết quả dữ liệu gần đây( tạm ngừng update).
+      🔹 \`d?cr\` → Xem biểu đồ kết quả dữ liệu gần đây( tạm ngừng update).
       🔹 \`/schedule\` → Lịch trình lão Mạnh đã lên.
+      🔹 \`d?help\` → Hiển thị danh sách lệnh.
 
       🚀 **Ví dụ:**
       - \`d?a man hoang\`
