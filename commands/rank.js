@@ -11,11 +11,11 @@ registerFont(path.join(__dirname, "../assets/MeowScript-Regular.ttf"), { family:
 registerFont(path.join(__dirname, "../assets/Qwigley-Regular.ttf"), { family: "Qwigley" });
 
 function getBackgroundByLevel(level) {
-    if (level == 0) return "./assets/backgrounds/level_0.png";
-    if (level >= 1 && level < 5) return "./assets/backgrounds/level_0.png";
-    if (level >= 5 && level < 10) return "./assets/backgrounds/level_5_10.png";
-    if (level >= 10 && level < 50) return "./assets/backgrounds/level_10_50.png";
-    if (level >= 50 && level < 100) return "./assets/backgrounds/level_50_100.png";
+    if (level <5) return "./assets/backgrounds/level_0.png";
+    if (level >= 5 && level < 15) return "./assets/backgrounds/level_1_5.png";
+    if (level >= 15 && level < 50) return "./assets/backgrounds/level_5_10.png";
+    if (level >= 50 && level < 100) return "./assets/backgrounds/level_10_50.png";
+    if (level >= 100 && level < 300) return "./assets/backgrounds/level_50_100.png";
     return "./assets/backgrounds/level_100_plus.png";
 }
 function getTitle(level) {
@@ -24,9 +24,9 @@ function getTitle(level) {
   if (level < 26) return "Trúc Cơ sơ kỳ";
   if (level < 37) return "Trúc Cơ trung kỳ";
   if (level < 50) return "Trúc Cơ hậu kỳ";
-  if (level < 66) return "Kim Đan sơ kỳ";
-  if (level < 82) return "Kim Đan trung kỳ";  
-  if (level < 100) return "Kim Đan hậu kỳ";
+  if (level < 66) return "Kết Đan sơ kỳ";
+  if (level < 82) return "Kết Đan trung kỳ";  
+  if (level < 100) return "Kết Đan hậu kỳ";
   if (level < 150) return "Nguyên Anh sơ kỳ";
   if (level < 200) return "Nguyên Anh trung kỳ";
   if (level < 300) return "Nguyên Anh hậu kỳ";
@@ -34,7 +34,7 @@ function getTitle(level) {
 }
 function getGlowColor(level) {
   if (level < 5) return "#c0c0c0";          // Xám nhẹ bạc
-  if (level < 10) return "#33ccff";         // Xanh biển
+  if (level < 15) return "#00bbff";         // Xanh biển
   if (level < 50) return "#66ff66";         // Lục nhạt
   if (level < 100) return "#fd0609";        // Vàng rực
   if (level < 300) return "#ff0000";        // Đỏ rực
