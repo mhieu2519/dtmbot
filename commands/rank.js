@@ -106,7 +106,7 @@ async function showRank(interaction) {
 
   // ✍️ Text: tên
   ctx.shadowColor = getGlowColor(userData.level);
-  ctx.shadowBlur = 40;
+  ctx.shadowBlur = 5;
   ctx.fillStyle = "#fff"; 
   ctx.font = setFont(userData.level);
   ctx.fillText(`${interaction.member?.nickname || interaction.user.username}`, 250, 70);

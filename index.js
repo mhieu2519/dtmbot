@@ -95,6 +95,7 @@ bot.on("guildMemberAdd", async (member) => {
 bot.on("messageCreate", async (message) => {
 
   if (message.author.bot) return; // Bỏ qua tin nhắn từ bot khác
+  
   const xpToAdd = Math.floor(Math.random() * 8) + 2; // Tạo XP ngẫu nhiên từ 1 đến 10
   handleXP(message.author.id, message.guild.id, xpToAdd);
   
