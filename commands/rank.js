@@ -9,6 +9,7 @@ registerFont(path.join(__dirname, "../assets/Allura-Regular.ttf"), { family: "Al
 registerFont(path.join(__dirname, "../assets/WindSong-Medium.ttf"), { family: "WindSong" });
 registerFont(path.join(__dirname, "../assets/MeowScript-Regular.ttf"), { family: "MeowScript" });
 registerFont(path.join(__dirname, "../assets/Qwigley-Regular.ttf"), { family: "Qwigley" });
+registerFont(path.join(__dirname, "../assets/comici.ttf"), { family: "Comic Sans MS" });
 
 function getBackgroundByLevel(level) {
     if (level ==0) return "./assets/backgrounds/level_0.png";
@@ -116,7 +117,7 @@ async function showRank(interaction) {
   // Thông tin level/xp/rank
   ctx.fillStyle = "#fff"; 
   ctx.shadowBlur = 20;
-  ctx.font = "24px Comic Sans MS";
+  ctx.font = "Italic 24px Comic Sans MS";
   ctx.fillText(`Level: ${userData.level}`, 250, 110);
   ctx.fillText(`XP: ${userData.xp} / ${nextXP}`, 250, 150);
   ctx.fillText(`Rank: #${rank}`, 250, 190);
