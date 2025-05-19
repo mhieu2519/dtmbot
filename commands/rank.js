@@ -156,4 +156,4 @@ async function showRank(interaction) {
   });
 }
 
-module.exports = { showRank };
+module.exports = { showRank,getTitle };
