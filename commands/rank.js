@@ -53,11 +53,13 @@ function setFont(level) {
 
 async function showRank(interaction) {
 
+  await interaction.deferReply();
+
   const guildId = interaction.guild.id;
   const userId = interaction.user.id;
 
   const userData = await UserXP.findOne({ guildId, userId });
-  if (!userData) return interaction.reply("Bạn chưa có dữ liệu XP nào.");
+  if (!userData) return interaction.editReply("Bạn chưa có dữ liệu XP nào.");
 
   const nextXP = getXPForNextLevel(userData.level);
   const rank = await getUserRank(userId, guildId);
@@ -149,7 +151,7 @@ async function showRank(interaction) {
   ctx.strokeRect(barX, barY, barWidth, barHeight);
 
   const buffer = canvas.toBuffer("image/png");
-  await interaction.reply({
+  await interaction.editReply({
     files: [{ attachment: buffer, name: "rank.png" }]
   });
 }
