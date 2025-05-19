@@ -69,6 +69,20 @@ async function showRank(interaction) {
   const canvas = createCanvas(800, 250);
   const ctx = canvas.getContext("2d");
 
+let member = interaction.member;
+// Nếu không có nickname, fetch lại member
+// (điều này có thể xảy ra nếu bot không có quyền xem nickname)
+
+if (!member || !member.nickname) {
+  try {
+    member = await interaction.guild.members.fetch(interaction.user.id);
+  } catch (e) {
+    console.error("Không thể fetch member:", e);
+  }
+}
+
+const displayName = member?.nickname || interaction.user.username;
+
   // 🖼️ Nền gradient
   const gradient = ctx.createLinearGradient(0, 0, 800, 250);
   gradient.addColorStop(0, "#4e54c8");
@@ -112,8 +126,9 @@ async function showRank(interaction) {
   ctx.shadowBlur = 5;
   ctx.fillStyle = "#fff"; 
   ctx.font = setFont(userData.level);
-  ctx.fillText(`${interaction.member?.nickname || interaction.user.username}`, 250, 70);
-  
+  //ctx.fillText(`${interaction.member?.nickname || interaction.user.username}`, 250, 70);
+  ctx.fillText(displayName, 250, 70);
+
   // Thông tin level/xp/rank
   ctx.fillStyle = "#fff"; 
   ctx.shadowBlur = 20;
