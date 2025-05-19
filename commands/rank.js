@@ -11,12 +11,13 @@ registerFont(path.join(__dirname, "../assets/MeowScript-Regular.ttf"), { family:
 registerFont(path.join(__dirname, "../assets/Qwigley-Regular.ttf"), { family: "Qwigley" });
 
 function getBackgroundByLevel(level) {
-    if (level <5) return "./assets/backgrounds/level_0.png";
-    if (level >= 5 && level < 15) return "./assets/backgrounds/level_1_5.png";
-    if (level >= 15 && level < 50) return "./assets/backgrounds/level_5_10.png";
-    if (level >= 50 && level < 100) return "./assets/backgrounds/level_10_50.png";
-    if (level >= 100 && level < 300) return "./assets/backgrounds/level_50_100.png";
-    return "./assets/backgrounds/level_100_plus.png";
+    if (level ==0) return "./assets/backgrounds/level_0.png";
+    if (level >= 3 && level < 5) return "./assets/backgrounds/level_1_5.png";
+    if (level >= 5 && level < 15) return "./assets/backgrounds/level_5_10.png";
+    if (level >= 15 && level < 50) return "./assets/backgrounds/level_10_50.png";
+    if (level >= 50 && level < 100) return "./assets/backgrounds/level_50_100.png";
+    if (level >= 100 && level < 300) return "./assets/backgrounds/level_100_300.png";
+    return "./assets/backgrounds/level_300_plus.png";
 }
 function getTitle(level) {
   if (level < 5) return "Phàm Nhân";
@@ -36,7 +37,7 @@ function getGlowColor(level) {
   if (level < 5) return "#c0c0c0";          // Xám nhẹ bạc
   if (level < 15) return "#00bbff";         // Xanh biển
   if (level < 50) return "#66ff66";         // Lục nhạt
-  if (level < 100) return "#fd0609";        // Vàng rực
+  if (level < 100) return "#ffcc00";        // Vàng rực
   if (level < 300) return "#ff0000";        // Đỏ rực
   return "#ff00ff";                         // Hồng tím huyền ảo
 }
@@ -105,13 +106,14 @@ async function showRank(interaction) {
 
   // ✍️ Text: tên
   ctx.shadowColor = getGlowColor(userData.level);
-  ctx.shadowBlur = 20;
-  ctx.fillStyle = getGlowColor(userData.level); 
+  ctx.shadowBlur = 40;
+  ctx.fillStyle = "#fff"; 
   ctx.font = setFont(userData.level);
   ctx.fillText(`${interaction.member?.nickname || interaction.user.username}`, 250, 70);
   
   // Thông tin level/xp/rank
   ctx.fillStyle = "#fff"; 
+  ctx.shadowBlur = 20;
   ctx.font = "24px Comic Sans MS";
   ctx.fillText(`Level: ${userData.level}`, 250, 110);
   ctx.fillText(`XP: ${userData.xp} / ${nextXP}`, 250, 150);
