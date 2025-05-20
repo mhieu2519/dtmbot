@@ -1,6 +1,6 @@
 const UserXP = require("../models/UserXP");
 
-const DAILY_XP_REWARD = 100;
+
 
 function getXPForNextLevel(level) {
   return 5 * level * level + 50 * level + 100;
@@ -52,14 +52,14 @@ async function getUserRank(userId, guildId) {
   return users.findIndex(u => u.userId === userId) + 1;
 }
 
-async function handleXP(userId, guildId, amount) {
-  await addXP(userId, guildId, amount);
+function getRandomXP(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 
 
-
 async function handleDailyAutoXP(userId, guildId, message) {
+  const DAILY_XP_REWARD = getRandomXP(100, 200); // XP ngẫu nhiên từ 100 đến 200
   let user = await UserXP.findOne({ userId, guildId });
   if (!user) user = new UserXP({ userId, guildId });
 
@@ -88,7 +88,7 @@ async function handleDailyAutoXP(userId, guildId, message) {
       if (leveledUp) {
         channel.send(`🎉 ${nickname} đã lên cấp nhờ chăm chỉ mỗi ngày!`);
       } else {
-        channel.send(`📅 ${nickname} đã nhận ${DAILY_XP_REWARD} XP cho lần hoạt động đầu tiên hôm nay!`);
+        channel.send(`📅Chúc mừng ${nickname} đạo hữu đã nhận ${DAILY_XP_REWARD} XP cho lần hoạt động đầu tiên hôm nay!`);
       }
     } catch (e) {
       console.warn("Không tìm thấy kênh để gửi thông báo daily.");
@@ -98,4 +98,4 @@ async function handleDailyAutoXP(userId, guildId, message) {
 
 
 
-module.exports = { handleXP, getXPForNextLevel, addXP, getUserRank, handleDailyAutoXP };
+module.exports = { getRandomXP, getXPForNextLevel, addXP, getUserRank, handleDailyAutoXP };

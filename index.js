@@ -33,7 +33,7 @@ const { loadScheduledMessages, excelTimeToISO, scheduleMessages  } = require('./
 const { canUseCommand } = require('./utils/cooldown');
 const { createCanvas, loadImage } = require("canvas");
 const { AttachmentBuilder } = require("discord.js");
-const { addXP, handleDailyAutoXP } = require("./utils/xpSystem");
+const { addXP, getRandomXP, handleDailyAutoXP } = require("./utils/xpSystem");
 const { showRank } = require("./commands/rank");
 const { showLeaderboard } = require("./commands/leaderboard");
 const mongoose = require("mongoose");
@@ -100,8 +100,7 @@ bot.on("messageCreate", async (message) => {
   // Thưởng XP cho tin nhắn đầu tiên trong ngày
   await handleDailyAutoXP(message.author.id, message.guild.id, message)
   
-  const xpToAdd = Math.floor(Math.random() * 8) + 2; // Tạo XP ngẫu nhiên từ 1 đến 10
-  
+  const xpToAdd = getRandomXP(5, 50); // XP ngẫu nhiên từ 5 đến 15  
   // Gọi addXP trực tiếp để nhận được cấp mới nếu có
   await addXP(message.author.id, message.guild.id, xpToAdd, message);
 
