@@ -67,6 +67,7 @@ async function handleDailyAutoXP(userId, guildId, message) {
   const last = user.lastDaily;
 
   const isNewDay = !last || now.toDateString() !== new Date(last).toDateString();
+  const nickname = message.member?.displayName ||message.author.globalName|| message.author.username;
 
   if (isNewDay) {
     user.xp += DAILY_XP_REWARD;
@@ -85,9 +86,9 @@ async function handleDailyAutoXP(userId, guildId, message) {
     try {
       const channel = message.guild.channels.cache.get(process.env.LEVELUP_CHANNEL_ID); 
       if (leveledUp) {
-        channel.send(`🎉 ${message.member.displayName} đã lên cấp nhờ chăm chỉ mỗi ngày!`);
+        channel.send(`🎉 ${nickname} đã lên cấp nhờ chăm chỉ mỗi ngày!`);
       } else {
-        channel.send(`📅 ${message.member.displayName} đã nhận ${DAILY_XP_REWARD} XP cho lần hoạt động đầu tiên hôm nay!`);
+        channel.send(`📅 ${nickname} đã nhận ${DAILY_XP_REWARD} XP cho lần hoạt động đầu tiên hôm nay!`);
       }
     } catch (e) {
       console.warn("Không tìm thấy kênh để gửi thông báo daily.");

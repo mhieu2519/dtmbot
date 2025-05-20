@@ -2,8 +2,6 @@ const { createCanvas, loadImage, registerFont } = require("canvas");
 const UserXP = require("../models/UserXP");
 const { getXPForNextLevel, getUserRank } = require("../utils/xpSystem");
 
-
-
 const path = require("path");
 registerFont(path.join(__dirname, "../assets/Allura-Regular.ttf"), { family: "Allura" });
 registerFont(path.join(__dirname, "../assets/WindSong-Medium.ttf"), { family: "WindSong" });
@@ -69,27 +67,12 @@ async function showRank(interaction) {
   const canvas = createCanvas(800, 250);
   const ctx = canvas.getContext("2d");
 
-    const member = interaction.member;
-//let member = interaction.member;
-// Nếu không có nickname, fetch lại member
-// (điều này có thể xảy ra nếu bot không có quyền xem nickname)
-/*
-if (!member || !member.nickname) {
-  try {
-    member = await interaction.guild.members.fetch(interaction.user.id);
-  } catch (e) {
-    console.error("Không thể fetch member:", e);
-  }
-}*/
- const displayName= interaction.member?.nickname ||
+  const member = interaction.member;
+
+  const displayName= interaction.member?.nickname ||
     interaction.user.globalName ||
     interaction.user.username ||
-    "Không rõ";
- console.log("Tên hiển thị 1:", displayName);
- console.log("Tên hiển thị 2:", interaction.member?.nickname);
- console.log("Tên hiển thị 3 :", interaction.member.user.globalName);
-  console.log("Tên hiển thị 4:", interaction.user.username);
-//const displayName = member?.nickname || interaction.user.username;
+    "Ẩn Danh";
 
   // 🖼️ Nền gradient
   const gradient = ctx.createLinearGradient(0, 0, 800, 250);
@@ -111,7 +94,6 @@ if (!member || !member.nickname) {
   // 📸 Avatar
   const avatarURL = interaction.user.displayAvatarURL({ extension: "png", size: 256 });
   const avatar = await loadImage(avatarURL);
-
 
   // Avatar bo tròn + viền
   ctx.save();

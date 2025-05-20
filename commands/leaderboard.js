@@ -26,9 +26,9 @@ async function showLeaderboard(interaction) {
   //const requesterName = interaction.member?.nickname || interaction.user.username;
   const requesterName =
     interaction.member?.nickname ||
-    interaction.member?.user?.username ||
+    interaction.user.globalName ||
     interaction.user.username ||
-    "Không rõ";
+    "Ẩn Danh";
   await interaction.reply({
     embeds: [{
       color: 0xFFD700,
