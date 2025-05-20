@@ -82,12 +82,12 @@ if (!member || !member.nickname) {
   }
 }*/
  const displayName= interaction.member?.nickname ||
-    interaction.member?.user?.username ||
+    interaction.user.globalName ||
     interaction.user.username ||
     "Không rõ";
  console.log("Tên hiển thị 1:", displayName);
  console.log("Tên hiển thị 2:", interaction.member?.nickname);
- console.log("Tên hiển thị 3 :", interaction.member?.user?.username);
+ console.log("Tên hiển thị 3 :", interaction.member.user.globalName);
   console.log("Tên hiển thị 4:", interaction.user.username);
 //const displayName = member?.nickname || interaction.user.username;
 

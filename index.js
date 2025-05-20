@@ -105,7 +105,7 @@ bot.on("messageCreate", async (message) => {
   // Gọi addXP trực tiếp để nhận được cấp mới nếu có
   await addXP(message.author.id, message.guild.id, xpToAdd, message);
 
-  const nickname = message.member?.displayName || message.author.username;
+  const nickname = message.member?.displayName ||message.author.globalName|| message.author.username;
   const content = message.content.trim(); // Lấy nội dung tin nhắn
   const lowerContent = content.toLowerCase(); // Chuyển về chữ thường để kiểm tra PREFIX
   
