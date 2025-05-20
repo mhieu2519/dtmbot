@@ -33,7 +33,7 @@ const { loadScheduledMessages, excelTimeToISO, scheduleMessages  } = require('./
 const { canUseCommand } = require('./utils/cooldown');
 const { createCanvas, loadImage } = require("canvas");
 const { AttachmentBuilder } = require("discord.js");
-const { addXP } = require("./utils/xpSystem");
+const { addXP, handleDailyAutoXP } = require("./utils/xpSystem");
 const { showRank } = require("./commands/rank");
 const { showLeaderboard } = require("./commands/leaderboard");
 const mongoose = require("mongoose");
@@ -97,25 +97,19 @@ bot.on("messageCreate", async (message) => {
 
   if (message.author.bot) return; // Bỏ qua tin nhắn từ bot khác
   
+  // Thưởng XP cho tin nhắn đầu tiên trong ngày
+  await handleDailyAutoXP(message.author.id, message.guild.id, message)
+  
   const xpToAdd = Math.floor(Math.random() * 8) + 2; // Tạo XP ngẫu nhiên từ 1 đến 10
   
   // Gọi addXP trực tiếp để nhận được cấp mới nếu có
-  const levelUp = await addXP(message.author.id, message.guild.id, xpToAdd);
-  
+  await addXP(message.author.id, message.guild.id, xpToAdd, message);
+
   const nickname = message.member?.displayName || message.author.username;
   const content = message.content.trim(); // Lấy nội dung tin nhắn
   const lowerContent = content.toLowerCase(); // Chuyển về chữ thường để kiểm tra PREFIX
   
-  // Nếu lên cấp, gửi thông báo
 
-  if (levelUp) {
-    const levelUpChannel = message.guild.channels.cache.get(LEVEL_UP_CHANNEL_ID);
-    if (levelUpChannel) {
-      levelUpChannel.send(`Chúc mừng ${nickname} đạo hữu đã lên cấp! 🎉`);
-    } else {
-      console.warn("Không tìm thấy kênh thông báo level up!");
-    }
-  }
 
   
 
