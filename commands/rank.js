@@ -69,17 +69,18 @@ async function showRank(interaction) {
   const canvas = createCanvas(800, 250);
   const ctx = canvas.getContext("2d");
 
+    const member = interaction.member;
 //let member = interaction.member;
 // Nếu không có nickname, fetch lại member
 // (điều này có thể xảy ra nếu bot không có quyền xem nickname)
-
+/*
 if (!member || !member.nickname) {
   try {
     member = await interaction.guild.members.fetch(interaction.user.id);
   } catch (e) {
     console.error("Không thể fetch member:", e);
   }
-}
+}*/
  const displayName= interaction.member?.nickname ||
     interaction.member?.user?.username ||
     interaction.user.username ||
