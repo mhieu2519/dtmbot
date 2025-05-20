@@ -69,7 +69,7 @@ async function showRank(interaction) {
   const canvas = createCanvas(800, 250);
   const ctx = canvas.getContext("2d");
 
-let member = interaction.member;
+//let member = interaction.member;
 // Nếu không có nickname, fetch lại member
 // (điều này có thể xảy ra nếu bot không có quyền xem nickname)
 
@@ -80,8 +80,15 @@ if (!member || !member.nickname) {
     console.error("Không thể fetch member:", e);
   }
 }
-
-const displayName = member?.nickname || interaction.user.username;
+ const displayName= interaction.member?.nickname ||
+    interaction.member?.user?.username ||
+    interaction.user.username ||
+    "Không rõ";
+ console.log("Tên hiển thị 1:", displayName);
+ console.log("Tên hiển thị 2:", interaction.member?.nickname);
+ console.log("Tên hiển thị 3 :", interaction.member?.user?.username);
+  console.log("Tên hiển thị 4:", interaction.user.username);
+//const displayName = member?.nickname || interaction.user.username;
 
   // 🖼️ Nền gradient
   const gradient = ctx.createLinearGradient(0, 0, 800, 250);

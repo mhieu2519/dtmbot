@@ -2,6 +2,10 @@ const UserXP = require("../models/UserXP");
 const { getTitle } = require("./rank");
 
 async function showLeaderboard(interaction) {
+  if (!interaction.inGuild()) {
+    return interaction.reply("⚠️ Lệnh này chỉ dùng trong máy chủ.");
+  }
+
   const guildId = interaction.guild.id;
 
   // 📊 Sắp xếp: level giảm dần, xp giảm dần
@@ -19,8 +23,12 @@ async function showLeaderboard(interaction) {
     return `${medal} <@${u.userId}> — **${title}** (Level ${u.level}- ${u.xp} XP)`;
   }).join("\n");
 
-  const requesterName = interaction.member?.nickname || interaction.user.username;
-
+  //const requesterName = interaction.member?.nickname || interaction.user.username;
+  const requesterName =
+    interaction.member?.nickname ||
+    interaction.member?.user?.username ||
+    interaction.user.username ||
+    "Không rõ";
   await interaction.reply({
     embeds: [{
       color: 0xFFD700,
