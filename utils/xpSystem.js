@@ -36,7 +36,7 @@ async function addXP(userId, guildId, xpAmount, message) {
   // Gửi thông báo lên cấp nếu có message và lên cấp
   if (leveledUp && message) {
     const nickname = message.member?.nickname || message.member?.user?.username || "Ẩn Danh";
-    const levelUpChannel = message.guild.channels.cache.get(process.env.LEVEL_UP_CHANNEL_ID);
+    const levelUpChannel = message.guild.channels.cache.get(process.env.LEVELUP_CHANNEL_ID);
     if (levelUpChannel) {
       levelUpChannel.send(`🌟 Chúc mừng ${nickname} đạo hữu đã đột phá lên cấp! 🎉`);
     } else {
@@ -83,7 +83,7 @@ async function handleDailyAutoXP(userId, guildId, message) {
 
     // Gửi thông báo lên cấp nếu muốn
     try {
-      const channel = message.guild.channels.cache.get(process.env.LEVEL_UP_CHANNEL_ID); 
+      const channel = message.guild.channels.cache.get(process.env.LEVELUP_CHANNEL_ID); 
       if (leveledUp) {
         channel.send(`🎉 ${message.member.displayName} đã lên cấp nhờ chăm chỉ mỗi ngày!`);
       } else {
