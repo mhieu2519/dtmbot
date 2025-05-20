@@ -17,6 +17,7 @@ const PREFIX = "d?";
 
 // Lấy giá trị từ biến môi trường
 const REPORT_CHANNEL_ID = process.env.REPORT_CHANNEL_ID;
+const LEVEL_UP_CHANNEL_ID = process.env.LEVEL_UP_CHANNEL_ID;
 const ANNOUNCE_CHANNEL_ID = process.env.ANNOUNCE_CHANNEL_ID;
 const greetings = ["hi", "hello", "heloo", "halo", "hey", "Bonjour"];
 const cooldowns = new Map();
@@ -97,12 +98,27 @@ bot.on("messageCreate", async (message) => {
   if (message.author.bot) return; // Bỏ qua tin nhắn từ bot khác
   
   const xpToAdd = Math.floor(Math.random() * 8) + 2; // Tạo XP ngẫu nhiên từ 1 đến 10
-  handleXP(message.author.id, message.guild.id, xpToAdd);
+  
+  // Gọi addXP trực tiếp để nhận được cấp mới nếu có
+  const levelUp = await addXP(message.author.id, message.guild.id, xpToAdd);
   
   const nickname = message.member?.displayName || message.author.username;
   const content = message.content.trim(); // Lấy nội dung tin nhắn
   const lowerContent = content.toLowerCase(); // Chuyển về chữ thường để kiểm tra PREFIX
   
+  // Nếu lên cấp, gửi thông báo
+
+  if (levelUp) {
+    const levelUpChannel = message.guild.channels.cache.get(LEVEL_UP_CHANNEL_ID);
+    if (levelUpChannel) {
+      levelUpChannel.send(`Chúc mừng ${nickname} đạo hữu đã lên cấp! 🎉`);
+    } else {
+      console.warn("Không tìm thấy kênh thông báo level up!");
+    }
+  }
+
+  
+
   //console.dir(lowerContent);
   // Cắt bỏ phần PREFIX mà không phân biệt hoa/thường
   const commandBody = content.slice(PREFIX.length).trim();
