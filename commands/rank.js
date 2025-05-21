@@ -52,8 +52,6 @@ function setFont(level) {
 
 async function showRank(interaction) {
 
-  await interaction.deferReply();
-
   const guildId = interaction.guild.id;
   const userId = interaction.user.id;
 

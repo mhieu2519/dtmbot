@@ -73,7 +73,15 @@ bot.on("interactionCreate", async (interaction) => {
   }
 
   if (interaction.commandName === "profile") {
-    await showRank(interaction);
+    try {
+      await interaction.deferReply();
+      await showRank(interaction);
+      } catch (error) {
+        console.error("Lỗi khi hiển thị profile:", error);
+        if (!interaction.replied) {
+          await interaction.followUp("❌ Không thể hiển thị profile.");
+        }
+      }
   }
 
   if (interaction.commandName === "leaderboard") {
