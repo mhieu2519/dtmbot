@@ -65,13 +65,14 @@ async function showRank(interaction) {
   const canvas = createCanvas(800, 250);
   const ctx = canvas.getContext("2d");
 
-  const member = interaction.member;
-
+  //const member = interaction.member;
+/*
   const displayName= interaction.member?.nickname ||
-    interaction.user.globalName ||
-    interaction.user.username ||
+    interaction.member?.user?.globalName ||
+    interaction.member?.user?.username ||
     "Ẩn Danh";
-
+*/
+const displayName = interaction.member.displayName;
   // 🖼️ Nền gradient
   const gradient = ctx.createLinearGradient(0, 0, 800, 250);
   gradient.addColorStop(0, "#4e54c8");
