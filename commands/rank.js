@@ -10,7 +10,7 @@ registerFont(path.join(__dirname, "../assets/Qwigley-Regular.ttf"), { family: "Q
 registerFont(path.join(__dirname, "../assets/comici.ttf"), { family: "Comic Sans MS" });
 
 function getBackgroundByLevel(level) {
-    if (level ==0) return "./assets/backgrounds/level_0.png";
+    if (level <3) return "./assets/backgrounds/level_0.png";
     if (level >= 3 && level < 5) return "./assets/backgrounds/level_1_5.png";
     if (level >= 5 && level < 15) return "./assets/backgrounds/level_5_10.png";
     if (level >= 15 && level < 50) return "./assets/backgrounds/level_10_50.png";
