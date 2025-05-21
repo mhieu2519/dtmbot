@@ -23,12 +23,13 @@ async function showLeaderboard(interaction) {
     return `${medal} <@${u.userId}> — **${title}** (Level ${u.level}- ${u.xp} XP)`;
   }).join("\n");
 
-  //const requesterName = interaction.member?.nickname || interaction.user.username;
+  const requesterName = interaction.member.displayName ;
+  /*
   const requesterName =
     interaction.member?.nickname ||
     interaction.user.globalName ||
     interaction.user.username ||
-    "Ẩn Danh";
+    "Ẩn Danh";*/
   await interaction.reply({
     embeds: [{
       color: 0xFFD700,
