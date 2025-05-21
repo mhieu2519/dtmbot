@@ -8,7 +8,7 @@ registerFont(path.join(__dirname, "../assets/WindSong-Medium.ttf"), { family: "W
 registerFont(path.join(__dirname, "../assets/MeowScript-Regular.ttf"), { family: "MeowScript" });
 registerFont(path.join(__dirname, "../assets/Qwigley-Regular.ttf"), { family: "Qwigley" });
 registerFont(path.join(__dirname, "../assets/comici.ttf"), { family: "Comic Sans MS" });
-
+registerFont(path.join(__dirname, "../assets/Updock-Regular.ttf"), { family: "Updock" });
 function getBackgroundByLevel(level) {
     if (level <3) return "./assets/backgrounds/level_0.png";
     if (level >= 3 && level < 5) return "./assets/backgrounds/level_1_5.png";
@@ -43,10 +43,10 @@ function getGlowColor(level) {
 // set font theo level
 function setFont(level) {
   if (level < 5) return "40px arial";
-  if (level < 10) return "40px WindSong";
-  if (level < 50) return "40px Qwigley";
+  if (level < 15) return "40px Qwigley";
+  if (level < 50) return "40px WindSong";
   if (level < 100) return "40px MeowScript";
-  if (level < 300) return "40px WindSong";
+  if (level < 300) return "40px Updock";
   return "40px Allura";
 } 
 
