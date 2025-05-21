@@ -42,6 +42,30 @@ async function addXP(userId, guildId, xpAmount, message) {
     } else {
       console.warn("Không tìm thấy kênh thông báo level up!");
     }
+
+        // 🎁 CẤP ROLE KHI ĐẠT LEVEL 50
+    if (user.level >= 50 && message.guild.roles.cache.has(process.env.LEVEL_50_ROLE_ID)) {
+      const role = message.guild.roles.cache.get(process.env.LEVEL_50_ROLE_ID);
+      if (!message.member.roles.cache.has(role.id)) {
+        await message.member.roles.add(role).catch(console.error);
+        levelUpChannel?.send(`🎖️ Chúc mừng ${nickname} đạo hữu đã được nâng cấp vai trò <@&${role.id}>!`);
+      }
+    }
+
+    // 🔒 MỞ KHÓA KÊNH RIÊNG TƯ KHI LEVEL 100
+    if (user.level >= 100) {
+      const channel = message.guild.channels.cache.get(process.env.PRIVATE_CHANNEL_ID);
+      if (channel) {
+        await channel.permissionOverwrites.edit(message.member.id, {
+          ViewChannel: true,
+          SendMessages: true
+        });
+        levelUpChannel?.send(`🔓 ${nickname} đã mở khóa <#${channel.id}>!`);
+      }
+    }
+  // 🏆 CẤP ROLE KHI ĐẠT LEVEL 200
+
+
   }
 
   return leveledUp ? user.level : null;
