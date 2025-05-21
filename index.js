@@ -107,9 +107,10 @@ bot.on("messageCreate", async (message) => {
   
   // Thưởng XP cho tin nhắn đầu tiên trong ngày
   await handleDailyAutoXP(message.author.id, message.guild.id, message)
-  
-  const xpToAdd = getRandomXP(5, 50); // XP ngẫu nhiên từ 5 đến 15  
-  // Gọi addXP trực tiếp để nhận được cấp mới nếu có
+    // Nếu trong kênh bí mật -> cộng nhiều XP hơn
+  const isPrivateChannel = message.channel.id === process.env.PRIVATE_CHANNEL_ID;
+  const xpToAdd  = isPrivateChannel ? getRandomXP(40, 80) : getRandomXP(10, 50);
+
   await addXP(message.author.id, message.guild.id, xpToAdd, message);
 
   const nickname = message.member?.displayName ||message.author.globalName|| message.author.username;
