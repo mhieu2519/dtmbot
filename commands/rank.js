@@ -3,12 +3,12 @@ const UserXP = require("../models/UserXP");
 const { getXPForNextLevel, getUserRank } = require("../utils/xpSystem");
 
 const path = require("path");
-registerFont(path.join(__dirname, "../assets/Allura-Regular.ttf"), { family: "Allura" });
-registerFont(path.join(__dirname, "../assets/WindSong-Medium.ttf"), { family: "WindSong" });
-registerFont(path.join(__dirname, "../assets/MeowScript-Regular.ttf"), { family: "MeowScript" });
-registerFont(path.join(__dirname, "../assets/Qwigley-Regular.ttf"), { family: "Qwigley" });
-registerFont(path.join(__dirname, "../assets/comici.ttf"), { family: "Comic Sans MS" });
-registerFont(path.join(__dirname, "../assets/Updock-Regular.ttf"), { family: "Updock" });
+registerFont(path.join(__dirname, "../assets/fonts/Allura-Regular.ttf"), { family: "Allura" });
+registerFont(path.join(__dirname, "../assets/fonts/WindSong-Medium.ttf"), { family: "WindSong" });
+registerFont(path.join(__dirname, "../assets/fonts/MeowScript-Regular.ttf"), { family: "MeowScript" });
+registerFont(path.join(__dirname, "../assets/fonts/Qwigley-Regular.ttf"), { family: "Qwigley" });
+registerFont(path.join(__dirname, "../assets/fonts/comici.ttf"), { family: "Comic Sans MS" });
+registerFont(path.join(__dirname, "../assets/fonts/Updock-Regular.ttf"), { family: "Updock" });
 function getBackgroundByLevel(level) {
     if (level <3) return "./assets/backgrounds/level_0.png";
     if (level >= 3 && level < 5) return "./assets/backgrounds/level_1_5.png";
