@@ -33,7 +33,7 @@ const { loadScheduledMessages, excelTimeToISO, scheduleMessages  } = require('./
 const { canUseCommand } = require('./utils/cooldown');
 const { createCanvas, loadImage } = require("canvas");
 const { AttachmentBuilder } = require("discord.js");
-const { addXP, getRandomXP, handleDailyAutoXP } = require("./utils/xpSystem");
+const { addXP, getRandom, handleDailyAutoXP } = require("./utils/xpSystem");
 const { showRank } = require("./commands/rank");
 const { showLeaderboard } = require("./commands/leaderboard");
 const { handleSecretRealm } = require("./commands/secretRealm");
@@ -89,7 +89,7 @@ bot.on("interactionCreate", async (interaction) => {
     await showLeaderboard(interaction);
   }
 
-  if (interaction.commandName === "bí_cảnh") {
+  if (interaction.commandName === "bicanh") {
      try {
       await interaction.deferReply(); // Đảm bảo bot có thêm thời gian
 
@@ -124,7 +124,7 @@ bot.on("messageCreate", async (message) => {
   await handleDailyAutoXP(message.author.id, message.guild.id, message)
     // Nếu trong kênh bí mật -> cộng nhiều XP hơn
   const isPrivateChannel = message.channel.id === process.env.PRIVATE_CHANNEL_ID;
-  const xpToAdd  = isPrivateChannel ? getRandomXP(40, 80) : getRandomXP(10, 50);
+  const xpToAdd  = isPrivateChannel ? getRandom(40, 80) : getRandom(10, 50);
 
   await addXP(message.author.id, message.guild.id, xpToAdd, message);
 
@@ -150,7 +150,7 @@ bot.on("messageCreate", async (message) => {
 
     // 📌 Nếu là tin nhắn reply của bot, tương tác lại với bot
   if (message.reference) {
-    await handleReplyToBot(message);
+    await handleReplyToBot(message, lastRequestTime, conversationHistory);
     return; // Tránh xử lý tiếp
   }
   

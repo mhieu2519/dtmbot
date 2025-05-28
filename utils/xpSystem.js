@@ -76,14 +76,15 @@ async function getUserRank(userId, guildId) {
   return users.findIndex(u => u.userId === userId) + 1;
 }
 
-function getRandomXP(min, max) {
+function getRandom(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 
 
 async function handleDailyAutoXP(userId, guildId, message) {
-  const DAILY_XP_REWARD = getRandomXP(100, 200); // XP ngẫu nhiên từ 100 đến 200
+  const DAILY_XP_REWARD = getRandom(100, 200); // XP ngẫu nhiên từ 100 đến 200
+  const daily_stone_reward = getRandom(50, 100); // Linh thạch ngẫu nhiên từ 50 đến 100
   let user = await UserXP.findOne({ userId, guildId });
   if (!user) user = new UserXP({ userId, guildId });
 
@@ -95,6 +96,7 @@ async function handleDailyAutoXP(userId, guildId, message) {
 
   if (isNewDay) {
     user.xp += DAILY_XP_REWARD;
+    user.stone += daily_stone_reward; // Thêm phần thưởng linh thạch
     user.lastDaily = now;
 
     let leveledUp = false;
@@ -122,4 +124,4 @@ async function handleDailyAutoXP(userId, guildId, message) {
 
 
 
-module.exports = { getRandomXP, getXPForNextLevel, addXP, getUserRank, handleDailyAutoXP };
+module.exports = { getRandom, getXPForNextLevel, addXP, getUserRank, handleDailyAutoXP };

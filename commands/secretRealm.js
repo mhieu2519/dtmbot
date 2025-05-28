@@ -1,7 +1,8 @@
 const UserXP = require("../models/UserXP");
-const { getRandomXP, addXP } = require("../utils/xpSystem");
+const { getRandom, addXP } = require("../utils/xpSystem");
 
-const COOLDOWN = 60 * 60 * 1000;
+//const COOLDOWN = 60 * 60 * 1000; // 1 hour cooldown
+const COOLDOWN =  30 * 1000; 
 const ENTRY_FEE = 50;
 
 async function handleSecretRealm(interaction) {
@@ -40,11 +41,11 @@ async function handleSecretRealm(interaction) {
     case "gặp yêu thú": {
       const win = Math.random() < 0.5;
       if (win) {
-        const reward = Math.floor(Math.random() * 50) + 20;
+        const reward = getRandom(40,80); //
         user.stone += reward;
         result += `🗡️ Chiến thắng yêu thú! Nhận ${reward} linh thạch.`;
       } else {
-        const xpLost = Math.floor(Math.random() * 40) + 10;
+        const xpLost = getRandom(10,50);
         user.xp = Math.max(0, user.xp - xpLost);
         result += `☠️ Thất bại... Mất ${xpLost} XP.`;
       }
@@ -52,22 +53,22 @@ async function handleSecretRealm(interaction) {
     }
 
     case "gặp cường giả": {
-      const xpGain = getRandomXP(50, 100);
+      const xpGain = getRandom(50, 100);
       await addXP(userId, guildId, xpGain, interaction);
       result += `🧙 Cường giả chỉ điểm, nhận ${xpGain} XP.`;
       break;
     }
 
     case "trúng mỏ linh thạch": {
-      const stones = Math.floor(Math.random() * 80) + 30;
+      const stones = getRandom(30, 110);
       user.stone += stones;
       result += `⛏️ Khai thác mỏ linh thạch, nhận ${stones} linh thạch.`;
       break;
     }
 
     case "mở được kho báu bí cảnh": {
-      const xp = getRandomXP(30, 80);
-      const stones = Math.floor(Math.random() * 40) + 20;
+      const xp = getRandom(100, 150);
+      const stones = getRandom(100, 150);
       user.stone += stones;
       await addXP(userId, guildId, xp, interaction);
       result += `🎁 Kho báu chứa ${xp} XP và ${stones} linh thạch!`;

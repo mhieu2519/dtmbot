@@ -99,7 +99,7 @@ async function sendMessageInChunks(message, content) {
   }
 }
 
-async function handleReplyToBot(message) {
+async function handleReplyToBot(message, lastRequestTime, conversationHistory) {
   const lastTime = lastRequestTime.get(message.author.id) || 0;
   const now = Date.now();
   

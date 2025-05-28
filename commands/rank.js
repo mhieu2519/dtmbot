@@ -50,6 +50,38 @@ function setFont(level) {
   return "40px Allura";
 } 
 
+// Hàm hỗ trợ vẽ thanh bo góc
+function drawRoundedRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+  ctx.fill();
+}
+
+function strokeRoundedRect(ctx, x, y, width, height, radius) {
+  ctx.beginPath();
+  ctx.moveTo(x + radius, y);
+  ctx.lineTo(x + width - radius, y);
+  ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+  ctx.lineTo(x + width, y + height - radius);
+  ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+  ctx.lineTo(x + radius, y + height);
+  ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+  ctx.lineTo(x, y + radius);
+  ctx.quadraticCurveTo(x, y, x + radius, y);
+  ctx.closePath();
+  ctx.stroke();
+}
+
+
 async function showRank(interaction) {
 
   const guildId = interaction.guild.id;
@@ -125,6 +157,7 @@ const displayName = interaction.member.displayName;
   ctx.fillText(`Level: ${userData.level}`, 250, 110);
   ctx.fillText(`XP: ${userData.xp} / ${nextXP}`, 250, 150);
   ctx.fillText(`Rank: #${rank}`, 250, 190);
+  ctx.fillText(`💎 ${userData.stone}`, 400, 190);
 
   ctx.font = "30px Allura";
   ctx.fillStyle = getGlowColor(userData.level);
@@ -136,24 +169,25 @@ const displayName = interaction.member.displayName;
 
   // 📊 Thanh XP
   ctx.shadowColor = getGlowColor(userData.level);
-  ctx.shadowBlur = 20;
+  ctx.shadowBlur = 10;
   const barX = 250;
   const barY = 210;
   const barWidth = 500;
   const barHeight = 20;
-
-  // Khung
+/*// nền
   ctx.fillStyle = "#333";
-  ctx.fillRect(barX, barY, barWidth, barHeight);
+  drawRoundedRect(ctx, barX, barY, barWidth, barHeight, 10); // 10 là độ bo góc
+*/
 
-  // Phần đã đạt
-  ctx.fillStyle = "#34a853"; // Màu xanh lá
-  ctx.fillRect(barX, barY, barWidth * percent, barHeight);
+  // Vẽ phần tiến độ XP
+  ctx.fillStyle = "#34a853"; // màu thanh xp
+  drawRoundedRect(ctx, barX, barY, barWidth * percent, barHeight, 10); // radius = 10
 
   // Viền bar
-  ctx.strokeStyle = "#fff";  //
+  ctx.strokeStyle = "#fff";
   ctx.lineWidth = 2;
-  ctx.strokeRect(barX, barY, barWidth, barHeight);
+  strokeRoundedRect(ctx, barX, barY, barWidth, barHeight, 10); // bo góc 10px
+
 
   const buffer = canvas.toBuffer("image/png");
   await interaction.editReply({
