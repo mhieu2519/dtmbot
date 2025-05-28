@@ -24,7 +24,7 @@ const cooldowns = new Map();
 const MAX_CONTEXT_MESSAGES = 3; // Giới hạn số câu trong ngữ cảnh
 const conversationHistory = new Map(); // Lưu hội thoại theo ID tin nhắn gốc
 const lastRequestTime = new Map(); // Lưu thời gian gửi request gần nhất
-const REPLY_COOLDOWN = 5000; // 5 giây cooldown
+
 
 const geminiApiKey = process.env["gemini_api_key"];
 const { loadQuestions, findMatches } = require('./utils/questions');
@@ -337,6 +337,9 @@ bot.on("messageCreate", async (message) => {
 bot.once("ready", async () => {
   console.log("✅ Bot is now online!");
    scheduleMessages(bot);
+});
+bot.on('error', (err) => {
+  console.error('❌ Discord bot error:', err);
 });
 
 keepAlive()
