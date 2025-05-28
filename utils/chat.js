@@ -99,8 +99,53 @@ async function sendMessageInChunks(message, content) {
   }
 }
 
+async function handleReplyToBot(message) {
+  const lastTime = lastRequestTime.get(message.author.id) || 0;
+  const now = Date.now();
+  
+  if (now - lastTime < REPLY_COOLDOWN) {
+    return message.reply("⏳ Đạo hữu đợi một chút, ta đang suy nghĩ...");
+  }
+
+  lastRequestTime.set(message.author.id, now);
+
+  try {
+    const referencedMessage = await message.channel.messages.fetch(message.reference.messageId);
+
+    // Nếu tin nhắn gốc là của bot
+    if (referencedMessage.author.id === message.client.user.id) {
+      const query = message.content.trim();
+      if (!query) return message.reply("🤔 Đạo hữu muốn hỏi gì?");
+
+      // Lấy lịch sử hội thoại (nếu có)
+      const contextKey = referencedMessage.id;
+      let contextHistory = conversationHistory.get(contextKey) || [];
+
+      // Thêm tin nhắn cũ vào ngữ cảnh
+      contextHistory.push(referencedMessage.content);
+
+      // Giới hạn số câu hội thoại
+      if (contextHistory.length > MAX_CONTEXT_MESSAGES) {
+        contextHistory.shift(); // Xóa câu cũ nhất
+      }
+
+      // Ghi đè lại lịch sử hội thoại
+      conversationHistory.set(contextKey, contextHistory);
+
+      // Ghép ngữ cảnh lại thành prompt
+      const prompt = contextHistory.join("\n") + `\nUser: ${query}`;
+      const reply = await chatWithGemini(prompt);
+
+      // Gửi phản hồi
+      await sendMessageInChunks(message, reply);
+    }
+  } catch (error) {
+    console.error("Lỗi khi xử lý phản hồi:", error);
+  }
+}
 
 
-module.exports= { chatWithGemini, sendMessageInChunks };
+
+module.exports= { chatWithGemini, sendMessageInChunks, handleReplyToBot };
 
 

@@ -17,7 +17,7 @@ async function addXP(userId, guildId, xpAmount, message) {
   if (!user) user = new UserXP({ userId, guildId, lastMessage: new Date(0) });
 
   const now = new Date();
-  const cooldown = 15 * 1000; // 60s cooldown
+  const cooldown = 15 * 1000; // 15s cooldown
 
   if (now - user.lastMessage < cooldown) return null;
 

@@ -28,7 +28,7 @@ const REPLY_COOLDOWN = 5000; // 5 giây cooldown
 
 const geminiApiKey = process.env["gemini_api_key"];
 const { loadQuestions, findMatches } = require('./utils/questions');
-const { chatWithGemini,sendMessageInChunks } = require('./utils/chat');
+const { chatWithGemini,sendMessageInChunks, handleReplyToBot } = require('./utils/chat');
 const { loadScheduledMessages, excelTimeToISO, scheduleMessages  } = require('./utils/schedule');
 const { canUseCommand } = require('./utils/cooldown');
 const { createCanvas, loadImage } = require("canvas");
@@ -36,6 +36,7 @@ const { AttachmentBuilder } = require("discord.js");
 const { addXP, getRandomXP, handleDailyAutoXP } = require("./utils/xpSystem");
 const { showRank } = require("./commands/rank");
 const { showLeaderboard } = require("./commands/leaderboard");
+const { handleSecretRealm } = require("./commands/secretRealm");
 const mongoose = require("mongoose");
 
 // Kết nối đến MongoDB Atlas
@@ -88,6 +89,12 @@ bot.on("interactionCreate", async (interaction) => {
     await showLeaderboard(interaction);
   }
 
+  if (interaction.commandName === "bí_cảnh") {
+    await interaction.deferReply();
+    const response = await handleSecretRealm(interaction);
+    await interaction.editReply(response);
+  }
+
 });
 
 // Chào bạn mới
@@ -133,41 +140,10 @@ bot.on("messageCreate", async (message) => {
     return;
   }
 
-    // 📌 Nếu là tin nhắn reply của bot, tự động xử lý như "d?r"
+    // 📌 Nếu là tin nhắn reply của bot, tương tác lại với bot
   if (message.reference) {
-    try {
-      const referencedMessage = await message.channel.messages.fetch(message.reference.messageId);
-
-      if (referencedMessage.author.id === bot.user.id) {
-        const query = message.content.trim();
-        if (!query) return message.reply("🤔 Đạo hữu muốn hỏi gì?");
-
-        // Lấy lịch sử hội thoại (nếu có)
-        const contextKey = referencedMessage.id;
-        let contextHistory = conversationHistory.get(contextKey) || [];
-        
-        // Thêm tin nhắn cũ vào ngữ cảnh
-        contextHistory.push(referencedMessage.content);
-
-        // Giới hạn số câu hội thoại
-        if (contextHistory.length > MAX_CONTEXT_MESSAGES) {
-          contextHistory.shift(); // Xóa câu cũ nhất
-        }
-
-        // Ghi đè lại lịch sử hội thoại
-        conversationHistory.set(contextKey, contextHistory);
-
-        // Ghép ngữ cảnh lại thành prompt
-        const prompt = contextHistory.join("\n") + `\nUser: ${query}`;
-        const reply = await chatWithGemini(prompt);
-
-        // Gửi phản hồi
-        await sendMessageInChunks(message, reply);
-        return; // Tránh xử lý tiếp
-      }
-    } catch (error) {
-      console.error("Lỗi khi xử lý phản hồi:", error);
-    }
+    await handleReplyToBot(message);
+    return; // Tránh xử lý tiếp
   }
   
   // 📌 Chỉ xử lý các lệnh bắt đầu bằng PREFIX
@@ -346,49 +322,6 @@ bot.on("messageCreate", async (message) => {
   }
 
 
-// tương tác lại với bot
-  if (message.reference) {
-    const lastTime = lastRequestTime.get(message.author.id) || 0;
-    const now = Date.now();
-    
-    if (now - lastTime < REPLY_COOLDOWN) {
-      return message.reply("⏳ Đạo hữu đợi một chút, ta đang suy nghĩ...");
-    }
-  
-    lastRequestTime.set(message.author.id, now);
-    try {
-      const referencedMessage = await message.channel.messages.fetch(message.reference.messageId);
-      // Nếu tin nhắn gốc là của bot
-      if (referencedMessage.author.id === bot.user.id) {
-        const query = message.content.trim();
-        if (!query) return message.reply("🤔 Đạo hữu muốn hỏi gì?");
-  
-        // Lấy lịch sử hội thoại (nếu có)
-        const contextKey = referencedMessage.id;
-        let contextHistory = conversationHistory.get(contextKey) || [];
-        
-        // Thêm tin nhắn cũ vào ngữ cảnh
-        contextHistory.push(referencedMessage.content);
-        
-        // Giới hạn số câu hội thoại
-        if (contextHistory.length > MAX_CONTEXT_MESSAGES) {
-          contextHistory.shift(); // Xóa câu cũ nhất
-        }
-  
-        // Ghi đè lại lịch sử hội thoại
-        conversationHistory.set(contextKey, contextHistory);
-  
-        // Ghép ngữ cảnh lại thành prompt
-        const prompt = contextHistory.join("\n") + `\nUser: ${query}`;
-        const reply = await chatWithGemini(prompt);
-  
-        // Gửi phản hồi
-        await sendMessageInChunks(message, reply);
-      }
-    } catch (error) {
-      console.error("Lỗi khi xử lý phản hồi:", error);
-    }
-  }
 
 
 });

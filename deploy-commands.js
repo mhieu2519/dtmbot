@@ -11,7 +11,10 @@ const commands = [
     .setDescription('Xem thông tin cá nhân của bạn'),
   new SlashCommandBuilder()
     .setName('leaderboard')
-    .setDescription('Xem bảng xếp hạng XP của server')
+    .setDescription('Xem bảng xếp hạng XP của server'),
+  new SlashCommandBuilder()
+    .setName('bicanh')
+    .setDescription("Khám phá bí cảnh tông môn và nhận phần thưởng"),
 ].map((command) => command.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
