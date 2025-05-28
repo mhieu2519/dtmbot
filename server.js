@@ -9,7 +9,7 @@ server.get("/", (req, res) => {
 function keepAlive() {
   const port = process.env.PORT || 4000; // ⚠ Dùng PORT từ biến môi trường
   server.listen(port, () => {
-    console.log(`✅ Server is ready on port ${PORT}.`);
+    console.log(`✅ Server is ready on port ${port}.`);
   });
 }
 
