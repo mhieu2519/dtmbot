@@ -90,9 +90,17 @@ bot.on("interactionCreate", async (interaction) => {
   }
 
   if (interaction.commandName === "bí_cảnh") {
-    await interaction.deferReply();
-    const response = await handleSecretRealm(interaction);
-    await interaction.editReply(response);
+     try {
+      await interaction.deferReply(); // Đảm bảo bot có thêm thời gian
+
+      const result = await handleSecretRealm(interaction);
+
+      await interaction.editReply(result); // Trả kết quả sau khi xử lý xong
+    } catch (error) {
+      console.error("❌ Lỗi khi xử lý bí cảnh:", error);
+      await interaction.editReply("😢 Đã xảy ra lỗi khi khám phá bí cảnh. Hãy thử lại sau.");
+    }
+
   }
 
 });
