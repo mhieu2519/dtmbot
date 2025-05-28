@@ -15,7 +15,11 @@ const commands = [
   new SlashCommandBuilder()
     .setName('bicanh')
     .setDescription("Khám phá bí cảnh tông môn và nhận phần thưởng"),
-].map((command) => command.toJSON());
+  new SlashCommandBuilder()
+    .setName('shop')
+    .setDescription("🛒 Cửa hàng tông môn"),  
+    
+  ].map((command) => command.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
 

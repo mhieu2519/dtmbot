@@ -1,5 +1,5 @@
 const UserXP = require("../models/UserXP");
-
+const moment = require("moment-timezone");
 
 
 function getXPForNextLevel(level) {
@@ -88,16 +88,21 @@ async function handleDailyAutoXP(userId, guildId, message) {
   let user = await UserXP.findOne({ userId, guildId });
   if (!user) user = new UserXP({ userId, guildId });
 
-  const now = new Date();
-  const last = user.lastDaily;
+  // const now = new Date();
+  //const last = user.lastDaily;
+  //const isNewDay = !last || now.toDateString() !== new Date(last).toDateString();
 
-  const isNewDay = !last || now.toDateString() !== new Date(last).toDateString();
+  const now = moment().tz("Asia/Ho_Chi_Minh");
+  // Lần cuối nhận daily (chuyển sang múi giờ VN luôn)
+  const last = moment(user.lastDaily).tz("Asia/Ho_Chi_Minh");
+  
+  const isNewDay = !last || !now.isSame(last, 'day');
   const nickname = message.member?.displayName ||message.author.globalName|| message.author.username;
 
   if (isNewDay) {
     user.xp += DAILY_XP_REWARD;
     user.stone += daily_stone_reward; // Thêm phần thưởng linh thạch
-    user.lastDaily = now;
+    user.lastDaily = new Date(); // vẫn lưu UTC
 
     let leveledUp = false;
     while (user.xp >= getXPForNextLevel(user.level)) {

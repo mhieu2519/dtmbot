@@ -37,6 +37,8 @@ const { addXP, getRandom, handleDailyAutoXP } = require("./utils/xpSystem");
 const { showRank } = require("./commands/rank");
 const { showLeaderboard } = require("./commands/leaderboard");
 const { handleSecretRealm } = require("./commands/secretRealm");
+const {  getItemById,  createBuyButton} = require("./utils/shopUtils");
+
 const mongoose = require("mongoose");
 
 // Kết nối đến MongoDB Atlas
@@ -46,61 +48,91 @@ mongoose.connect(process.env.MONGODB_URI)
 
 // Command "/" schedule
 bot.on("interactionCreate", async (interaction) => {
-  if (!interaction.isCommand()) return;
 
-  if (interaction.commandName === "schedule") {
-    try {
-      // Trả lời ngay lập tức để tránh lỗi timeout
-      await interaction.deferReply();
+  if (interaction.isCommand()){
+    switch (interaction.commandName) {
+      case "schedule":{
+        try {
+            // Trả lời ngay lập tức để tránh lỗi timeout
+            await interaction.deferReply();
 
-      const messages = loadScheduledMessages(); // Lấy danh sách lịch trình
-      let response = "📅 **Danh sách lịch trình đã thiết kế:**\n";
+            const messages = loadScheduledMessages(); // Lấy danh sách lịch trình
+            let response = "📅 **Danh sách lịch trình đã thiết kế:**\n";
 
-      messages.forEach((msg, index) => {
-        const timeValue = msg["Thời gian"];
-        const time = new Date((timeValue - 25569) * 86400 * 1000)
-          .toISOString()
-          .substring(11, 16);
+            messages.forEach((msg, index) => {
+              const timeValue = msg["Thời gian"];
+              const time = new Date((timeValue - 25569) * 86400 * 1000)
+                .toISOString()
+                .substring(11, 16);
 
-        response += `\n**${index + 1}.** 🕒 ${time}\n✉️ ${msg["Nội dung"]}\n`;
-      });
+              response += `\n**${index + 1}.** 🕒 ${time}\n✉️ ${msg["Nội dung"]}\n`;
+            });
 
-      // Cập nhật phản hồi sau khi xử lý xong
-      await interaction.editReply(response);
-    } catch (error) {
-      console.error("Lỗi khi xử lý lệnh schedule:", error);
-      await interaction.followUp("❌ Lão phu không thể xử lý yêu cầu này!");
-    }
-  }
+            // Cập nhật phản hồi sau khi xử lý xong
+            await interaction.editReply(response);
+          } catch (error) {
+            console.error("Lỗi khi xử lý lệnh schedule:", error);
+            await interaction.followUp("❌ Lão phu không thể xử lý yêu cầu này!");
+          }
+        break;}
+      case "profile":{
+        try {
+          await interaction.deferReply();
+          await showRank(interaction);
+          } catch (error) {
+            console.error("Lỗi khi hiển thị profile:", error);
+            if (!interaction.replied) {
+              await interaction.followUp("❌ Không thể hiển thị profile.");
+            }
+          }
+        break; }
+      case "leaderboard": {    
+        await showLeaderboard(interaction);
+        break; }
+      case "bicanh": {
+        try {
+          await interaction.deferReply(); // Đảm bảo bot có thêm thời gian
 
-  if (interaction.commandName === "profile") {
-    try {
-      await interaction.deferReply();
-      await showRank(interaction);
-      } catch (error) {
-        console.error("Lỗi khi hiển thị profile:", error);
-        if (!interaction.replied) {
-          await interaction.followUp("❌ Không thể hiển thị profile.");
+          const result = await handleSecretRealm(interaction);
+
+          await interaction.editReply(result); // Trả kết quả sau khi xử lý xong
+        } catch (error) {
+          console.error("❌ Lỗi khi xử lý bí cảnh:", error);
+          await interaction.editReply("😢 Đã xảy ra lỗi khi khám phá bí cảnh. Hãy thử lại sau.");
         }
-      }
-  }
+        break; }
+  }}
 
-  if (interaction.commandName === "leaderboard") {
-    await showLeaderboard(interaction);
-  }
+  if (interaction.isStringSelectMenu()){
+    if (interaction.customId === "shop"){
+      const item = getItemById(interaction.values[0]);
+        if (!item) return interaction.reply({ content: "❌ Không tìm thấy vật phẩm.", ephemeral: true });
 
-  if (interaction.commandName === "bicanh") {
-     try {
-      await interaction.deferReply(); // Đảm bảo bot có thêm thời gian
-
-      const result = await handleSecretRealm(interaction);
-
-      await interaction.editReply(result); // Trả kết quả sau khi xử lý xong
-    } catch (error) {
-      console.error("❌ Lỗi khi xử lý bí cảnh:", error);
-      await interaction.editReply("😢 Đã xảy ra lỗi khi khám phá bí cảnh. Hãy thử lại sau.");
+        await interaction.update({
+          content: `📦 **${item.name}**\n${item.description}`,
+          components: [createBuyButton(item)]
+        });
     }
+  }
 
+  if (interaction.isButton()) {
+    if (interaction.customId.startsWith("buy_")) {
+      const itemId = interaction.customId.replace("buy_", "");
+      const item = getItemById(itemId);
+      const user = await UserXP.findOne({ userId: interaction.user.id, guildId: interaction.guildId });
+
+      if (!item || !user) return interaction.reply({ content: "❌ Lỗi xử lý mua hàng.", ephemeral: true });
+      if (user.stone < item.price) {
+        return interaction.reply({ content: "❌ Bạn không đủ đá linh.", ephemeral: true });
+      }
+
+      user.stone -= item.price;
+      user.inventory = user.inventory || [];
+      user.inventory.push(item.id);
+      await user.save();
+
+      interaction.reply({ content: `✅ Bạn đã mua **${item.name}**!`, ephemeral: true });
+      }
   }
 
 });

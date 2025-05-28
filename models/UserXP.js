@@ -9,6 +9,9 @@ const userXPSchema = new mongoose.Schema({
   lastMessage: { type: Date, default: new Date(0) },
   lastDaily: { type: Date, default: null }, // ⬅️ Thêm dòng này
   lastSecretRealmTime: { type: Date, default: null }, // ⬅️ Thêm dòng này
+  inventory: { type: [String], default: [] },
+
+
 });
 
 module.exports = mongoose.model("UserXP", userXPSchema);
