@@ -2,13 +2,13 @@ const express = require("express")
 
 const server = express()
 
-server.all("/", (req, res) => {
+server.get("/", (req, res) => {
   res.send("Bot is running!")
 })
 
 function keepAlive() {
-  const PORT = process.env.PORT || 3000; // ⚠ Dùng PORT từ biến môi trường
-  server.listen(PORT, () => {
+  const port = process.env.PORT || 4000; // ⚠ Dùng PORT từ biến môi trường
+  server.listen(port, () => {
     console.log(`✅ Server is ready on port ${PORT}.`);
   });
 }
