@@ -21,7 +21,7 @@ const LEVEL_UP_CHANNEL_ID = process.env.LEVEL_UP_CHANNEL_ID;
 const ANNOUNCE_CHANNEL_ID = process.env.ANNOUNCE_CHANNEL_ID;
 const greetings = ["hi", "hello", "heloo", "halo", "hey", "Bonjour"];
 const cooldowns = new Map();
-const MAX_CONTEXT_MESSAGES = 3; // Giới hạn số câu trong ngữ cảnh
+
 const conversationHistory = new Map(); // Lưu hội thoại theo ID tin nhắn gốc
 const lastRequestTime = new Map(); // Lưu thời gian gửi request gần nhất
 

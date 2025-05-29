@@ -2,6 +2,7 @@ require('dotenv').config();
 const axios = require("axios"); // Thêm axios nếu chưa cài đặt
 const geminiApiKey = process.env["gemini_api_key"]; // Sử dụng biến môi trường
 const REPLY_COOLDOWN = 5000; // 5 giây cooldown
+const MAX_CONTEXT_MESSAGES = 3; // Giới hạn số câu trong ngữ cảnh
 
 async function chatWithGemini(prompt) {
     try {
