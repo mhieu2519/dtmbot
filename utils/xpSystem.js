@@ -84,7 +84,7 @@ function getRandom(min, max) {
 
 async function handleDailyAutoXP(userId, guildId, message) {
   const DAILY_XP_REWARD = getRandom(100, 200); // XP ngẫu nhiên từ 100 đến 200
-  const daily_stone_reward = getRandom(50, 100); // Linh thạch ngẫu nhiên từ 50 đến 100
+  const daily_stone_reward = getRandom(150, 300); // Phần thưởng linh thạch ngẫu nhiên từ 150 đến 300
   let user = await UserXP.findOne({ userId, guildId });
   if (!user) user = new UserXP({ userId, guildId });
 
@@ -119,7 +119,7 @@ async function handleDailyAutoXP(userId, guildId, message) {
       if (leveledUp) {
         channel.send(`🎉 ${nickname} đã lên cấp nhờ chăm chỉ mỗi ngày!`);
       } else {
-        channel.send(`📅Chúc mừng ${nickname} đạo hữu đã nhận ${DAILY_XP_REWARD} XP cho lần hoạt động đầu tiên hôm nay!`);
+        channel.send(`📅Chúc mừng ${nickname} đạo hữu đã nhận ${DAILY_XP_REWARD} XP và ${daily_stone_reward} 💎 cho lần hoạt động đầu tiên hôm nay!`);
       }
     } catch (e) {
       console.warn("Không tìm thấy kênh để gửi thông báo daily.");

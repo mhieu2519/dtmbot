@@ -96,6 +96,7 @@ async function showRank(interaction) {
 
   const canvas = createCanvas(800, 250);
   const ctx = canvas.getContext("2d");
+  const diamond = await loadImage('../assets/icons/diamond.png');
 
   //const member = interaction.member;
 /*
@@ -104,7 +105,7 @@ async function showRank(interaction) {
     interaction.member?.user?.username ||
     "Ẩn Danh";
 */
-const displayName = interaction.member.displayName;
+  const displayName = interaction.member.displayName;
   // 🖼️ Nền gradient
   const gradient = ctx.createLinearGradient(0, 0, 800, 250);
   gradient.addColorStop(0, "#4e54c8");
@@ -157,7 +158,9 @@ const displayName = interaction.member.displayName;
   ctx.fillText(`Level: ${userData.level}`, 250, 110);
   ctx.fillText(`XP: ${userData.xp} / ${nextXP}`, 250, 150);
   ctx.fillText(`Rank: #${rank}`, 250, 190);
-  ctx.fillText(`💎 ${userData.stone}`, 400, 190);
+  //ctx.fillText(`💎 ${userData.stone}`, 400, 190); 
+  ctx.drawImage(diamond, 370, 170, 24, 24); // vị trí và kích thước tùy chỉnh
+  ctx.fillText(`${userData.stone}`, 400, 190);
 
   ctx.font = "30px Allura";
   ctx.fillStyle = getGlowColor(userData.level);

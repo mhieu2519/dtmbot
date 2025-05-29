@@ -5,6 +5,19 @@ const { getRandom, addXP } = require("../utils/xpSystem");
 const COOLDOWN =  30 * 1000; 
 const ENTRY_FEE = 50;
 
+function chooseWeighted(scenarios) {
+  const totalWeight = scenarios.reduce((sum, item) => sum + item.weight, 0);
+  const rand = Math.random() * totalWeight;
+  let cumulative = 0;
+
+  for (const item of scenarios) {
+    cumulative += item.weight;
+    if (rand < cumulative) {
+      return item.text;
+    }
+  }
+}
+
 async function handleSecretRealm(interaction) {
   const userId = interaction.user.id;
   const guildId = interaction.guild.id;
@@ -28,17 +41,29 @@ async function handleSecretRealm(interaction) {
   user.lastSecretRealmTime = now;
 
   const scenarios = [
-    "gặp yêu thú",
-    "gặp cường giả",
-    "trúng mỏ linh thạch",
-    "mở được kho báu bí cảnh",
-    "gặp đỉnh cấp yêu thú",
+      { text: "gặp yêu thú", weight: 25 },
+      { text: "gặp cường giả", weight: 15 },
+      { text: "trúng mỏ linh thạch", weight: 20 },
+      { text: "mở được kho báu bí cảnh", weight: 15 },
+      { text: "gặp đỉnh cấp yêu thú", weight: 10 },
+      { text: "gặp được truyền thừa ẩn giấu", weight: 5 }, // Tỉ lệ thấp hơn
   ];
-  const chosen = scenarios[Math.floor(Math.random() * scenarios.length)];
+  //const chosen = scenarios[Math.floor(Math.random() * scenarios.length)];
+
+  // Chọn ngẫu nhiên một kịch bản dựa trên trọng số
+  const chosen = chooseWeighted(scenarios);
 
   let result = `🔮 Đạo hữu tiến vào bí cảnh và ${chosen}...\n`;
 
   switch (chosen) {
+
+    case "gặp được truyền thừa ẩn giấu": {
+      const xpGain = getRandom(150, 300);
+      await addXP(userId, guildId, xpGain, interaction);
+      result += `📜 Nhận được truyền thừa ẩn giấu, tăng ${xpGain} XP.`;
+      break;
+    }
+
     case "gặp yêu thú": {
       const win = Math.random() < 0.5;
       if (win) {
@@ -54,14 +79,14 @@ async function handleSecretRealm(interaction) {
     }
 
     case "gặp cường giả": {
-      const xpGain = getRandom(50, 100);
+      const xpGain = getRandom(50, 120);
       await addXP(userId, guildId, xpGain, interaction);
       result += `🧙 Cường giả chỉ điểm, nhận ${xpGain} XP.`;
       break;
     }
 
     case "trúng mỏ linh thạch": {
-      const stones = getRandom(30, 110);
+      const stones = getRandom(30, 120);
       user.stone += stones;
       result += `⛏️ Khai thác mỏ linh thạch, nhận ${stones} linh thạch.`;
       break;
@@ -77,7 +102,7 @@ async function handleSecretRealm(interaction) {
     }
 
     case "gặp đỉnh cấp yêu thú": {
-      const win = Math.random() < 0.1; // 10% cơ hội thắng
+      const win = Math.random() < 0.4; 
       if (win) {
         const xpGain = getRandom(200, 500);
         await addXP(userId, guildId, xpGain, interaction);
