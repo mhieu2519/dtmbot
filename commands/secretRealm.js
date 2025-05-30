@@ -56,14 +56,7 @@ async function handleSecretRealm(interaction) {
   let result = `🔮 Đạo hữu tiến vào bí cảnh và ${chosen}...\n`;
 
   switch (chosen) {
-
-    case "gặp được truyền thừa ẩn giấu": {
-      const xpGain = getRandom(150, 300);
-      await addXP(userId, guildId, xpGain, interaction);
-      result += `📜 Nhận được truyền thừa ẩn giấu, tăng ${xpGain} XP.`;
-      break;
-    }
-
+ 
     case "gặp yêu thú": {
       const win = Math.random() < 0.5;
       if (win) {
@@ -114,6 +107,15 @@ async function handleSecretRealm(interaction) {
       }
       break;
     }
+   case "gặp được truyền thừa ẩn giấu": {
+      const xpGain = getRandom(250, 500);
+      const stones = getRandom(300, 500);
+      user.stone += stones;
+      await addXP(userId, guildId, xpGain, interaction);
+      result += `📜 Nhận được truyền thừa ẩn giấu, tăng ${xpGain} XP và ${stones} linh thạch.`;
+      break;
+    }
+
   }
 
   await user.save();
