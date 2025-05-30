@@ -375,4 +375,5 @@ bot.on('error', (err) => {
 });
 
 keepAlive()
-bot.login(process.env.DISCORD_TOKEN); // Sử dụng token từ biến môi trường
+bot.login(process.env.DISCORD_TOKEN) // Sử dụng token từ biến môi trường
+  .catch((err) => console.error("❌ Login failed:", err));
