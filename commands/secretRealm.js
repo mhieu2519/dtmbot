@@ -1,22 +1,10 @@
 const UserXP = require("../models/UserXP");
 const { getRandom, addXP } = require("../utils/xpSystem");
+const { chooseWeighted, addItemToInventory } = require("../utils/inventory");
 
 //const COOLDOWN = 60 * 60 * 1000; // 1 hour cooldown
 const COOLDOWN =  30 * 1000; 
 const ENTRY_FEE = 50;
-
-function chooseWeighted(scenarios) {
-  const totalWeight = scenarios.reduce((sum, item) => sum + item.weight, 0);
-  const rand = Math.random() * totalWeight;
-  let cumulative = 0;
-
-  for (const item of scenarios) {
-    cumulative += item.weight;
-    if (rand < cumulative) {
-      return item.text;
-    }
-  }
-}
 
 async function handleSecretRealm(interaction) {
   const userId = interaction.user.id;
@@ -41,12 +29,13 @@ async function handleSecretRealm(interaction) {
   user.lastSecretRealmTime = now;
 
   const scenarios = [
-      { text: "gặp yêu thú", weight: 25 },
-      { text: "gặp cường giả", weight: 15 },
-      { text: "trúng mỏ linh thạch", weight: 20 },
-      { text: "mở được kho báu bí cảnh", weight: 15 },
-      { text: "gặp đỉnh cấp yêu thú", weight: 10 },
-      { text: "gặp được truyền thừa ẩn giấu", weight: 5 }, // Tỉ lệ thấp hơn
+      { text: "gặp yêu thú", weight: 30 },
+      { text: "gặp cường giả", weight: 18 },
+      { text: "trúng mỏ linh thạch", weight: 25 },
+      { text: "mở được kho báu bí cảnh", weight: 12 },
+      { text: "gặp đỉnh cấp yêu thú", weight: 12 },
+      { text: "tìm thấy vật phẩm ẩn giấu", weight: 1 }, // Tỉ lệ thấp hơn
+      { text: "gặp được truyền thừa ẩn giấu", weight: 2 }, // Tỉ lệ thấp hơn
   ];
   //const chosen = scenarios[Math.floor(Math.random() * scenarios.length)];
 
@@ -95,7 +84,7 @@ async function handleSecretRealm(interaction) {
     }
 
     case "gặp đỉnh cấp yêu thú": {
-      const win = Math.random() < 0.3; 
+      const win = Math.random() < 0.25; 
       if (win) {
         const xpGain = getRandom(200, 500);
         await addXP(userId, guildId, xpGain, interaction);
@@ -113,6 +102,15 @@ async function handleSecretRealm(interaction) {
       user.stone += stones;
       await addXP(userId, guildId, xpGain, interaction);
       result += `📜 Nhận được truyền thừa ẩn giấu, tăng ${xpGain} XP và ${stones} linh thạch.`;
+      break;
+    }
+    case "tìm thấy vật phẩm ẩn giấu": {
+     const hiddenItem = require("../shops/hiddenItems");
+      const item = chooseWeighted(hiddenItem);
+      await addItemToInventory(user, item);
+      
+      result += `⛓️‍💥 Tìm thấy vật phẩm ẩn giấu: **${item.name}**! ${item.description}`;
+
       break;
     }
 
