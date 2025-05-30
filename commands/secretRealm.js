@@ -95,7 +95,7 @@ async function handleSecretRealm(interaction) {
     }
 
     case "gặp đỉnh cấp yêu thú": {
-      const win = Math.random() < 0.4; 
+      const win = Math.random() < 0.3; 
       if (win) {
         const xpGain = getRandom(200, 500);
         await addXP(userId, guildId, xpGain, interaction);
