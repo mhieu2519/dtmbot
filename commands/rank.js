@@ -96,7 +96,7 @@ async function showRank(interaction) {
 
   const canvas = createCanvas(800, 250);
   const ctx = canvas.getContext("2d");
-  const diamond = await loadImage('../assets/icons/diamond.png');
+  const diamond = await loadImage("./assets/icons/diamond.png");
 
   //const member = interaction.member;
 /*
