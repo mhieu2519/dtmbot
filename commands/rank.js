@@ -1,6 +1,7 @@
 const { createCanvas, loadImage, registerFont } = require("canvas");
 const UserXP = require("../models/UserXP");
 const { getXPForNextLevel, getUserRank } = require("../utils/xpSystem");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle,  MessageFlags  } = require("discord.js");
 
 const path = require("path");
 registerFont(path.join(__dirname, "../assets/fonts/Allura-Regular.ttf"), { family: "Allura" });
@@ -79,6 +80,16 @@ function strokeRoundedRect(ctx, x, y, width, height, radius) {
   ctx.quadraticCurveTo(x, y, x + radius, y);
   ctx.closePath();
   ctx.stroke();
+}
+
+function getColorByRarity(rarity) {
+  switch (rarity) {
+    case 'common': return '#ffffff';
+    case 'rare': return '#4dabf7';
+    case 'epic': return '#be4bdb';
+    case 'legendary': return '#fab005';
+    default: return '#ffffff';
+  }
 }
 
 
@@ -181,7 +192,6 @@ async function showRank(interaction) {
   ctx.fillStyle = "#333";
   drawRoundedRect(ctx, barX, barY, barWidth, barHeight, 10); // 10 là độ bo góc
 */
-
   // Vẽ phần tiến độ XP
   ctx.fillStyle = "#34a853"; // màu thanh xp
   drawRoundedRect(ctx, barX, barY, barWidth * percent, barHeight, 10); // radius = 10
@@ -191,11 +201,153 @@ async function showRank(interaction) {
   ctx.lineWidth = 2;
   strokeRoundedRect(ctx, barX, barY, barWidth, barHeight, 10); // bo góc 10px
 
-
   const buffer = canvas.toBuffer("image/png");
-  await interaction.editReply({
-    files: [{ attachment: buffer, name: "rank.png" }]
+
+ return buffer;
+}
+/*
+async function handleInventoryView(interaction) {
+  const userId = interaction.user.id;
+  const guildId = interaction.guild.id;
+
+  const userData = await UserXP.findOne({ userId, guildId });
+  if (!userData || !userData.inventory || userData.inventory.length === 0) {
+    return interaction.reply({
+      content: "💰 Túi trữ vật của đạo hữu trống rỗng.",
+      flags: MessageFlags.Ephemeral,
+    });
+  }
+
+  const itemsText = userData.inventory.map((item, index) => {
+    return `**${index + 1}. ${item.name}** (x${item.quantity}) - ${item.rarity}`;
+  }).join("\n");
+  const hidden = true;
+  await interaction.reply({
+    
+    content: `💰 **Túi trữ vật:**\n${itemsText}`,
+    flags: hidden ? MessageFlags.Ephemeral : undefined
   });
 }
+/*
+const ITEMS_PER_PAGE = 5;
+//const userData = await UserXP.findOne({ guildId, userId });
 
-module.exports = { showRank,getTitle };
+async function showInventory(interaction, userData, page = 0) {
+  const start = page * ITEMS_PER_PAGE;
+  const end = start + ITEMS_PER_PAGE;
+  const items = userData.inventory.slice(start, end);
+
+  if (!items.length) return interaction.update({ content: "❌ Không có vật phẩm ở trang này.", components: [] });
+
+  const itemList = items
+    .map((item, i) => `**${start + i + 1}.** ${item.name} (x${item.quantity}) — ${item.rarity}\n*${item.description}*`)
+    .join("\n");
+
+  const maxPage = Math.ceil(userData.inventory.length / ITEMS_PER_PAGE);
+
+  const row = new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`inventory_prev_${page}`)
+      .setLabel("⬅️")
+      .setStyle(ButtonStyle.Secondary)
+      .setDisabled(page === 0),
+
+    new ButtonBuilder()
+      .setCustomId(`inventory_next_${page}`)
+      .setLabel("➡️")
+      .setStyle(ButtonStyle.Secondary)
+      .setDisabled(end >= userData.inventory.length),
+
+    new ButtonBuilder()
+      .setCustomId("back_to_profile")
+      .setLabel("🖼️ Quay lại Profile")
+      .setStyle(ButtonStyle.Primary)
+  );
+
+  await interaction.update({
+    content: `💰 **Túi Đồ của bạn** (Trang ${page + 1}/${maxPage}):\n\n${itemList}`,
+    files: [],
+    components: [row],
+    embeds: []
+  });
+}*/
+
+
+async function createInventoryImage(displayName, stone, inventory, page = 1, itemsPerPage = 3) {
+  const canvas = createCanvas(800, 300);
+  const ctx = canvas.getContext('2d');
+
+  const diamond = await loadImage("./assets/icons/diamond.png");
+
+
+  // Nền
+  const bg = await loadImage('./assets/backgrounds/inventory.png');
+  ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
+
+
+  ctx.font = '28px Updock';
+  ctx.fillStyle = '#1A2A4F'; 
+  ctx.fillText(`💰 Túi trữ vật – Trang ${page}`, 40, 50);
+
+  const startIndex = (page - 1) * itemsPerPage;
+  const pageItems = inventory.slice(startIndex, startIndex + itemsPerPage);
+
+  const itemHeight = 70;
+  pageItems.forEach((item, index) => {
+    const y = 100 + index * itemHeight;
+    ctx.fillStyle = getColorByRarity(item.rarity);
+    ctx.fillText(`${item.name} x${item.quantity}`, 60, y);
+    ctx.font = '28px Updock';
+    ctx.fillStyle = '#ffe2e7';
+    ctx.fillText(`${item.description}`, 60, y + 25);
+    ctx.font = '28px Updock';
+  });
+
+      // Hiển thị tên và linh thạch
+  ctx.font = '26px Updock';
+  ctx.fillStyle = '#ffd700';
+  ctx.drawImage(diamond, 700, 45, 24, 24);
+   ctx.fillText(`${stone}`, 730, 60);
+  ctx.textAlign = "right";
+  ctx.fillText(`${displayName}`, 750, 35);
+ 
+
+
+  return canvas.toBuffer('image/png');
+}
+
+function createInventoryButtons(currentPage, totalPages) {
+  const row = new ActionRowBuilder();
+
+  if (currentPage > 1) {
+    row.addComponents(
+      new ButtonBuilder()
+        .setCustomId(`prev_inventory_${currentPage - 1}`)
+        .setLabel('⬅ Trang trước')
+        .setStyle(ButtonStyle.Primary)
+    );
+  }
+
+  if (currentPage < totalPages) {
+    row.addComponents(
+      new ButtonBuilder()
+        .setCustomId(`next_inventory_${currentPage + 1}`)
+        .setLabel('Trang sau ➡')
+        .setStyle(ButtonStyle.Primary)
+    );
+  }
+
+  row.addComponents(
+    new ButtonBuilder()
+      .setCustomId(`back_to_profile`)
+      .setLabel('🔙 Profile')
+      .setStyle(ButtonStyle.Secondary)
+  );
+
+  return [row];
+}
+
+
+
+
+module.exports = { showRank,getTitle, createInventoryImage, createInventoryButtons };

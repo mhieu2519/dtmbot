@@ -1,10 +1,38 @@
 const UserXP = require("../models/UserXP");
 const { getRandom, addXP } = require("../utils/xpSystem");
-const { chooseWeighted, addItemToInventory } = require("../utils/inventory");
+const { addItemToInventory } = require("../utils/inventory");
+ const hiddenItem = require("../shops/hiddenItems");
+
 
 //const COOLDOWN = 60 * 60 * 1000; // 1 hour cooldown
 const COOLDOWN =  30 * 1000; 
 const ENTRY_FEE = 50;
+
+function chooseWeighted(scenarios) {
+  const totalWeight = scenarios.reduce((sum, item) => sum + item.weight, 0);
+  const rand = Math.random() * totalWeight;
+  let cumulative = 0;
+
+  for (const item of scenarios) {
+    cumulative += item.weight;
+    if (rand < cumulative) {
+      return item; 
+    }
+  }
+}
+
+function chonKichBanNgauNhien(scenarios) {
+  const totalWeight = scenarios.reduce((sum, item) => sum + item.weight, 0);
+  const random = Math.random() * totalWeight;
+
+  let cumulativeWeight = 0;
+  for (const scenario of scenarios) {
+    cumulativeWeight += scenario.weight;
+    if (random <= cumulativeWeight) {
+      return scenario.text;
+    }
+  }
+}
 
 async function handleSecretRealm(interaction) {
   const userId = interaction.user.id;
@@ -31,16 +59,17 @@ async function handleSecretRealm(interaction) {
   const scenarios = [
       { text: "gặp yêu thú", weight: 30 },
       { text: "gặp cường giả", weight: 18 },
-      { text: "trúng mỏ linh thạch", weight: 25 },
-      { text: "mở được kho báu bí cảnh", weight: 12 },
-      { text: "gặp đỉnh cấp yêu thú", weight: 12 },
-      { text: "tìm thấy vật phẩm ẩn giấu", weight: 1 }, // Tỉ lệ thấp hơn
+      { text: "cuốc trúng mỏ linh thạch", weight: 23 },
+      { text: "mở được kho báu bí cảnh", weight: 6 },
+      { text: "gặp đỉnh cấp yêu thú", weight: 20 },
+      { text: "tìm thấy vật phẩm ẩn giấu", weight: 1}, // Tỉ lệ thấp hơn
       { text: "gặp được truyền thừa ẩn giấu", weight: 2 }, // Tỉ lệ thấp hơn
   ];
   //const chosen = scenarios[Math.floor(Math.random() * scenarios.length)];
 
   // Chọn ngẫu nhiên một kịch bản dựa trên trọng số
-  const chosen = chooseWeighted(scenarios);
+  const chosen = chonKichBanNgauNhien(scenarios);
+ // console.log("Kết quả:", chosen);
 
   let result = `🔮 Đạo hữu tiến vào bí cảnh và ${chosen}...\n`;
 
@@ -49,11 +78,11 @@ async function handleSecretRealm(interaction) {
     case "gặp yêu thú": {
       const win = Math.random() < 0.5;
       if (win) {
-        const reward = getRandom(40,80); //
+        const reward = getRandom(40,150); //
         user.stone += reward;
         result += `🗡️ Chiến thắng yêu thú! Nhận ${reward} linh thạch.`;
       } else {
-        const xpLost = getRandom(10,50);
+        const xpLost = getRandom(10,80);
         user.xp = Math.max(0, user.xp - xpLost); // đảm bảo không âm XP 
         result += `☠️ Thất bại... Mất ${xpLost} XP.`;
       }
@@ -61,14 +90,14 @@ async function handleSecretRealm(interaction) {
     }
 
     case "gặp cường giả": {
-      const xpGain = getRandom(50, 120);
+      const xpGain = getRandom(50, 150);
       await addXP(userId, guildId, xpGain, interaction);
       result += `🧙 Cường giả chỉ điểm, nhận ${xpGain} XP.`;
       break;
     }
 
-    case "trúng mỏ linh thạch": {
-      const stones = getRandom(30, 120);
+    case "cuốc trúng mỏ linh thạch": {
+      const stones = getRandom(5, 150);
       user.stone += stones;
       result += `⛏️ Khai thác mỏ linh thạch, nhận ${stones} linh thạch.`;
       break;
@@ -84,11 +113,13 @@ async function handleSecretRealm(interaction) {
     }
 
     case "gặp đỉnh cấp yêu thú": {
-      const win = Math.random() < 0.25; 
+      const win = Math.random() < 0.4; 
       if (win) {
-        const xpGain = getRandom(200, 500);
+        const xpGain = getRandom(300, 500);
+        const stones = getRandom(100, 300);
+         user.stone += stones;
         await addXP(userId, guildId, xpGain, interaction);
-        result += `🐉 Chiến thắng đỉnh cấp yêu thú! Nhận ${xpGain} XP.`;
+        result += `🐉 Chiến thắng đỉnh cấp yêu thú! Nhận ${xpGain} XP và ${stones}💎.`;
       } else {
         const xpLost = getRandom(150, 350);
         user.xp = Math.max(0, user.xp - xpLost); // đảm bảo không âm XP 
@@ -105,11 +136,17 @@ async function handleSecretRealm(interaction) {
       break;
     }
     case "tìm thấy vật phẩm ẩn giấu": {
-     const hiddenItem = require("../shops/hiddenItems");
-      const item = chooseWeighted(hiddenItem);
+      const chosen = chooseWeighted(hiddenItem);
+      const item = {
+        itemId: chosen.id,
+        name: chosen.name,
+        rarity: chosen.rarity,
+        quantity: 1,
+        description: chosen.description
+      };
       await addItemToInventory(user, item);
       
-      result += `⛓️‍💥 Tìm thấy vật phẩm ẩn giấu: **${item.name}**! ${item.description}`;
+      result += `⚡ Tìm thấy vật phẩm ẩn giấu: **${item.name}**. \n ${item.description}`;
 
       break;
     }

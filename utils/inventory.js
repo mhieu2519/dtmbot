@@ -6,22 +6,14 @@
  * @param {Object} user - Tài liệu người dùng từ MongoDB (Mongoose document).
  * @param {Object} itemData - Thông tin vật phẩm muốn thêm.
  */
-function chooseWeighted(scenarios) {
-  const totalWeight = scenarios.reduce((sum, item) => sum + item.weight, 0);
-  const rand = Math.random() * totalWeight;
-  let cumulative = 0;
-
-  for (const item of scenarios) {
-    cumulative += item.weight;
-    if (rand < cumulative) {
-      return item;
-    }
-  }
-}
 
 async function addItemToInventory(user, itemData) {
-  const { itemId, name, rarity = "thường", quantity = 1, description = "" } = itemData;
 
+  const { itemId, name, rarity = "common", quantity = 1, description = "" } = itemData;
+  if (!itemId) {
+    console.warn("⚠️ Item không có itemId, không thêm vào inventory:", itemData);
+    return;
+  }
   const existing = user.inventory.find(item => item.itemId === itemId);
 
   if (existing) {
@@ -37,7 +29,7 @@ async function addItemToInventory(user, itemData) {
     });
   }
 
-  await user.save();
+  //await user.save();
 }
 
 /**
@@ -73,5 +65,4 @@ module.exports = {
   addItemToInventory,
   getItemFromInventory,
   removeItemFromInventory,
-  chooseWeighted
 };

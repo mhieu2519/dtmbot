@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits } = require("discord.js");
+const { Client, GatewayIntentBits, ActionRowBuilder, AttachmentBuilder,  ButtonBuilder, ButtonStyle, MessageFlags } = require("discord.js");
 const keepAlive = require("./server");
 require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy token từ .env
 //require("dotenv").config({ path: "/etc/secrets/.env" }); // Render lưu file ở đây
@@ -15,7 +15,8 @@ const bot = new Client({
 
 const PREFIX = "d?";
 
-// Lấy giá trị từ biến môi trường
+// Lấy giá trị từ biến môi trường\
+const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID;
 const REPORT_CHANNEL_ID = process.env.REPORT_CHANNEL_ID;
 const LEVEL_UP_CHANNEL_ID = process.env.LEVEL_UP_CHANNEL_ID;
 const ANNOUNCE_CHANNEL_ID = process.env.ANNOUNCE_CHANNEL_ID;
@@ -25,6 +26,7 @@ const cooldowns = new Map();
 const conversationHistory = new Map(); // Lưu hội thoại theo ID tin nhắn gốc
 const lastRequestTime = new Map(); // Lưu thời gian gửi request gần nhất
 
+const UserXP = require("./models/UserXP");
 
 const geminiApiKey = process.env["gemini_api_key"];
 const { loadQuestions, findMatches } = require('./utils/questions');
@@ -32,9 +34,8 @@ const { chatWithGemini,sendMessageInChunks, handleReplyToBot } = require('./util
 const { loadScheduledMessages, excelTimeToISO, scheduleMessages  } = require('./utils/schedule');
 const { canUseCommand } = require('./utils/cooldown');
 const { createCanvas, loadImage } = require("canvas");
-const { AttachmentBuilder } = require("discord.js");
 const { addXP, getRandom, handleDailyAutoXP } = require("./utils/xpSystem");
-const { showRank } = require("./commands/rank");
+const { showRank, createInventoryImage, createInventoryButtons } = require("./commands/rank");
 const { showLeaderboard } = require("./commands/leaderboard");
 const { handleSecretRealm } = require("./commands/secretRealm");
 const {  getItemById,  createBuyButton} = require("./utils/shopUtils");
@@ -76,16 +77,32 @@ bot.on("interactionCreate", async (interaction) => {
           }
         break;}
       case "profile":{
-        try {
-          await interaction.deferReply();
-          await showRank(interaction);
+         try {
+              await interaction.deferReply(); // defer trả lời trước (tránh timeout)
+
+              const buffer = await showRank(interaction); // lấy buffer ảnh từ hàm
+
+              const buttons = [
+                new ActionRowBuilder().addComponents(
+                  new ButtonBuilder()
+                    .setCustomId("open_inventory")
+                    .setLabel("📦 Túi trữ vật")
+                    .setStyle(ButtonStyle.Primary)
+                )
+              ];
+
+            await interaction.editReply({
+              files: [{ attachment: buffer, name: "profile.png" }],
+              components: buttons,
+            });
           } catch (error) {
             console.error("Lỗi khi hiển thị profile:", error);
             if (!interaction.replied) {
               await interaction.followUp("❌ Không thể hiển thị profile.");
             }
           }
-        break; }
+          break;
+      } 
       case "leaderboard": {    
         await showLeaderboard(interaction);
         break; }
@@ -101,6 +118,99 @@ bot.on("interactionCreate", async (interaction) => {
           await interaction.editReply("😢 Đã xảy ra lỗi khi khám phá bí cảnh. Hãy thử lại sau.");
         }
         break; }
+      case "transfer": {
+        const senderId = interaction.user.id;
+        const guildId = interaction.guild.id;
+        const member = await interaction.guild.members.fetch(senderId);
+        const displayName = member.displayName;
+        const receiver = interaction.options.getUser('nguoinhan');
+        const amount = interaction.options.getInteger('soluong');
+
+
+        const senderMember = await interaction.guild.members.fetch(interaction.user.id);
+        const senderDisplayName = senderMember.displayName;
+
+
+        const now = Date.now();
+        const cooldownMs = 1 * 60 * 1000; // 10 phút
+
+        if (receiver.bot) {
+          return await interaction.reply({ 
+            content: "❌ Không thể chuyển cho bot.", 
+            flags: MessageFlags.Ephemeral,
+          });
+        }
+
+        if (receiver.id === senderId) {
+          return await interaction.reply({ 
+            content: "❌ Không thể tự chuyển cho chính mình.", 
+            flags: MessageFlags.Ephemeral,
+          });
+        }
+
+        const senderData = await UserXP.findOne({ guildId, userId: senderId });
+        const receiverData = await UserXP.findOneAndUpdate(
+          { guildId, userId: receiver.id },
+          { $setOnInsert: { xp: 0, level: 0, stone: 0, inventory: [] } },
+          { upsert: true, new: true }
+        );
+
+        if (!senderData || senderData.stone < amount) {
+          return await interaction.reply({ 
+            content: "❌ Bạn không đủ linh thạch để chuyển.", 
+            flags: MessageFlags.Ephemeral,
+          });
+        }
+
+
+        if (senderData.lastTransfer && now - senderData.lastTransfer.getTime() < cooldownMs) {
+          const remaining = Math.ceil((cooldownMs - (now - senderData.lastTransfer.getTime())) / 60000);
+          return await interaction.reply({
+            content: `❌ Đạo hữu cần chờ **${remaining} phút** nữa mới có thể chuyển tiếp.`, 
+            flags: MessageFlags.Ephemeral,
+          });
+        }
+
+        // Trừ và cộng
+        senderData.stone -= amount;
+        receiverData.stone += amount;
+        senderData.lastTransfer = new Date();
+        
+        await senderData.save();
+        await receiverData.save();
+        
+
+       // const logChannel = interaction.guild.channels.cache.get('LOG_CHANNEL_ID');
+       const logChannel = await interaction.client.channels.fetch(LOG_CHANNEL_ID);
+        if (logChannel && logChannel.isTextBased()) {
+            await logChannel.send({
+              content: `📜 **Log chuyển linh thạch**\n` +
+                      `Người gửi: ${senderDisplayName} - ${interaction.user.tag} (${interaction.user.id})\n` +
+                      `Người nhận: ${receiver.displayName} - ${receiver.tag} (${receiver.id})\n` +
+                      `Số lượng: ${amount}\n` +
+                      `Thời gian: <t:${Math.floor(Date.now() / 1000)}:F>`,
+            });
+          } else {
+            console.warn("⚠️ Không thể gửi log – không tìm thấy kênh hoặc không phải kênh text.");
+          }
+
+        await interaction.reply({
+          content: `✅ Đạo hữu đã chuyển **${amount}** linh thạch cho ${receiver.displayName}.`,
+        });
+        /*
+        try {
+            await receiver.send(`📥 Đạo hữu vừa nhận **${amount}** linh thạch từ ${interaction.user.tag}.`);
+          } catch (err) {
+            console.warn("Không thể gửi DM cho người nhận.");
+          }
+        try {
+            await interaction.user.send(`📤 Đạo hữu đã chuyển **${amount}** linh thạch cho ${receiver.tag}.`);
+          } catch (err) {
+            console.warn("Không thể gửi DM cho người gửi.");
+          } */
+
+        break;}
+
   }}
 
   if (interaction.isStringSelectMenu()){
@@ -116,27 +226,58 @@ bot.on("interactionCreate", async (interaction) => {
   }
 
   if (interaction.isButton()) {
-    if (interaction.customId.startsWith("buy_")) {
-      const itemId = interaction.customId.replace("buy_", "");
-      const item = getItemById(itemId);
-      const user = await UserXP.findOne({ userId: interaction.user.id, guildId: interaction.guildId });
+    const userId = interaction.user.id;
+    const guildId = interaction.guild.id;
+    const userData = await UserXP.findOne({ guildId, userId });
+    const member = await interaction.guild.members.fetch(userId);
+    const displayName = member.displayName;
+    if (!userData) return;
+    const id = interaction.customId;
 
-      if (!item || !user) return interaction.reply({ content: "❌ Lỗi xử lý mua hàng.", ephemeral: true });
-      if (user.stone < item.price) {
-        return interaction.reply({ content: "❌ Bạn không đủ đá linh.", ephemeral: true });
-      }
+    //const inventory = userData ? userData.inventory || [] : []; // Lấy túi đồ người chơi từ DB hoặc cache
+    const inventory = Array.isArray(userData.inventory) ? userData.inventory : []; // Đảm bảo inventory là mảng
+    if (interaction.customId === 'open_inventory') {
+      const page = 1;
+      const buffer = await createInventoryImage(displayName, userData.stone, inventory, page);
+      const buttons = createInventoryButtons(page, Math.ceil(inventory.length / 3));
 
-      user.stone -= item.price;
-      user.inventory = user.inventory || [];
-      user.inventory.push(item.id);
-      await user.save();
+      await interaction.update({
+        files: [{ attachment: buffer, name: 'inventory.png' }],
+        components: buttons
+      });
+    }
 
-      interaction.reply({ content: `✅ Bạn đã mua **${item.name}**!`, ephemeral: true });
-      }
+    if (id.startsWith('prev_inventory_') || id.startsWith('next_inventory_')) {
+      const page = parseInt(interaction.customId.split('_').pop());
+      const buffer = await createInventoryImage(displayName, userData.stone, inventory, page);
+      const buttons = createInventoryButtons(page, Math.ceil(inventory.length / 3));
+
+      await interaction.update({
+        files: [{ attachment: buffer, name: 'inventory.png' }],
+        components: buttons
+  });
+    }
+
+    if (id === "back_to_profile") {
+      await interaction.deferUpdate ();
+      const buffer = await showRank(interaction); // Ảnh profile
+        const buttons = [
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId('open_inventory')
+            .setLabel('📦 Túi trữ vật')
+            .setStyle(ButtonStyle.Secondary)
+        )
+      ];
+    await interaction.editReply({
+    files: [{ attachment: buffer, name: 'profile.png' }],
+    components: buttons
+  });
+
+     }
+
   }
-
 });
-
 // Chào bạn mới
 bot.on("guildMemberAdd", async (member) => {
   const channel = member.guild.channels.cache.get(ANNOUNCE_CHANNEL_ID);

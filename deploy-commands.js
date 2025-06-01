@@ -16,6 +16,19 @@ const commands = [
     .setName('bicanh')
     .setDescription("Khám phá bí cảnh tông môn và nhận phần thưởng"),
   new SlashCommandBuilder()
+  .setName('transfer')
+  .setDescription('Chuyển linh thạch cho người khác 💎')
+  .addUserOption(option =>
+    option.setName('nguoinhan')
+      .setDescription('Người nhận')
+      .setRequired(true))
+  .addIntegerOption(option =>
+    option.setName('soluong')
+      .setDescription('Số linh thạch muốn chuyển')
+      .setMinValue(1)
+      .setRequired(true)),
+
+  new SlashCommandBuilder()
     .setName('shop')
     .setDescription("🛒 Cửa hàng tông môn"),  
     
@@ -25,12 +38,12 @@ const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);
 
 (async () => {
   try {
-    console.log("🔄 Đang đăng ký lệnh /schedule...");
+    console.log("🔄 Đang đăng ký lệnh...");
     await rest.put(
       Routes.applicationCommands(process.env.CLIENT_ID),
       { body: commands }
     );
-    console.log("✅ Đã đăng ký lệnh /schedule thành công!");
+    console.log("✅ Đã đăng ký lệnh thành công!");
   } catch (error) {
     console.error("❌ Lỗi khi đăng ký lệnh:", error);
   }

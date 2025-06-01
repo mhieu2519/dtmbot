@@ -9,7 +9,8 @@ const userXPSchema = new mongoose.Schema({
   lastMessage: { type: Date, default: new Date(0) },
   lastDaily: { type: Date, default: null }, // ⬅️ Thêm dòng này
   lastSecretRealmTime: { type: Date, default: null }, // ⬅️ Thêm dòng này
-    // 🎒 Inventory chi tiết
+  lastTransfer: { type: Date, default: null },
+    // Inventory chi tiết
   inventory: [
     {
       itemId: String,         // ID duy nhất của vật phẩm
