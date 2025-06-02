@@ -30,7 +30,16 @@ const commands = [
 
   new SlashCommandBuilder()
     .setName('shop')
-    .setDescription("🛒 Cửa hàng tông môn"),  
+    .setDescription('Cửa hàng tông môn')
+    .addSubcommand(sub =>
+      sub.setName('mua')
+        .setDescription('Mua vật phẩm từ cửa hàng')
+    )
+    .addSubcommand(sub =>
+      sub.setName('ban')
+        .setDescription('Bán vật phẩm từ túi đồ')
+    ),
+
     
   ].map((command) => command.toJSON());
 

@@ -1,7 +1,7 @@
 require('dotenv').config();
 const axios = require("axios"); // Thêm axios nếu chưa cài đặt
 const geminiApiKey = process.env["gemini_api_key"]; // Sử dụng biến môi trường
-const REPLY_COOLDOWN = 5000; // 5 giây cooldown
+const REPLY_COOLDOWN = 2*60*1000; //
 const MAX_CONTEXT_MESSAGES = 3; // Giới hạn số câu trong ngữ cảnh
 
 async function chatWithGemini(prompt) {
@@ -106,7 +106,9 @@ async function handleReplyToBot(message, lastRequestTime, conversationHistory) {
   const now = Date.now();
   
   if (now - lastTime < REPLY_COOLDOWN) {
-    return message.reply("⏳ Đạo hữu đợi một chút, ta đang suy nghĩ...");
+   // return message.reply("⏳ Đạo hữu đợi một chút, ta đang suy nghĩ...");
+    message.channel.sendTyping(); // Discord hiển thị bot đang gõ
+    return;
   }
 
   lastRequestTime.set(message.author.id, now);

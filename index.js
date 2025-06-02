@@ -223,6 +223,62 @@ bot.on("interactionCreate", async (interaction) => {
           components: [createBuyButton(item)]
         });
     }
+    // Xử lý select menu
+    if (interaction.customId === 'shop_select_item') {
+      const selectedItemId = interaction.values[0];
+      const item = shopItems.find((i) => i.itemId === selectedItemId);
+      if (!item) return interaction.reply({ content: '❌ Vật phẩm không tồn tại.', ephemeral: true });
+
+      await interaction.reply({
+        content: `💠 Bạn đã chọn **${item.name}** – Giá: ${item.price} linh thạch mỗi cái.\n` +
+                `Vui lòng nhập số lượng bạn muốn mua (trả lời bằng số nguyên).`,
+        ephemeral: true
+      });
+
+      const filter = (msg) => msg.author.id === interaction.user.id;
+      const collector = interaction.channel.createMessageCollector({ filter, time: 15000, max: 1 });
+
+      collector.on('collect', async (msg) => {
+        const quantity = parseInt(msg.content);
+        if (isNaN(quantity) || quantity <= 0) {
+          return msg.reply('❌ Số lượng không hợp lệ.');
+        }
+
+        const totalCost = item.price * quantity;
+        const userData = await UserXP.findOne({ guildId: interaction.guild.id, userId: interaction.user.id });
+
+        if (!userData || userData.stone < totalCost) {
+          return msg.reply(`❌ Bạn không đủ linh thạch. Cần ${totalCost} nhưng bạn có ${userData?.stone || 0}.`);
+        }
+
+        // Trừ linh thạch và thêm vật phẩm vào túi
+        userData.stone -= totalCost;
+        const existing = userData.inventory.find(i => i.itemId === item.itemId);
+        if (existing) {
+          existing.quantity += quantity;
+        } else {
+          userData.inventory.push({
+            itemId: item.itemId,
+            name: item.name,
+            description: item.description,
+            rarity: item.rarity,
+            quantity: quantity
+          });
+        }
+
+        await userData.save();
+
+        return msg.reply(`✅ Bạn đã mua thành công **${quantity}x ${item.name}** với giá ${totalCost} linh thạch!`);
+      });
+
+      collector.on('end', (collected) => {
+        if (collected.size === 0) {
+          interaction.followUp({ content: '⏳ Hết thời gian mua hàng.', ephemeral: true });
+        }
+      });
+    }
+
+
   }
 
   if (interaction.isButton()) {
@@ -275,6 +331,45 @@ bot.on("interactionCreate", async (interaction) => {
   });
 
      }
+    if (id === 'shop_buy') {
+      // Chuyển sang giao diện mua
+      return await interaction.update({
+        content: '🛒 Bạn đã chọn **MUA**. Đang tải danh sách vật phẩm...',
+        components: [], // Tạm ẩn nút gốc
+      });
+
+      // Trong interaction.isButton() phần shop_buy
+      const shopItems = require('./data/shopItems'); // hoặc nơi bạn lưu mảng trên
+      const { StringSelectMenuBuilder, ActionRowBuilder } = require('discord.js');
+
+      const options = shopItems.map((item) => ({
+        label: item.name,
+        description: item.description,
+        value: item.itemId
+      }));
+
+      const selectMenu = new StringSelectMenuBuilder()
+        .setCustomId('shop_select_item')
+        .setPlaceholder('Chọn vật phẩm để mua')
+        .addOptions(options);
+
+      const row = new ActionRowBuilder().addComponents(selectMenu);
+
+      await interaction.update({
+        content: '🛒 Hãy chọn một vật phẩm để mua:',
+        components: [row]
+      });
+
+
+    }
+
+    if (id === 'shop_sell') {
+      // Chuyển sang giao diện bán
+      return await interaction.update({
+        content: '💰 Bạn đã chọn **BÁN**. Đang tải danh sách vật phẩm trong túi...',
+        components: [],
+      });
+    }
 
   }
 });
