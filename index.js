@@ -1,4 +1,4 @@
-const { Client, GatewayIntentBits, ActionRowBuilder, AttachmentBuilder,  ButtonBuilder, ButtonStyle, MessageFlags } = require("discord.js");
+const { Client, GatewayIntentBits, ActionRowBuilder, AttachmentBuilder,  ButtonBuilder, ButtonStyle, MessageFlags,  Events } = require("discord.js");
 const keepAlive = require("./server");
 require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy token từ .env
 //require("dotenv").config({ path: "/etc/secrets/.env" }); // Render lưu file ở đây
@@ -216,7 +216,24 @@ bot.on("interactionCreate", async (interaction) => {
   }}
 
   if (interaction.isStringSelectMenu()){
-  
+    if (interaction.customId === 'shop_select_item') {
+    const selectedItemId = interaction.values[0];
+    const shopItems = require('./data/shopItems');
+    const item = shopItems.find(i => i.itemId === selectedItemId);
+
+    if (!item) {
+      return await interaction.reply({
+        content: '❌ Vật phẩm không tồn tại.',
+        ephemeral: true
+      });
+    }
+
+    // Tạm thời chỉ cho mua 1 món
+    return await interaction.update({
+      content: `🛍️ Bạn đã chọn **${item.name}** (${item.description})\nNhập số lượng muốn mua bằng lệnh hoặc nút (chưa triển khai).`,
+      components: [], // Có thể thêm nút xác nhận mua
+    });
+  }
 
   }
 
@@ -270,46 +287,7 @@ bot.on("interactionCreate", async (interaction) => {
   });
 
      }
-    if (id === 'shop_buy') {
-      // Chuyển sang giao diện mua
-      return await interaction.update({
-        content: '🛒 Bạn đã chọn **MUA**. Đang tải danh sách vật phẩm...',
-        components: [], // Tạm ẩn nút gốc
-      });
-
-      // Trong interaction.isButton() phần shop_buy
-      const shopItems = require('./data/shopItems'); // hoặc nơi bạn lưu mảng trên
-      const { StringSelectMenuBuilder, ActionRowBuilder } = require('discord.js');
-
-      const options = shopItems.map((item) => ({
-        label: item.name,
-        description: item.description,
-        value: item.itemId
-      }));
-
-      const selectMenu = new StringSelectMenuBuilder()
-        .setCustomId('shop_select_item')
-        .setPlaceholder('Chọn vật phẩm để mua')
-        .addOptions(options);
-
-      const row = new ActionRowBuilder().addComponents(selectMenu);
-
-      await interaction.update({
-        content: '🛒 Hãy chọn một vật phẩm để mua:',
-        components: [row]
-      });
-
-
-    }
-
-    if (id === 'shop_sell') {
-      // Chuyển sang giao diện bán
-      return await interaction.update({
-        content: '💰 Bạn đã chọn **BÁN**. Đang tải danh sách vật phẩm trong túi...',
-        components: [],
-      });
-    }
-
+    
   }
 });
 //lắng nghe sự kiện
