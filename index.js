@@ -38,7 +38,9 @@ const { addXP, getRandom, handleDailyAutoXP } = require("./utils/xpSystem");
 const { showRank, createInventoryImage, createInventoryButtons } = require("./commands/rank");
 const { showLeaderboard } = require("./commands/leaderboard");
 const { handleSecretRealm } = require("./commands/secretRealm");
-const {  getItemById,  createBuyButton} = require("./utils/shopUtils");
+
+// Load các event
+const shopInteraction = require('./shops/interactionCreate');
 
 const mongoose = require("mongoose");
 
@@ -214,70 +216,7 @@ bot.on("interactionCreate", async (interaction) => {
   }}
 
   if (interaction.isStringSelectMenu()){
-    if (interaction.customId === "shop"){
-      const item = getItemById(interaction.values[0]);
-        if (!item) return interaction.reply({ content: "❌ Không tìm thấy vật phẩm.", ephemeral: true });
-
-        await interaction.update({
-          content: `📦 **${item.name}**\n${item.description}`,
-          components: [createBuyButton(item)]
-        });
-    }
-    // Xử lý select menu
-    if (interaction.customId === 'shop_select_item') {
-      const selectedItemId = interaction.values[0];
-      const item = shopItems.find((i) => i.itemId === selectedItemId);
-      if (!item) return interaction.reply({ content: '❌ Vật phẩm không tồn tại.', ephemeral: true });
-
-      await interaction.reply({
-        content: `💠 Bạn đã chọn **${item.name}** – Giá: ${item.price} linh thạch mỗi cái.\n` +
-                `Vui lòng nhập số lượng bạn muốn mua (trả lời bằng số nguyên).`,
-        ephemeral: true
-      });
-
-      const filter = (msg) => msg.author.id === interaction.user.id;
-      const collector = interaction.channel.createMessageCollector({ filter, time: 15000, max: 1 });
-
-      collector.on('collect', async (msg) => {
-        const quantity = parseInt(msg.content);
-        if (isNaN(quantity) || quantity <= 0) {
-          return msg.reply('❌ Số lượng không hợp lệ.');
-        }
-
-        const totalCost = item.price * quantity;
-        const userData = await UserXP.findOne({ guildId: interaction.guild.id, userId: interaction.user.id });
-
-        if (!userData || userData.stone < totalCost) {
-          return msg.reply(`❌ Bạn không đủ linh thạch. Cần ${totalCost} nhưng bạn có ${userData?.stone || 0}.`);
-        }
-
-        // Trừ linh thạch và thêm vật phẩm vào túi
-        userData.stone -= totalCost;
-        const existing = userData.inventory.find(i => i.itemId === item.itemId);
-        if (existing) {
-          existing.quantity += quantity;
-        } else {
-          userData.inventory.push({
-            itemId: item.itemId,
-            name: item.name,
-            description: item.description,
-            rarity: item.rarity,
-            quantity: quantity
-          });
-        }
-
-        await userData.save();
-
-        return msg.reply(`✅ Bạn đã mua thành công **${quantity}x ${item.name}** với giá ${totalCost} linh thạch!`);
-      });
-
-      collector.on('end', (collected) => {
-        if (collected.size === 0) {
-          interaction.followUp({ content: '⏳ Hết thời gian mua hàng.', ephemeral: true });
-        }
-      });
-    }
-
+  
 
   }
 
@@ -373,6 +312,11 @@ bot.on("interactionCreate", async (interaction) => {
 
   }
 });
+//lắng nghe sự kiện
+bot.on(Events.interactionCreate, async (interaction) => {
+    await shopInteraction.execute(interaction);
+});
+
 // Chào bạn mới
 bot.on("guildMemberAdd", async (member) => {
   const channel = member.guild.channels.cache.get(ANNOUNCE_CHANNEL_ID);

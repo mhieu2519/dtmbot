@@ -27,20 +27,10 @@ const commands = [
       .setDescription('Số linh thạch muốn chuyển')
       .setMinValue(1)
       .setRequired(true)),
-
   new SlashCommandBuilder()
     .setName('shop')
-    .setDescription('Cửa hàng tông môn')
-    .addSubcommand(sub =>
-      sub.setName('mua')
-        .setDescription('Mua vật phẩm từ cửa hàng')
-    )
-    .addSubcommand(sub =>
-      sub.setName('ban')
-        .setDescription('Bán vật phẩm từ túi đồ')
-    ),
+    .setDescription('🛒 Mở giao diện shop để mua hoặc bán vật phẩm'),
 
-    
   ].map((command) => command.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(process.env.DISCORD_TOKEN);

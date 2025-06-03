@@ -1,78 +1,45 @@
-const {
-  ActionRowBuilder,
-  ButtonBuilder,
-  ButtonStyle,
-  ComponentType,
-} = require("discord.js");
+// 📁 commands/shop.js
+const { SlashCommandBuilder, ActionRowBuilder, StringSelectMenuBuilder } = require('discord.js');
+const shopItems = require('../shops/shopItems');
 
- async function handleShop(interaction) {
-  // Tạo các nút lựa chọn
-  const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId("shop_buy")
-      .setLabel("🛒 Mua vật phẩm")
-      .setStyle(ButtonStyle.Primary),
-    new ButtonBuilder()
-      .setCustomId("shop_sell")
-      .setLabel("💰 Bán vật phẩm")
-      .setStyle(ButtonStyle.Secondary)
-  );
+module.exports = {
+  data: new SlashCommandBuilder()
+    .setName('shop')
+    .setDescription('Mở giao diện cửa hàng'),
 
-  const reply = await interaction.reply({
-    content: "🧧 Chào mừng đạo hữu đến cửa hàng! Hãy chọn hành động:",
-    components: [row],
-    ephemeral: true,
-  });
+  async execute(interaction) {
+    const buyOptions = shopItems.map(item => ({
+      label: `${item.name} (${item.price}💠)`,
+      description: item.description,
+      value: `buy-${item.itemId}`
+    }));
 
-  // Tạo collector để nghe lựa chọn người dùng
-  const collector = reply.createMessageComponentCollector({
-    componentType: ComponentType.Button,
-    time: 60_000, // 1 phút
-  });
+    const sellOptions = shopItems
+      .filter(i => i.sellPrice > 0)
+      .map(item => ({
+        label: `${item.name} (+${item.sellPrice}💰)`,
+        description: item.description,
+        value: `sell-${item.itemId}`
+      }));
 
-  collector.on("collect", async (btnInteraction) => {
-    if (btnInteraction.user.id !== interaction.user.id)
-      return btnInteraction.reply({
-        content: "❌ Bạn không phải người đã mở menu này.",
-        ephemeral: true,
-      });
+    const row1 = new ActionRowBuilder().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId('shop-buy')
+        .setPlaceholder('🛒 Chọn vật phẩm để mua')
+        .addOptions(buyOptions)
+    );
 
-    if (btnInteraction.customId === "shop_buy") {
-      await handleBuy(btnInteraction);
-    } else if (btnInteraction.customId === "shop_sell") {
-      await handleSell(btnInteraction);
-    }
-  });
+    const row2 = new ActionRowBuilder().addComponents(
+      new StringSelectMenuBuilder()
+        .setCustomId('shop-sell')
+        .setPlaceholder('📤 Chọn vật phẩm để bán')
+        .addOptions(sellOptions)
+    );
 
-  collector.on("end", async () => {
-    // Xóa nút khi hết thời gian
-    try {
-      await reply.edit({ components: [] });
-    } catch (err) {
-      console.warn("❌ Không thể xóa nút shop khi hết thời gian:", err);
-    }
-  });
+    await interaction.reply({
+      content: '🛍️ **Chào mừng đến với Cửa Hàng!**\nChọn để mua hoặc bán vật phẩm:',
+      components: [row1, row2],
+      ephemeral: true
+    });
+  }
 };
-
-// 🛒 Hàm xử lý mua hàng
-async function handleBuy(interaction) {
-  await interaction.update({
-    content: "🛒 Đạo hữu đang vào cửa hàng mua vật phẩm...\n(đang phát triển...)",
-    components: [],
-  });
-
-  // TODO: Hiển thị danh sách vật phẩm để mua
-}
-
-// 💰 Hàm xử lý bán hàng
-async function handleSell(interaction) {
-  await interaction.update({
-    content: "💰 Đạo hữu đang vào cửa hàng bán vật phẩm...\n(đang phát triển...)",
-    components: [],
-  });
-
-  // TODO: Hiển thị vật phẩm trong túi để bán
-}
-
-
-module.exports ={ handleShop, handleBuy, handleSell };
