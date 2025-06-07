@@ -13,7 +13,7 @@ const sellableItems = [
     bonusExp: 150
   },
   {
-    id: "spirit_stone",
+    id: "spiritStone",
     name: "Đá thiên nhiên 🪨",
     sellPrice: 200,
     bonusExp: 50  

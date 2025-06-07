@@ -15,7 +15,7 @@ module.exports = [
     description: '+500 exp'
   },
   {
-    id: "grass_sorrow",
+    id: "grassSorrow",
     name: "Đoạn Trường Thảo 🌿",
     effect: 'gainExp',
     amount: 500,

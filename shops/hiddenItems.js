@@ -1,6 +1,6 @@
 module.exports = [
   {
-    id: "ancient_sword",
+    id: "ancientSword",
     name: "Cổ Kiếm Linh 🗡️",
     description: "Thanh kiếm từng thuộc về đại năng cổ xưa.",
     rarity: "legendary",
@@ -8,7 +8,7 @@ module.exports = [
     weight: 1 // xác suất thấp
   },
   {
-    id: "phoenix_feather",
+    id: "phoenixFeather",
     name: "Lông Phượng Hoàng 🪶",
     description: "Mang theo hơi thở bất tử.",
     rarity: "epic",
@@ -16,7 +16,7 @@ module.exports = [
     weight: 5
   },
   {
-    id: "spirit_stone",
+    id: "spiritStone",
     name: "Đá thiên nhiên 🪨",
     description: "Đá chứa linh khí của đất trời.",
     rarity: "common", 
@@ -40,7 +40,7 @@ module.exports = [
     weight: 5 // xác suất trung bình
   },
   {
-    id: "mystic_scroll",
+    id: "mysticScroll",
     name: "Cuộn Bí Pháp 📜",
     description: "Chứa đựng bí thuật cổ xưa.",
     rarity: "epic",
@@ -49,7 +49,7 @@ module.exports = [
   },
   // Cỏ đoạn trường
   {
-    id: "grass_sorrow",
+    id: "grassSorrow",
     name: "Đoạn Trường Thảo 🌿",
     description: "Loài cỏ thần kỳ có thể chữa lành:).",
     rarity: "legendary",
