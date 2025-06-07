@@ -1,21 +1,22 @@
-// 📁 data/shopItems.js
+// 📁 shops/shopItems.js
 module.exports = [
   {
-    itemId: 'potion',
-    name: 'Bình Máu',
-    description: 'Hồi 50 máu',
+    // trúc cơ đan
+    id: 'pharmaBamboo',
+    name: 'Trúc Cơ Đan 🎍',
+    description: '+200 exp',
     price: 100,
     sellPrice: 50,
-    rarity: 'thường',
+    rarity: 'common',
     maxQuantity: 10,
   },
   {
-    itemId: 'sword',
-    name: 'Kiếm Bạc',
-    description: 'Vũ khí tăng sức mạnh',
-    price: 500,
+    id: 'pharmaEra',
+    name: 'Tẩy Tủy Đan 🫐',
+    description: '+500 exp',
+    price: 450,
     sellPrice: 300,
-    rarity: 'hiếm',
+    rarity: 'rare',
     maxQuantity: 1,
   }
 ];

@@ -6,7 +6,7 @@ function getXPForNextLevel(level) {
   return 5 * level * level + 50 * level + 100;
 }
 
-async function addXP(userId, guildId, xpAmount, message) {
+async function addXP(userId, guildId, xpAmount, context = null) {
     // Kiểm tra xpAmount hợp lệ
   if (typeof xpAmount !== 'number' || isNaN(xpAmount)) {
     console.error(`❌ Giá trị xp không hợp lệ:`, xpAmount);
@@ -33,36 +33,49 @@ async function addXP(userId, guildId, xpAmount, message) {
 
   await user.save();
 
-  // Gửi thông báo lên cấp nếu có message và lên cấp
-  if (leveledUp && message) {
-    const nickname = message.member.displayName;
-    const levelUpChannel = message.guild.channels.cache.get(process.env.LEVELUP_CHANNEL_ID);
-    if (levelUpChannel) {
-      levelUpChannel.send(`🌟 Chúc mừng ${nickname} đạo hữu đã đột phá lên cấp! 🎉`);
-    } else {
-      console.warn("Không tìm thấy kênh thông báo level up!");
+  // Nếu có context thì gửi thông báo
+  if (leveledUp && context) {
+    let guild, member, channel;
+    if (context.member && context.guild) {
+      // context là interaction hoặc message
+      guild = context.guild;
+      member = context.member;
+    } else if (context.guilds && typeof context.guilds.fetch === "function") {
+      // context là client
+      guild = await context.guilds.fetch(guildId);
+      member = await guild.members.fetch(userId);
     }
 
-        // 🎁 CẤP ROLE KHI ĐẠT LEVEL 50
-    if (user.level >= 50 && message.guild.roles.cache.has(process.env.LEVEL_50_ROLE_ID)) {
-      const role = message.guild.roles.cache.get(process.env.LEVEL_50_ROLE_ID);
-      if (!message.member.roles.cache.has(role.id)) {
-        await message.member.roles.add(role).catch(console.error);
-        levelUpChannel?.send(`🎖️ Chúc mừng ${nickname} đạo hữu đã được nâng cấp vai trò <@&${role.id}>!`);
-      }
-    }
-
-    // 🔒 MỞ KHÓA KÊNH RIÊNG TƯ KHI LEVEL 100
-    if (user.level >= 100) {
-      const channel = message.guild.channels.cache.get(process.env.PRIVATE_CHANNEL_ID);
+    if (guild && member) {
+      const nickname = member.displayName;
+      channel = guild.channels.cache.get(process.env.LEVELUP_CHANNEL_ID);
       if (channel) {
-        await channel.permissionOverwrites.edit(message.member.id, {
-          ViewChannel: true,
-          SendMessages: true
-        });
-        levelUpChannel?.send(`🔓 ${nickname} đã mở khóa <#${channel.id}>!`);
+        channel.send(`🌟 Chúc mừng ${nickname} đạo hữu đã đột phá lên cấp! 🎉`);
       }
+
+
+      // Vai trò Level 50
+      if (user.level >= 50 && guild.roles.cache.has(process.env.LEVEL_50_ROLE_ID)) {
+        const role = guild.roles.cache.get(process.env.LEVEL_50_ROLE_ID);
+        if (!member.roles.cache.has(role.id)) {
+          await member.roles.add(role).catch(console.error);
+          channel?.send(`🎖️ ${nickname} đạo hữu được nâng vai trò <@&${role.id}>!`);
+        }
+      }
+
+      // Kênh bí mật Level 100
+      if (user.level >= 100) {
+        const secret = guild.channels.cache.get(process.env.PRIVATE_CHANNEL_ID);
+        if (secret) {
+          await secret.permissionOverwrites.edit(member.id, {
+            ViewChannel: true,
+            SendMessages: true,
+          });
+          channel?.send(`🔓 ${nickname} đã mở khóa <#${secret.id}>!`);
+        }
+        }
     }
+
   // 🏆 CẤP ROLE KHI ĐẠT LEVEL 200
 
 

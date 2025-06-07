@@ -340,7 +340,14 @@ function createInventoryButtons(currentPage, totalPages) {
   row.addComponents(
     new ButtonBuilder()
       .setCustomId(`back_to_profile`)
-      .setLabel('🔙 Profile')
+      .setLabel('🔙🖼️ Profile')
+      .setStyle(ButtonStyle.Secondary)
+  );
+
+  row.addComponents(
+    new ButtonBuilder()
+      .setCustomId('use_item')
+      .setLabel('🩸 Sử dụng vật phẩm')
       .setStyle(ButtonStyle.Secondary)
   );
 

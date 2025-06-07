@@ -1,4 +1,14 @@
-const { Client, GatewayIntentBits, ActionRowBuilder, AttachmentBuilder,  ButtonBuilder, ButtonStyle, MessageFlags,  Events } = require("discord.js");
+const { 
+  Client, 
+  GatewayIntentBits, 
+  ActionRowBuilder, 
+  AttachmentBuilder,  
+  ButtonBuilder, 
+  ButtonStyle, 
+  MessageFlags, 
+  StringSelectMenuBuilder ,
+
+  } = require("discord.js");
 const keepAlive = require("./server");
 require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy token từ .env
 //require("dotenv").config({ path: "/etc/secrets/.env" }); // Render lưu file ở đây
@@ -16,7 +26,7 @@ const bot = new Client({
 const PREFIX = "d?";
 
 // Lấy giá trị từ biến môi trường\
-const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID;
+
 const REPORT_CHANNEL_ID = process.env.REPORT_CHANNEL_ID;
 const LEVEL_UP_CHANNEL_ID = process.env.LEVEL_UP_CHANNEL_ID;
 const ANNOUNCE_CHANNEL_ID = process.env.ANNOUNCE_CHANNEL_ID;
@@ -38,16 +48,34 @@ const { addXP, getRandom, handleDailyAutoXP } = require("./utils/xpSystem");
 const { showRank, createInventoryImage, createInventoryButtons } = require("./commands/rank");
 const { showLeaderboard } = require("./commands/leaderboard");
 const { handleSecretRealm } = require("./commands/secretRealm");
+const { 
+  handleShopCommand, 
+  handleConfirmSell,
+  handleShopBuy, 
+  handleShopSell, 
+  handleBuyItemSelection, 
+  handleBuyQuantitySelection, 
+  handleConfirmPurchase,
+  handleSellQuantitySelection
+  } = require("./commands/shop");
+const {
+  handleUseItem,
+  handleUseItemSelection,
+  handleUseItemConfirm
+} = require("./utils/useInventory");
 
 // Load các event
-const shopInteraction = require('./shops/interactionCreate');
+//const shopInteraction = require('./shops/interactionCreate');
 
 const mongoose = require("mongoose");
+//const { handleUseItem } = require("./utils/useInventory");
 
 // Kết nối đến MongoDB Atlas
 mongoose.connect(process.env.MONGODB_URI)
 .then(() => console.log("✅ Connected to MongoDB Atlas"))
 .catch((err) => console.error("❌ MongoDB connection error:", err));
+
+
 
 // Command "/" schedule
 bot.on("interactionCreate", async (interaction) => {
@@ -212,31 +240,117 @@ bot.on("interactionCreate", async (interaction) => {
           } */
 
         break;}
+      case "shop": {
+        try {
+            await handleShopCommand(interaction); // 👈 gọi như các lệnh khác
+          } catch (error) {
+            console.error("Lỗi khi xử lý shop:", error);
+            await interaction.reply("❌ Lỗi khi mở cửa hàng.");
+          }
+        break; // Để lệnh này không bị xử lý ở phần dưới
+      }
 
   }}
 
-  if (interaction.isStringSelectMenu()){
-    if (interaction.customId === 'shop_select_item') {
-    const selectedItemId = interaction.values[0];
-    const shopItems = require('./data/shopItems');
-    const item = shopItems.find(i => i.itemId === selectedItemId);
+  // Xử lý các lệnh tương tác khác
+  if (interaction.isStringSelectMenu()) {
+    const id = interaction.customId;
+    const values = interaction.values;
 
-    if (!item) {
-      return await interaction.reply({
-        content: '❌ Vật phẩm không tồn tại.',
-        ephemeral: true
-      });
+    const userId = interaction.user.id;
+    const guildId = interaction.guild.id;
+    const userData = await UserXP.findOne({ guildId, userId });
+
+    if (id === 'select_buy_item') {
+      return handleBuyItemSelection(interaction);
     }
 
-    // Tạm thời chỉ cho mua 1 món
-    return await interaction.update({
-      content: `🛍️ Bạn đã chọn **${item.name}** (${item.description})\nNhập số lượng muốn mua bằng lệnh hoặc nút (chưa triển khai).`,
-      components: [], // Có thể thêm nút xác nhận mua
-    });
+    // ✅ Xử lý chọn số lượng (hiển thị nút xác nhận)
+    if (id === 'select_quantity_item') {
+      return handleBuyQuantitySelection(interaction, userData);
+    }
+
+    if (id === "select_sell_item") {
+        // Người chơi chọn vật phẩm → tạo menu chọn số lượng
+      const selectedValue = interaction.values[0]; // ví dụ: "sell_pharmaBamboo"
+      const itemId = selectedValue.replace('sell_', '');
+
+      const userData = await UserXP.findOne({
+        userId: interaction.user.id,
+        guildId: interaction.guild.id
+      });
+
+      const inventoryItem = userData.inventory.find(i => i.itemId === itemId);
+      if (!inventoryItem) {
+        return interaction.reply({
+          content: '❌ Vật phẩm không còn trong túi.',
+          ephemeral: true
+        });
+      }
+
+      const row = new ActionRowBuilder().addComponents(
+        new StringSelectMenuBuilder()
+          .setCustomId(`select_sell_quantity_${itemId}`)
+          .setPlaceholder('🧮 Chọn số lượng muốn bán')
+          .addOptions(
+            Array.from({ length: inventoryItem.quantity }, (_, i) => ({
+              label: `${i + 1}`,
+              value: `sell_${itemId}_${i + 1}`
+            }))
+          )
+      );
+
+      await interaction.update({
+        content: `💰 Đạo hữu muốn bán bao nhiêu **${inventoryItem.name}**?`,
+        components: [row]
+      });
+
+      return;
+    
+    }
+
+    if (id.startsWith("select_sell_quantity")) {
+      const user = await UserXP.findOne({
+        userId: interaction.user.id,
+        guildId: interaction.guild.id,
+      });
+      return handleSellQuantitySelection(interaction, user); // chọn số lượng
+    }
+
+    // Chọn vật phẩm để dùng
+    if (id === "select_use_item"){
+      await handleUseItemSelection(interaction);
+    }
+    // Chọn số lượng vật phẩm sử dụng
+    if (id === "confirm_use_quantity"){
+      const [_, itemId, quantityStr] = interaction.values[0].split("_");
+      const quantity = parseInt(quantityStr);
+      await handleUseItemConfirm (interaction, itemId, quantity);
+
+    }
+
+
+    const [action, itemId, quantityStr] = values[0]?.split('_') || [];
+  
+    if (!action || !itemId) {
+      console.warn('⚠️ Không thể phân tích giá trị từ SelectMenu:', values[0]);
+      return;
+    }
+
+    switch (action) {
+      case 'buy':
+        if (quantityStr) {
+          await handleConfirmPurchase(interaction, itemId, parseInt(quantityStr));
+        } 
+        break;
+
+      case 'sell':
+        await handleConfirmSell(interaction, itemId);
+        break;
+    }
   }
 
-  }
-
+  // Xử lý các nút bấm
   if (interaction.isButton()) {
     const userId = interaction.user.id;
     const guildId = interaction.guild.id;
@@ -248,7 +362,7 @@ bot.on("interactionCreate", async (interaction) => {
 
     //const inventory = userData ? userData.inventory || [] : []; // Lấy túi đồ người chơi từ DB hoặc cache
     const inventory = Array.isArray(userData.inventory) ? userData.inventory : []; // Đảm bảo inventory là mảng
-    if (interaction.customId === 'open_inventory') {
+    if (id === 'open_inventory') {
       const page = 1;
       const buffer = await createInventoryImage(displayName, userData.stone, inventory, page);
       const buttons = createInventoryButtons(page, Math.ceil(inventory.length / 3));
@@ -286,14 +400,49 @@ bot.on("interactionCreate", async (interaction) => {
     components: buttons
   });
 
+    }
+
+    if (id === 'shop_buy') {
+      await handleShopBuy(interaction);
+    }
+
+    if (id.startsWith('confirm_buy_')) {
+      
+      const parts = id.split('_'); // ['confirm', 'buy', 'pharmaBamboo', '2']
+      const quantity = parseInt(parts.pop(), 10);
+      const itemId = parts.slice(2).join('_'); 
+      await handleConfirmPurchase(interaction, itemId, quantity);
+       
+    }
+    if (id === 'select_quantity_item') {
+      await handleBuyQuantitySelection(interaction,userData);
+    }
+    if (id=== 'shop_sell') {
+      await handleShopSell(interaction);
+    }
+    // Xử lý sau khi chọn số lượng
+    if (id.startsWith("confirm_sell_")) {
+      const parts = id.split("_");
+      const itemId = parts[2];
+      const quantity = parseInt(parts[3]);
+
+      const user = await UserXP.findOne({
+        userId: interaction.user.id,
+        guildId: interaction.guild.id,
+      });
+      return handleConfirmSell(interaction, itemId, quantity);
+
      }
-    
+    // Dùng vật phẩm
+    if (id === 'use_item') {
+      await handleUseItem(interaction);
+
+    }
   }
 });
-//lắng nghe sự kiện
-bot.on(Events.interactionCreate, async (interaction) => {
-    await shopInteraction.execute(interaction);
-});
+
+
+
 
 // Chào bạn mới
 bot.on("guildMemberAdd", async (member) => {
@@ -314,7 +463,7 @@ bot.on("messageCreate", async (message) => {
   await handleDailyAutoXP(message.author.id, message.guild.id, message)
     // Nếu trong kênh bí mật -> cộng nhiều XP hơn
   const isPrivateChannel = message.channel.id === process.env.PRIVATE_CHANNEL_ID;
-  const xpToAdd  = isPrivateChannel ? getRandom(40, 80) : getRandom(10, 50);
+  const xpToAdd  = isPrivateChannel ? getRandom(40, 80) : getRandom(10, 30);
 
   await addXP(message.author.id, message.guild.id, xpToAdd, message);
 
@@ -322,10 +471,6 @@ bot.on("messageCreate", async (message) => {
   const content = message.content.trim(); // Lấy nội dung tin nhắn
   const lowerContent = content.toLowerCase(); // Chuyển về chữ thường để kiểm tra PREFIX
   
-
-
-  
-
   //console.dir(lowerContent);
   // Cắt bỏ phần PREFIX mà không phân biệt hoa/thường
   const commandBody = content.slice(PREFIX.length).trim();
@@ -356,6 +501,8 @@ bot.on("messageCreate", async (message) => {
       🔹 \`d?a [Từ khóa]\` → Tìm câu trả lời theo dữ liệu đã học.
       🔹 \`d?r [Từ khóa]\` → Tra cứu cùng Thái Ất Chân Nhân.
       🔹 \`/profile\` → Thông tin cá nhân.
+      🔹 \`/bicanh\` → Tham gia thí luyện bí cảnh.
+      🔹 \`/shop\` → Cửa hàng trao đổi sản phẩm.
       🔹 \`/leaderboard\` →  Bảng xếp hạng tông môn.
       🔹 \`d?t\` → Xem bảng dữ liệu đặt đá gần đây( tạm ngừng update).
       🔹 \`d?c\` → Xem biểu đồ kết quả dữ liệu gần đây( tạm ngừng update).
@@ -518,9 +665,6 @@ bot.on("messageCreate", async (message) => {
     default:
       message.channel.send("⚠️ Lệnh không hợp lệ! Hãy thử `d?help` để xem danh sách lệnh.");
   }
-
-
-
 
 });
 

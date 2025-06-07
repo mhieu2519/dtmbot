@@ -59,11 +59,11 @@ async function handleSecretRealm(interaction) {
   const scenarios = [
       { text: "gặp yêu thú", weight: 30 },
       { text: "gặp cường giả", weight: 18 },
-      { text: "cuốc trúng mỏ linh thạch", weight: 23 },
-      { text: "mở được kho báu bí cảnh", weight: 6 },
-      { text: "gặp đỉnh cấp yêu thú", weight: 20 },
+      { text: "cuốc trúng mỏ linh thạch", weight: 13 },
+      { text: "mở được kho báu bí cảnh", weight: 10 },
+      { text: "gặp đỉnh cấp yêu thú", weight: 22 },
       { text: "tìm thấy vật phẩm ẩn giấu", weight: 1}, // Tỉ lệ thấp hơn
-      { text: "gặp được truyền thừa ẩn giấu", weight: 2 }, // Tỉ lệ thấp hơn
+      { text: "gặp được truyền thừa ẩn giấu", weight: 10 }, // Tỉ lệ thấp hơn
   ];
   //const chosen = scenarios[Math.floor(Math.random() * scenarios.length)];
 
@@ -113,7 +113,7 @@ async function handleSecretRealm(interaction) {
     }
 
     case "gặp đỉnh cấp yêu thú": {
-      const win = Math.random() < 0.4; 
+      const win = Math.random() < 0.4; // Tỉ lệ thắng 60%
       if (win) {
         const xpGain = getRandom(300, 500);
         const stones = getRandom(100, 300);
