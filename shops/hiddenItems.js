@@ -21,7 +21,7 @@ module.exports = [
     description: "Đá chứa linh khí của đất trời.",
     rarity: "common", 
     quantity: 2,
-    weight: 20 // rơi thường xuyên
+    weight: 40 // rơi thường xuyên
   },
   {
     id: "rareGem",
@@ -29,7 +29,7 @@ module.exports = [
     description: "Đá tồn tại từ thượng cổ.",
     rarity: "common", 
     quantity: 2,
-    weight: 6
+    weight: 10
   },
   {
     id: "shield",
@@ -52,8 +52,37 @@ module.exports = [
     id: "grassSorrow",
     name: "Đoạn Trường Thảo 🌿",
     description: "Loài cỏ thần kỳ có thể chữa lành:).",
-    rarity: "legendary",
+    rarity: "rare",
     quantity: 1,
     weight: 2 // xác suất rất thấp
+  },
+  // lam ngọc
+  {
+    id: "jadeGem",
+    name: "Lam Ngọc 💧",
+    description: "Chứa sức mạnh linh khí đặc biệt.",
+    rarity: "common", 
+    quantity: 1,
+    weight: 10 
+  },
+  // mảnh ghép tàn đồ
+  {
+    id: "fragMap",
+    name: "Mảnh Ghép Tàn Đồ 🗺️",
+    description: "Tàn đồ di chỉ thượng cổ.",
+    rarity: "legendary", 
+    quantity: 1,
+    weight: 1 
+
+  },
+  // chìa khóa bảo tàng
+  {
+    id: "fragKey",
+    name: "Chìa khóa bảo tàng 🔑",
+    description: "Đến từ di chỉ thượng cổ (không rõ).",
+    rarity: "legendary", 
+    quantity: 1,
+    weight: 1 
   }
+
 ];

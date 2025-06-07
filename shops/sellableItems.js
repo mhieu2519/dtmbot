@@ -13,6 +13,12 @@ const sellableItems = [
     bonusExp: 150
   },
   {
+    id: "jadeGem",
+    name: "Lam Ngọc 💧",
+    sellPrice: 450,
+    bonusExp: 200
+  },
+  {
     id: "spiritStone",
     name: "Đá thiên nhiên 🪨",
     sellPrice: 200,
@@ -23,7 +29,26 @@ const sellableItems = [
     name: "Khiên Bất Diệt 🛡️",
     sellPrice: 500,
     bonusExp: 200  
+  },
+  {
+    id: "ancientSword",
+    name: "Cổ Kiếm Linh 🗡️",
+    sellPrice: 800,
+    bonusExp: 200  
+  },
+  {
+    id: "fragMap",
+    name: "Mảnh Ghép Tàn Đồ 🗺️",
+    sellPrice: 1500,
+    bonusExp: 400  
+  },
+  {
+    id: "fragKey",
+    name: "Chìa khóa bảo tàng 🔑",
+    sellPrice: 2000,
+    bonusExp: 500  
   }
+
 ];
 
 module.exports = sellableItems;
