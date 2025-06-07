@@ -2,13 +2,13 @@
 const sellableItems = [
   {
     id: 'pharmaBamboo',
-    name: 'Trúc Cơ Đan',
+    name: 'Trúc Cơ Đan 🎍',
     sellPrice: 90,
     bonusExp: 10
   },
   {
     id: 'rareGem',
-    name: 'Huyết Ngọc',
+    name: 'Huyết Ngọc 🔶',
     sellPrice: 500,
     bonusExp: 150
   },

@@ -13,5 +13,12 @@ module.exports = [
     effect: 'gainExp',
     amount: 500,
     description: '+500 exp'
+  },
+  {
+    id: "grass_sorrow",
+    name: "Đoạn Trường Thảo 🌿",
+    effect: 'gainExp',
+    amount: 500,
+    description: '+500 exp'
   }
 ];

@@ -34,7 +34,7 @@ async function handleUseItem(interaction) {
         return {
         label: `${info.name} x${item.quantity}`,
         description: info.description,
-        value: `use_${item.itemId}`
+        value: `use::${item.itemId}`
         };
   });
 
@@ -59,7 +59,7 @@ async function handleUseItemSelection(interaction) {
   const guildId = interaction.guild.id;
   const user = await UserXP.findOne({ userId, guildId });
 
-  const [_, itemId] = interaction.values[0].split('_');
+  const [_, itemId] = interaction.values[0].split('::');
   const item = usableItems.find(i => i.id === itemId);
  
 // Tìm vật phẩm trong túi đồ
@@ -75,7 +75,7 @@ async function handleUseItemSelection(interaction) {
       .addOptions(
         Array.from({ length: maxQuantity }, (_, i) => ({
           label: `${i + 1}`,
-          value:  `use_${itemId}_${i + 1}`
+          value:  `use::${itemId}::${i + 1}`
         }))
       )
   );

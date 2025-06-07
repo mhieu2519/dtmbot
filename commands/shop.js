@@ -9,7 +9,7 @@ const {
 
 const shopItems = require('../shops/shopItems'); // danh sách vật phẩm shop
 const UserXP = require('../models/UserXP');
-const { addItemToInventory } = require('../utils/inventory'); 
+const { addItemToInventory, removeItemFromInventory } = require('../utils/inventory'); 
 const { addXP} = require('../utils/xpSystem');
 const sellableItems = require('../shops/sellableItems');
 
@@ -69,7 +69,7 @@ async function handleBuyItemSelection(interaction) {
     return {
       label: `x${quantity}`,
       description: `Mua ${quantity} ${item.name} (${item.price * quantity} linh thạch)`,
-      value: `buy_${item.id}_${quantity}`
+      value: `buy::${item.id}::${quantity}`
     };
   });
 
@@ -81,7 +81,7 @@ async function handleBuyItemSelection(interaction) {
   );
 
   await interaction.update({
-    content: `🛒 Đạo hữu đã chọn **${item.name}**\n💵 Giá mỗi vật phẩm: ${item.price} linh thạch\n➡️ Bây giờ hãy chọn số lượng muốn mua:`,
+    content: `🛒 Đạo hữu đã chọn **${item.name}**\n💵 Giá mỗi vật phẩm: ${item.price} linh thạch\n➡️ Đạo hữu vui lòng chọn số lượng muốn mua:`,
     components: [row]
   });
 }
@@ -89,9 +89,9 @@ async function handleBuyItemSelection(interaction) {
 async function handleBuyQuantitySelection(interaction, user) {
   
   const raw = interaction.values[0]; 
-  const parts = raw.split('_'); 
+  const parts = raw.split('::'); 
   const quantity = parseInt(parts.pop()); 
-  const itemId = parts.slice(1).join('_'); 
+  const itemId = parts.slice(1).join('::'); 
   const item = shopItems.find(i => i.id === itemId);
   if (!item) {
     console.log('❌ Không tìm thấy item:', itemId);
@@ -102,7 +102,7 @@ async function handleBuyQuantitySelection(interaction, user) {
   const canAfford = user.stone >= totalCost;
  
   const buyButton = new ButtonBuilder()
-    .setCustomId(`confirm_buy_${item.id}_${quantity}`)
+    .setCustomId(`confirm::buy::${item.id}::${quantity}`)
     .setLabel(`🛒 Mua x${quantity} (${totalCost} linh thạch)`)
     .setStyle(ButtonStyle.Primary)
     .setDisabled(!canAfford);
@@ -117,7 +117,7 @@ async function handleBuyQuantitySelection(interaction, user) {
 
 // Xử lý sự kiện khi người dùng xác nhận mua hàng
 async function handleConfirmPurchase(interaction, itemId, quantity=1) {
- 
+  
   const item = shopItems.find(i => i.id === itemId);
   const user = await UserXP.findOne({ userId: interaction.user.id, guildId: interaction.guild.id });
   if (!item || !user) return;
@@ -208,7 +208,7 @@ async function handleShopSell(interaction) {
   return {
     label: `${sellInfo.name} x${invItem.quantity}`,
     description: `Giá bán: ${sellInfo.sellPrice} linh thạch`,
-    value: `sell_${invItem.itemId}`
+    value: `sell::${invItem.itemId}`
   };
 });
 
@@ -229,9 +229,9 @@ async function handleShopSell(interaction) {
 async function handleSellQuantitySelection(interaction, user) {
   
   const raw = interaction.values[0]; 
-  const parts = raw.split('_');
+  const parts = raw.split('::');
   const quantity = parseInt(parts.pop());
-  const itemId = parts.slice(1).join('_');
+  const itemId = parts.slice(1).join('::');
 
   const itemData = sellableItems.find(i => i.id === itemId);
   const inventoryItem = user.inventory.find(i => i.itemId === itemId);
@@ -247,7 +247,7 @@ async function handleSellQuantitySelection(interaction, user) {
   const totalExp = (itemData.bonusExp || 0) * quantity;
 
   const sellButton = new ButtonBuilder()
-    .setCustomId(`confirm_sell_${itemId}_${quantity}`)
+    .setCustomId(`confirm::sell::${itemId}::${quantity}`)
     .setLabel(`💰 Bán x${quantity} (${totalStone} 💎 ${totalExp ? ` + ${totalExp} EXP` : ''})`)
     .setStyle(ButtonStyle.Danger);
 
@@ -278,11 +278,7 @@ async function handleConfirmSell(interaction, itemId, quantity) {
   const totalStone = sellItem.sellPrice * quantity;
   const totalExp = (sellItem.bonusExp || 0) * quantity;
 
-  // Cập nhật tồn kho
-  inventoryItem.quantity -= quantity;
-  if (inventoryItem.quantity <= 0) {
-    userData.inventory = userData.inventory.filter(i => i.itemId !== itemId);
-  }
+  await removeItemFromInventory(userData, itemId, quantity );
 
   // Cộng linh thạch
   userData.stone += totalStone;

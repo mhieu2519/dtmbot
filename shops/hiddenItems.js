@@ -24,6 +24,14 @@ module.exports = [
     weight: 20 // rơi thường xuyên
   },
   {
+    id: "rareGem",
+    name: "Huyết Ngọc 🔶",
+    description: "Đá tồn tại từ thượng cổ.",
+    rarity: "common", 
+    quantity: 2,
+    weight: 6
+  },
+  {
     id: "shield",
     name: "Khiên Bất Diệt 🛡️",
     description: "Khiên đến từ thượng cổ đại năng.",

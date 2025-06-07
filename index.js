@@ -249,7 +249,6 @@ bot.on("interactionCreate", async (interaction) => {
           }
         break; // Để lệnh này không bị xử lý ở phần dưới
       }
-
   }}
 
   // Xử lý các lệnh tương tác khác
@@ -270,10 +269,11 @@ bot.on("interactionCreate", async (interaction) => {
       return handleBuyQuantitySelection(interaction, userData);
     }
 
+    //bán 
     if (id === "select_sell_item") {
         // Người chơi chọn vật phẩm → tạo menu chọn số lượng
       const selectedValue = interaction.values[0]; // ví dụ: "sell_pharmaBamboo"
-      const itemId = selectedValue.replace('sell_', '');
+      const itemId = selectedValue.replace('sell::', '');
 
       const userData = await UserXP.findOne({
         userId: interaction.user.id,
@@ -290,12 +290,12 @@ bot.on("interactionCreate", async (interaction) => {
 
       const row = new ActionRowBuilder().addComponents(
         new StringSelectMenuBuilder()
-          .setCustomId(`select_sell_quantity_${itemId}`)
+          .setCustomId(`select::sell::quantity::${itemId}`)
           .setPlaceholder('🧮 Chọn số lượng muốn bán')
           .addOptions(
             Array.from({ length: inventoryItem.quantity }, (_, i) => ({
               label: `${i + 1}`,
-              value: `sell_${itemId}_${i + 1}`
+              value: `sell::${itemId}::${i + 1}`
             }))
           )
       );
@@ -309,7 +309,7 @@ bot.on("interactionCreate", async (interaction) => {
     
     }
 
-    if (id.startsWith("select_sell_quantity")) {
+    if (id.startsWith("select::sell::quantity::")) {
       const user = await UserXP.findOne({
         userId: interaction.user.id,
         guildId: interaction.guild.id,
@@ -317,20 +317,21 @@ bot.on("interactionCreate", async (interaction) => {
       return handleSellQuantitySelection(interaction, user); // chọn số lượng
     }
 
+
+
     // Chọn vật phẩm để dùng
     if (id === "select_use_item"){
       await handleUseItemSelection(interaction);
     }
     // Chọn số lượng vật phẩm sử dụng
     if (id === "confirm_use_quantity"){
-      const [_, itemId, quantityStr] = interaction.values[0].split("_");
+      const [_, itemId, quantityStr] = interaction.values[0].split("::");
       const quantity = parseInt(quantityStr);
       await handleUseItemConfirm (interaction, itemId, quantity);
 
     }
 
-
-    const [action, itemId, quantityStr] = values[0]?.split('_') || [];
+    const [action, itemId, quantityStr] = values[0]?.split('::') || [];
   
     if (!action || !itemId) {
       console.warn('⚠️ Không thể phân tích giá trị từ SelectMenu:', values[0]);
@@ -381,7 +382,7 @@ bot.on("interactionCreate", async (interaction) => {
       await interaction.update({
         files: [{ attachment: buffer, name: 'inventory.png' }],
         components: buttons
-  });
+      });
     }
 
     if (id === "back_to_profile") {
@@ -393,12 +394,12 @@ bot.on("interactionCreate", async (interaction) => {
             .setCustomId('open_inventory')
             .setLabel('📦 Túi trữ vật')
             .setStyle(ButtonStyle.Secondary)
-        )
-      ];
-    await interaction.editReply({
-    files: [{ attachment: buffer, name: 'profile.png' }],
-    components: buttons
-  });
+            )
+          ];
+        await interaction.editReply({
+        files: [{ attachment: buffer, name: 'profile.png' }],
+        components: buttons
+      });
 
     }
 
@@ -406,11 +407,11 @@ bot.on("interactionCreate", async (interaction) => {
       await handleShopBuy(interaction);
     }
 
-    if (id.startsWith('confirm_buy_')) {
+    if (id.startsWith('confirm::buy::')) {
       
-      const parts = id.split('_'); // ['confirm', 'buy', 'pharmaBamboo', '2']
+      const parts = id.split('::'); // ['confirm', 'buy', 'pharmaBamboo', '2']
       const quantity = parseInt(parts.pop(), 10);
-      const itemId = parts.slice(2).join('_'); 
+      const itemId = parts.slice(2).join('::'); 
       await handleConfirmPurchase(interaction, itemId, quantity);
        
     }
@@ -421,8 +422,8 @@ bot.on("interactionCreate", async (interaction) => {
       await handleShopSell(interaction);
     }
     // Xử lý sau khi chọn số lượng
-    if (id.startsWith("confirm_sell_")) {
-      const parts = id.split("_");
+    if (id.startsWith("confirm::sell::")) {
+      const parts = id.split("::");
       const itemId = parts[2];
       const quantity = parseInt(parts[3]);
 
@@ -440,9 +441,6 @@ bot.on("interactionCreate", async (interaction) => {
     }
   }
 });
-
-
-
 
 // Chào bạn mới
 bot.on("guildMemberAdd", async (member) => {
