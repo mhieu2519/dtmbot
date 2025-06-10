@@ -26,7 +26,7 @@ const bot = new Client({
 const PREFIX = "d?";
 
 // Lấy giá trị từ biến môi trường\
-
+const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID;
 const REPORT_CHANNEL_ID = process.env.REPORT_CHANNEL_ID;
 const LEVEL_UP_CHANNEL_ID = process.env.LEVEL_UP_CHANNEL_ID;
 const ANNOUNCE_CHANNEL_ID = process.env.ANNOUNCE_CHANNEL_ID;
@@ -68,7 +68,6 @@ const {
 //const shopInteraction = require('./shops/interactionCreate');
 
 const mongoose = require("mongoose");
-//const { handleUseItem } = require("./utils/useInventory");
 
 // Kết nối đến MongoDB Atlas
 mongoose.connect(process.env.MONGODB_URI)

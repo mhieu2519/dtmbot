@@ -14,8 +14,8 @@ module.exports = [
     id: 'pharmaEra',
     name: 'Tẩy Tủy Đan 🫐',
     description: '+500 exp',
-    price: 450,
-    sellPrice: 300,
+    price: 350,
+    sellPrice: 250,
     rarity: 'rare',
     maxQuantity: 1,
   }
