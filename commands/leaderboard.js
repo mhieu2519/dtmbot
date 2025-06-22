@@ -24,12 +24,7 @@ async function showLeaderboard(interaction) {
   }).join("\n");
 
   const requesterName = interaction.member.displayName ;
-  /*
-  const requesterName =
-    interaction.member?.nickname ||
-    interaction.user.globalName ||
-    interaction.user.username ||
-    "Ẩn Danh";*/
+
   await interaction.reply({
     embeds: [{
       color: 0xFFD700,

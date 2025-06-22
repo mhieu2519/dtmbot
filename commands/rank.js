@@ -169,7 +169,7 @@ async function showRank(interaction) {
   ctx.fillText(`Level: ${userData.level}`, 250, 110);
   ctx.fillText(`XP: ${userData.xp} / ${nextXP}`, 250, 150);
   ctx.fillText(`Rank: #${rank}`, 250, 190);
-  //ctx.fillText(`💎 ${userData.stone}`, 400, 190); 
+
   ctx.drawImage(diamond, 370, 170, 24, 24); // vị trí và kích thước tùy chỉnh
   ctx.fillText(`${userData.stone}`, 400, 190);
 
@@ -205,73 +205,6 @@ async function showRank(interaction) {
 
  return buffer;
 }
-/*
-async function handleInventoryView(interaction) {
-  const userId = interaction.user.id;
-  const guildId = interaction.guild.id;
-
-  const userData = await UserXP.findOne({ userId, guildId });
-  if (!userData || !userData.inventory || userData.inventory.length === 0) {
-    return interaction.reply({
-      content: "💰 Túi trữ vật của đạo hữu trống rỗng.",
-      flags: MessageFlags.Ephemeral,
-    });
-  }
-
-  const itemsText = userData.inventory.map((item, index) => {
-    return `**${index + 1}. ${item.name}** (x${item.quantity}) - ${item.rarity}`;
-  }).join("\n");
-  const hidden = true;
-  await interaction.reply({
-    
-    content: `💰 **Túi trữ vật:**\n${itemsText}`,
-    flags: hidden ? MessageFlags.Ephemeral : undefined
-  });
-}
-/*
-const ITEMS_PER_PAGE = 5;
-//const userData = await UserXP.findOne({ guildId, userId });
-
-async function showInventory(interaction, userData, page = 0) {
-  const start = page * ITEMS_PER_PAGE;
-  const end = start + ITEMS_PER_PAGE;
-  const items = userData.inventory.slice(start, end);
-
-  if (!items.length) return interaction.update({ content: "❌ Không có vật phẩm ở trang này.", components: [] });
-
-  const itemList = items
-    .map((item, i) => `**${start + i + 1}.** ${item.name} (x${item.quantity}) — ${item.rarity}\n*${item.description}*`)
-    .join("\n");
-
-  const maxPage = Math.ceil(userData.inventory.length / ITEMS_PER_PAGE);
-
-  const row = new ActionRowBuilder().addComponents(
-    new ButtonBuilder()
-      .setCustomId(`inventory_prev_${page}`)
-      .setLabel("⬅️")
-      .setStyle(ButtonStyle.Secondary)
-      .setDisabled(page === 0),
-
-    new ButtonBuilder()
-      .setCustomId(`inventory_next_${page}`)
-      .setLabel("➡️")
-      .setStyle(ButtonStyle.Secondary)
-      .setDisabled(end >= userData.inventory.length),
-
-    new ButtonBuilder()
-      .setCustomId("back_to_profile")
-      .setLabel("🖼️ Quay lại Profile")
-      .setStyle(ButtonStyle.Primary)
-  );
-
-  await interaction.update({
-    content: `💰 **Túi Đồ của bạn** (Trang ${page + 1}/${maxPage}):\n\n${itemList}`,
-    files: [],
-    components: [row],
-    embeds: []
-  });
-}*/
-
 
 async function createInventoryImage(displayName, stone, inventory, page = 1, itemsPerPage = 3) {
   const canvas = createCanvas(800, 300);

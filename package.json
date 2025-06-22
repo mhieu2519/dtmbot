@@ -21,7 +21,6 @@
     "discord.js": "^14.20.0",
     "dotenv": "^16.5.0",
     "express": "^4.21.2",
-    "ffmpeg": "^0.0.4",
     "ffmpeg-static": "^5.2.0",
     "fontkit": "^2.0.4",
     "googleapis": "^144.0.0",
@@ -32,7 +31,6 @@
     "mongoose": "^8.15.0",
     "node-cron": "^3.0.3",
     "node-schedule": "^2.1.1",
-    "node-tesseract-ocr": "^2.2.1",
     "openai": "^4.83.0",
     "punycode": "^2.3.1",
     "xlsx": "^0.18.5"
