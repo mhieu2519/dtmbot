@@ -15,30 +15,38 @@ module.exports = [
     description: '+500 exp'
   },
   {
+    id: 'pharmaPure',
+    name: 'Thanh Tâm Đan 🥑',
+    effect: 'gainExp',
+    amount: 1000,
+    description: '+1000 exp',
+  },
+  {
     id: "grassSorrow",
     name: "Đoạn Trường Thảo 🌿",
     effect: 'gainExp',
     amount: 500,
     description: '+500 exp'
   },
+  /*
   {
     id: 'mysticScroll',
     name: 'Cuộn Bí Pháp 📜',
-    effect: 'gainStone',
+    effect: 'buffExp',
     amount: 200,
     description: '+200 stone'
   },
   {
     id: 'phoenixFeather',
     name: 'Lông Phượng Hoàng 🪶',
-    effect: 'gainStone',
+    effect: 'buffTranphap',
     amount: 500,
     description: '+500 stone'
   },
   {
     id: "ancientSword",
     name: "Cổ Kiếm Linh 🗡️",
-    effect: 'gainStone',
+    effect: 'buffYeuthu',
     amount: 500,
     description: '+500 stone'
   },
@@ -56,6 +64,7 @@ module.exports = [
     amount: 500,
     description: '+500 stone'
   },
+  */
   {
     id: 'shield',
     name: 'Khiên Bất Diệt 🛡️',
@@ -63,4 +72,5 @@ module.exports = [
     amount: 300,
     description: '+300 stone'
   }
+    
 ];

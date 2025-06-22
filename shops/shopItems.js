@@ -17,6 +17,15 @@ module.exports = [
     price: 350,
     sellPrice: 250,
     rarity: 'rare',
-    maxQuantity: 1,
+    maxQuantity: 5,
+  },
+  {
+    id: 'pharmaPure',
+    name: 'Thanh Tâm Đan 🥑',
+    description: '+1000 exp',
+    price: 480,
+    sellPrice: 400,
+    rarity: 'rare',
+    maxQuantity: 2,
   }
 ];

@@ -20,8 +20,16 @@ const userXPSchema = new mongoose.Schema({
       description: String,    // Mô tả vật phẩm
       obtainedAt: { type: Date, default: Date.now } // Ngày nhận
     }
-  ]
-
+  ],
+// ✅ Thêm phần buff ở đây
+  buffs: {
+    type: Map,
+    of: new mongoose.Schema({
+      value: Number,     // hệ số nhân, tỉ lệ cộng,...
+      uses: Number       // số lần sử dụng còn lại
+    }, { _id: false }),
+    default: {}
+  }
 
 });
 

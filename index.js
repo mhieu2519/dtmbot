@@ -9,6 +9,7 @@ const {
   StringSelectMenuBuilder ,
 
   } = require("discord.js");
+
 const keepAlive = require("./server");
 require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy token từ .env
 //require("dotenv").config({ path: "/etc/secrets/.env" }); // Render lưu file ở đây
@@ -20,8 +21,88 @@ const bot = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.GuildMembers,
     GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildVoiceStates, // Để xử lý âm thanh
   ],
 });
+
+const { Player } = require('discord-player');
+const { YoutubeiExtractor } = require('discord-player-youtubei'); // Import YoutubeiExtractor
+const { SpotifyExtractor } = require('@discord-player/extractor'); // Import SpotifyExtractor
+
+// Cấu hình Discord Player
+const player = new Player(bot);
+
+// Đăng ký các extractor
+// YoutubeiExtractor cho YouTube (thay thế YoutubeExtractor cũ)
+player.extractors.register(YoutubeiExtractor, {});
+
+// SpotifyExtractor cho Spotify
+player.extractors.register(SpotifyExtractor, {
+    client_id: process.env.SPOTIFY_CLIENT_ID,
+    client_secret: process.env.SPOTIFY_CLIENT_SECRET,
+    // Bạn có thể thêm các tùy chọn khác nếu cần, ví dụ: concurrency
+});
+// --- Xử lý các sự kiện của Discord Player ---
+
+player.on('error', (queue, error) => {
+    console.error(`Lỗi Player: ${error.message}`);
+    if (queue && queue.metadata && queue.metadata.channel) {
+        queue.metadata.channel.send(`Đã xảy ra lỗi khi phát nhạc: ${error.message}`).catch(console.error);
+    }
+});
+
+player.on('playerError', (queue, error) => {
+    console.error(`Lỗi Player Node: ${error.message}`);
+    if (queue && queue.metadata && queue.metadata.channel) {
+         queue.metadata.channel.send(`Đã xảy ra lỗi hệ thống khi phát nhạc: ${error.message}`).catch(console.error);
+    }
+});
+
+player.on('error', (queue, error) => {
+    console.error(`Lỗi trong hàng đợi của ${queue.guild.name}: ${error.message}`);
+    if (queue.metadata.channel) {
+        queue.metadata.channel.send(`Có lỗi xảy ra: ${error.message}`).catch(e => console.error("Could not send error message:", e));
+    }
+});
+
+player.on('nodeError', (queue, error) => {
+    console.error(`Lỗi Node trong hàng đợi của ${queue.guild.name}: ${error.message}`);
+    if (queue.metadata.channel) {
+        queue.metadata.channel.send(`Lỗi hệ thống khi phát nhạc: ${error.message}`).catch(e => console.error("Could not send node error message:", e));
+    }
+});
+
+player.on('trackStart', (queue, track) => {
+    if (queue.metadata.channel) {
+        queue.metadata.channel.send(`🎶 Đang phát: **[${track.title}](${track.url})** của **${track.author}**`);
+    }
+});
+
+player.on('tracksAdd', (queue, tracks) => {
+    if (queue.metadata.channel) {
+        queue.metadata.channel.send(`Đã thêm ${tracks.length} bài hát vào hàng đợi!`);
+    }
+});
+
+player.on('emptyQueue', queue => {
+    if (queue.metadata.channel) {
+        queue.metadata.channel.send('Hàng đợi đã hết, bot sẽ rời kênh thoại.');
+    }
+});
+
+player.on('connectionError', (queue, error) => {
+    console.error(`Lỗi kết nối trong hàng đợi của ${queue.guild.name}: ${error.message}`);
+    if (queue.metadata.channel) {
+        queue.metadata.channel.send(`Lỗi kết nối kênh thoại: ${error.message}`).catch(e => console.error("Could not send connection error message:", e));
+    }
+});
+
+player.on('disconnect', queue => {
+    if (queue.metadata.channel) {
+        queue.metadata.channel.send('Bot đã bị ngắt kết nối khỏi kênh thoại.');
+    }
+});
+// --- Kết thúc cấu hình Discord Player ---
 
 const PREFIX = "d?";
 
@@ -48,6 +129,7 @@ const { addXP, getRandom, handleDailyAutoXP } = require("./utils/xpSystem");
 const { showRank, createInventoryImage, createInventoryButtons } = require("./commands/rank");
 const { showLeaderboard } = require("./commands/leaderboard");
 const { handleSecretRealm } = require("./commands/secretRealm");
+const { handleMusicCommand } = require("./music/music");
 const { 
   handleShopCommand, 
   handleConfirmSell,
@@ -158,7 +240,7 @@ bot.on("interactionCreate", async (interaction) => {
 
         const senderMember = await interaction.guild.members.fetch(interaction.user.id);
         const senderDisplayName = senderMember.displayName;
-
+        const receiverMember = await interaction.guild.members.fetch(receiver.id);
 
         const now = Date.now();
         const cooldownMs = 1 * 60 * 1000; // 10 phút
@@ -215,7 +297,7 @@ bot.on("interactionCreate", async (interaction) => {
             await logChannel.send({
               content: `📜 **Log chuyển linh thạch**\n` +
                       `Người gửi: ${senderDisplayName} - ${interaction.user.tag} (${interaction.user.id})\n` +
-                      `Người nhận: ${receiver.displayName} - ${receiver.tag} (${receiver.id})\n` +
+                      `Người nhận: ${receiverMember.displayName} - ${receiver.tag} (${receiver.id})\n` +
                       `Số lượng: ${amount}\n` +
                       `Thời gian: <t:${Math.floor(Date.now() / 1000)}:F>`,
             });
@@ -224,7 +306,7 @@ bot.on("interactionCreate", async (interaction) => {
           }
 
         await interaction.reply({
-          content: `✅ Đạo hữu đã chuyển **${amount}** linh thạch cho ${receiver.displayName}.`,
+          content: `✅ Đạo hữu đã chuyển **${amount}** linh thạch cho ${receiverMember.displayName}.`,
         });
         /*
         try {
@@ -241,14 +323,18 @@ bot.on("interactionCreate", async (interaction) => {
         break;}
       case "shop": {
         try {
-            await handleShopCommand(interaction); // 👈 gọi như các lệnh khác
+            await handleShopCommand(interaction); 
           } catch (error) {
             console.error("Lỗi khi xử lý shop:", error);
             await interaction.reply("❌ Lỗi khi mở cửa hàng.");
           }
-        break; // Để lệnh này không bị xử lý ở phần dưới
+        break; 
       }
-  }}
+      case "music": {
+        await handleMusicCommand(interaction, player);
+        break; 
+      }
+}}
 
   // Xử lý các lệnh tương tác khác
   if (interaction.isStringSelectMenu()) {
@@ -363,6 +449,7 @@ bot.on("interactionCreate", async (interaction) => {
     //const inventory = userData ? userData.inventory || [] : []; // Lấy túi đồ người chơi từ DB hoặc cache
     const inventory = Array.isArray(userData.inventory) ? userData.inventory : []; // Đảm bảo inventory là mảng
     if (id === 'open_inventory') {
+      //await interaction.deferUpdate(); // tránh lỗi Unknown interaction
       const page = 1;
       const buffer = await createInventoryImage(displayName, userData.stone, inventory, page);
       const buttons = createInventoryButtons(page, Math.ceil(inventory.length / 3));
@@ -668,6 +755,7 @@ bot.on("messageCreate", async (message) => {
 bot.once("ready", async () => {
   console.log("✅ Bot is now online!");
    scheduleMessages(bot);
+ 
 });
 bot.on('error', (err) => {
   console.error('❌ Discord bot error:', err);

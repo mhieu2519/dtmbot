@@ -63,8 +63,8 @@ async function handleBuyItemSelection(interaction) {
   const selectedItemId = interaction.values[0];
   const item = shopItems.find(i => i.id === selectedItemId);
   if (!item) return await interaction.reply({ content: '❌ Vật phẩm không tồn tại.', flags: MessageFlags.Ephemeral });
-
-  const quantityOptions = Array.from({ length: 10 }, (_, i) => {
+  //const index = item.maxQuantity > 25 ? 25 : item.maxQuantity; // Giới hạn số lượng tối đa là 25 cho menu Discord 
+  const quantityOptions = Array.from({ length: item.maxQuantity }, (_, i) => {
     const quantity = i + 1;
     return {
       label: `x${quantity}`,

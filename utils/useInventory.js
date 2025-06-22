@@ -12,6 +12,43 @@ const UserXP = require('../models/UserXP');
 const { removeItemFromInventory} = require('../utils/inventory'); 
 const { addXP} = require('../utils/xpSystem');
 
+
+// xử lí hiệu ứng buff dùng đồ
+
+async function addBuff(user, buffName, value, uses) {
+  if (!user.buffs) user.buffs = {};
+
+  if (user.buffs[buffName]) {
+    user.buffs[buffName].uses += uses;
+    user.buffs[buffName].value = Math.max(user.buffs[buffName].value, value); // giữ giá trị lớn hơn
+  } else {
+    user.buffs[buffName] = { value, uses };
+  }
+
+  await user.save();
+}
+async function consumeBuff(user, buffName, uses = 1) {
+  if (!user.buffs || !user.buffs[buffName]) return null;
+
+  user.buffs[buffName].uses -= uses;
+
+  const value = user.buffs[buffName].value;
+
+  if (user.buffs[buffName].uses <= 0) {
+    delete user.buffs[buffName];
+  }
+
+  await user.save();
+
+  return value;
+}
+function getBuffValue(user, buffName) {
+  if (!user.buffs || !user.buffs[buffName]) return null;
+  return user.buffs[buffName];
+}
+
+
+
 // xử lí chọn vật phẩm
 async function handleUseItem(interaction) {
 
@@ -107,6 +144,9 @@ async function handleUseItemConfirm(interaction, itemId, quantity) {
      // await addStone(user, itemInfo.amount * quantity);
       break;
     // Mở rộng thêm ở đây
+
+
+    
   }
   const userMember = await interaction.guild.members.fetch(userId);
   const userDisplayName = userMember.displayName;
