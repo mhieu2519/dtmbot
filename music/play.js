@@ -41,7 +41,7 @@ async function handlePlay(interaction, player) {
     } catch (error) {
         queue.delete();
         console.error("Lỗi khi kết nối kênh thoại:", error);
-        return interaction.reply({ content: `Lão phu không thể vào kênh thoại ${targetChannel.name} của đạo hữu!` });
+        return interaction.editReply({ content: `Lão phu không thể vào kênh thoại ${targetChannel.name} của đạo hữu!` });
     }
 
     await interaction.deferReply();

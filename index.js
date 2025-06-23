@@ -32,13 +32,14 @@ const ffmpegPath = require('ffmpeg-static'); // Import ffmpeg-static
 // Cấu hình Discord Player
 const player = new Player(bot,{
     ytdlOptions: {
-        quality: 'highestaudio',
-        filter: 'audioonly',
+      quality: 'highestaudio',
+     filter: 'audioonly',
         highWaterMark: 1 << 25 // 32MB
     },
-    skipFFmpeg: true, // Báo cho discord-player biết bạn sẽ cung cấp FFmpeg
+   skipFFmpeg: true, // Báo cho discord-player biết bạn sẽ cung cấp FFmpeg
     connectionTimeout: 60000 // Tăng thời gian chờ kết nối (ví dụ: 60 giây)
-});
+}
+);
 
 // Hoặc nếu bạn muốn thiết lập cho tất cả các extractor (cách này an toàn hơn nếu không chắc chắn)
  player.options.ffmpeg = { ffmpegPath: ffmpegPath };
