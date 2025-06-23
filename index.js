@@ -53,6 +53,8 @@ player.extractors.register(SpotifyExtractor, {
     client_secret: process.env.SPOTIFY_CLIENT_SECRET,
     // Bạn có thể thêm các tùy chọn khác nếu cần, ví dụ: concurrency
 });
+const ffmpegPath = require('ffmpeg-static');
+console.log("✅ FFmpeg static path:", ffmpegPath);
 // --- Xử lý các sự kiện của Discord Player ---
 player.on('error', (queue, error) => {
     console.error(`Lỗi trong hàng đợi của ${queue?.guild?.name || 'unknown'}: ${error.message}`);
