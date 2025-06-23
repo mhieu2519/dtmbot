@@ -34,9 +34,9 @@ const player = new Player(bot,{
     ytdlOptions: {
       quality: 'highestaudio',
      filter: 'audioonly',
-        highWaterMark: 1 << 25 // 32MB
+        highWaterMark: 1 << 24 // 16Mb
     },
-   skipFFmpeg: true, // Báo cho discord-player biết bạn sẽ cung cấp FFmpeg
+  //skipFFmpeg: true, // Báo cho discord-player biết bạn sẽ cung cấp FFmpeg
     connectionTimeout: 60000 // Tăng thời gian chờ kết nối (ví dụ: 60 giây)
 }
 );
