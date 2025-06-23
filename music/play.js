@@ -30,7 +30,7 @@ async function handlePlay(interaction, player) {
             client: interaction.guild.members.me,
         },
         leaveOnEmpty: true,
-        leaveOnEmptyCooldown: 60000,
+        //leaveOnEmptyCooldown: 60000,
         leaveOnStop: true,
         volume: 80,
     });
