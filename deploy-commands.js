@@ -30,26 +30,6 @@ const commands = [
   new SlashCommandBuilder()
     .setName('shop')
     .setDescription('🛒 Mở giao diện shop để mua hoặc bán vật phẩm'),
-new SlashCommandBuilder()
-  .setName("music")
-  .setDescription("🎶 Điều khiển phát nhạc")
-  .addSubcommand(sub =>
-    sub.setName("play")
-      .setDescription("Phát nhạc từ tên hoặc link")
-      .addStringOption(opt =>
-        opt.setName("query")
-          .setDescription("Tên hoặc link bài hát")
-          .setRequired(true)))
-  .addSubcommand(sub =>
-    sub.setName("stop")
-      .setDescription("Dừng phát nhạc và rời phòng"))
-  .addSubcommand(sub =>
-    sub.setName("next")
-      .setDescription("Chuyển sang bài tiếp theo"))
-  .addSubcommand(sub =>
-    sub.setName("list")
-      .setDescription("Xem danh sách hàng đợi hiện tại"))
-    
 
   ].map((command) => command.toJSON());
 
