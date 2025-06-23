@@ -56,6 +56,18 @@ player.extractors.register(SpotifyExtractor, {
 
 console.log("✅ FFmpeg static path:", ffmpegPath);
 // --- Xử lý các sự kiện của Discord Player ---
+player.events.on('error', (queue, error) => {
+  console.error(`❌ [error] Lỗi phát nhạc trong guild ${queue.guild.name}:`, error);
+});
+
+player.events.on('playerError', (queue, error) => {
+  console.error(`❌ [playerError] Lỗi trình phát trong guild ${queue.guild.name}:`, error);
+});
+
+player.events.on('connectionError', (queue, error) => {
+  console.error(`❌ [connectionError] Kết nối voice lỗi ở ${queue.guild.name}:`, error);
+});
+
 player.on('error', (queue, error) => {
     console.error(`Lỗi trong hàng đợi của ${queue?.guild?.name || 'unknown'}: ${error.message}`);
     if (queue?.metadata?.channel) {
