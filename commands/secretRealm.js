@@ -2,7 +2,7 @@ const UserXP = require("../models/UserXP");
 const { getRandom, addXP } = require("../utils/xpSystem");
 const { addItemToInventory } = require("../utils/inventory");
  const hiddenItem = require("../shops/hiddenItems");
-const BuffClasses = require('./buffs'); // ánh xạ effect -> class
+//const BuffClasses = require('./buffs'); // ánh xạ effect -> class
 
 
 //const COOLDOWN = 60 * 60 * 1000; // 1 hour cooldown
@@ -92,13 +92,13 @@ async function handleSecretRealm(interaction) {
       { text: "gặp được truyền thừa ẩn giấu", weight: 4 }, 
   ];
   // Thêm buff hook
-  runBuffHook(user, 'onScenarioWeightModify', scenarios);
+ // runBuffHook(user, 'onScenarioWeightModify', scenarios);
   // Chọn ngẫu nhiên một kịch bản dựa trên trọng số
   const chosen = chonKichBanNgauNhien(scenarios);
  // console.log("Kết quả:", chosen);
 
   let result = `🔮 Đạo hữu tiến vào bí cảnh và ${chosen}...\n`;
-
+/*
   const buffState = {
     winChance: 0,
     stoneBonus: 0,
@@ -107,17 +107,17 @@ async function handleSecretRealm(interaction) {
     encounter: chosen
   };
   runBuffHook(user, 'onBattleCheck', buffState);
-
+*/
   switch (chosen) {
  
     case "gặp yêu thú": {
-      const win = Math.random() <  (0.5 + buffState.winChance);
+      const win = Math.random() <  (0.5 /*+ buffState.winChance*/);
       if (win) {
-        const reward = getRandom(40,150)+buffState.stoneBonus; //
+        const reward = getRandom(40,150);//+buffState.stoneBonus; //
         user.stone += reward;
         result += `🗡️ Chiến thắng yêu thú! Nhận ${reward} linh thạch.`;
       } else {
-        const xpLost = getRandom(40,100)+  buffState.xpBonus;
+        const xpLost = getRandom(40,100) ;//+  buffState.xpBonus;
               if (!buffState.preventXPLoss) {
           user.xp = Math.max(0, user.xp - xpLost);
         }
@@ -126,35 +126,35 @@ async function handleSecretRealm(interaction) {
       break;
     }
     case "gặp cường giả": {
-      const xpGain = getRandom(50, 150)+ buffState.xpBonus;
+      const xpGain = getRandom(50, 150); //+ buffState.xpBonus;
       await addXP(userId, guildId, xpGain, interaction);
       result += `🧙 Cường giả chỉ điểm, nhận ${xpGain} XP.`;
       break;
     }
     case "cuốc trúng mỏ linh thạch": {
-      const stones = getRandom(5, 150)+ buffState.stoneBonus;
+      const stones = getRandom(5, 150); //+ buffState.stoneBonus;
       user.stone += stones;
       result += `⛏️ Khai thác mỏ linh thạch, nhận ${stones} linh thạch.`;
       break;
     }
     case "mở được kho báu bí cảnh": {
-      const xp = getRandom(100, 150)  + buffState.xpBonus;
-      const stones = getRandom(100, 150)+ buffState.stoneBonus;
+      const xp = getRandom(100, 150) ;// + buffState.xpBonus;
+      const stones = getRandom(100, 150); //+ buffState.stoneBonus;
       user.stone += stones;
       await addXP(userId, guildId, xp, interaction);
       result += `🎁 Kho báu chứa ${xp} XP và ${stones} linh thạch!`;
       break;
     }
     case "gặp đỉnh cấp yêu thú": {
-      const win = Math.random() < (0.35 + buffState.winChance); 
+      const win = Math.random() < (0.35 /* + buffState.winChance*/); 
       if (win) {
-        const xpGain = getRandom(300, 500)+buffState.xpBonus;
-        const stones = getRandom(100, 300)+buffState.stoneBonus;
+        const xpGain = getRandom(300, 500) ;//+buffState.xpBonus;
+        const stones = getRandom(100, 300);//+buffState.stoneBonus;
          user.stone += stones;
         await addXP(userId, guildId, xpGain, interaction);
         result += `🐉 Chiến thắng đỉnh cấp yêu thú! Nhận ${xpGain} XP và ${stones}💎.`;
       } else {
-        const xpLost = getRandom(150, 400)  + buffState.xpBonus;
+        const xpLost = getRandom(150, 400) ; // + buffState.xpBonus;
         user.xp = Math.max(0, user.xp - xpLost); // đảm bảo không âm XP 
         result += `🪫 Đạo hữu đã thua... Mất ${xpLost} XP.`;
       }
@@ -199,7 +199,7 @@ async function handleSecretRealm(interaction) {
     }
 
   }
-  runBuffHook(user, 'onRewardCalculated', buffState);
+ // runBuffHook(user, 'onRewardCalculated', buffState);
   await user.save();
   return result;
 }
