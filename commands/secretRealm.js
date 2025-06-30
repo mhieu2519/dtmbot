@@ -118,9 +118,9 @@ async function handleSecretRealm(interaction) {
         result += `🗡️ Chiến thắng yêu thú! Nhận ${reward} linh thạch.`;
       } else {
         const xpLost = getRandom(40,100) ;//+  buffState.xpBonus;
-              if (!buffState.preventXPLoss) {
+              //if (!buffState.preventXPLoss) {
           user.xp = Math.max(0, user.xp - xpLost);
-        }
+       // }
         result += `🛡️ Thất bại... Mất ${xpLost} XP.`;
       }
       break;
