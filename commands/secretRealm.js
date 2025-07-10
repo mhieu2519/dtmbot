@@ -1,13 +1,14 @@
 const UserXP = require("../models/UserXP");
 const { getRandom, addXP } = require("../utils/xpSystem");
 const { addItemToInventory } = require("../utils/inventory");
- const hiddenItem = require("../shops/hiddenItems");
+const hiddenItem = require("../shops/hiddenItems");
 //const BuffClasses = require('./buffs'); // ánh xạ effect -> class
 
 
 //const COOLDOWN = 60 * 60 * 1000; // 1 hour cooldown
-const COOLDOWN =  30 * 1000; 
-const ENTRY_FEE = 50;
+// Thay đổi cooldown thành 45 seconds
+const COOLDOWN = 45 * 1000;
+const ENTRY_FEE = 100;
 
 function chooseWeighted(scenarios) {
   const totalWeight = scenarios.reduce((sum, item) => sum + item.weight, 0);
@@ -17,7 +18,7 @@ function chooseWeighted(scenarios) {
   for (const item of scenarios) {
     cumulative += item.weight;
     if (rand < cumulative) {
-      return item; 
+      return item;
     }
   }
 }
@@ -69,8 +70,8 @@ async function handleSecretRealm(interaction) {
 
   // Cooldown
   if (user.lastSecretRealmTime && now - user.lastSecretRealmTime < COOLDOWN) {
-    const remaining = Math.ceil((COOLDOWN - (now - user.lastSecretRealmTime)) / 60000);
-    return `⏳ Đạo hữu cần nghỉ ngơi. Quay lại sau ${remaining} phút nữa.`;
+    const remaining = Math.ceil((COOLDOWN - (now - user.lastSecretRealmTime)) / 1000); //
+    return `⏳ Đạo hữu cần nghỉ ngơi. Quay lại sau ${remaining} giây nữa.`;
   }
 
   // Không đủ phí
@@ -82,96 +83,112 @@ async function handleSecretRealm(interaction) {
   user.lastSecretRealmTime = now;
 
   const scenarios = [
-      { text: "gặp yêu thú", weight: 65 },
-      { text: "gặp cường giả", weight: 48 },
-      { text: "kích hoạt trận pháp ẩn", weight: 1 },
-      { text: "cuốc trúng mỏ linh thạch", weight: 40 },
-      { text: "mở được kho báu bí cảnh", weight: 20 },
-      { text: "gặp đỉnh cấp yêu thú", weight: 20 },
-      { text: "tìm thấy vật phẩm ẩn giấu", weight: 2}, 
-      { text: "gặp được truyền thừa ẩn giấu", weight: 4 }, 
+    { text: "gặp yêu thú", weight: 65 },
+    { text: "gặp cường giả", weight: 48 },
+    { text: "kích hoạt trận pháp ẩn", weight: 1 },
+    { text: "cuốc trúng mỏ linh thạch", weight: 40 },
+    { text: "mở được kho báu bí cảnh", weight: 20 },
+    { text: "gặp đỉnh cấp yêu thú", weight: 20 },
+    { text: "tìm thấy vật phẩm ẩn giấu", weight: 2 },
+    { text: "gặp được truyền thừa ẩn giấu", weight: 4 },
+    { text: "gặp cường giả Hắc Ảnh Môn", weight: 10 }
   ];
   // Thêm buff hook
- // runBuffHook(user, 'onScenarioWeightModify', scenarios);
+  // runBuffHook(user, 'onScenarioWeightModify', scenarios);
   // Chọn ngẫu nhiên một kịch bản dựa trên trọng số
   const chosen = chonKichBanNgauNhien(scenarios);
- // console.log("Kết quả:", chosen);
+  // console.log("Kết quả:", chosen);
 
   let result = `🔮 Đạo hữu tiến vào bí cảnh và ${chosen}...\n`;
-/*
-  const buffState = {
-    winChance: 0,
-    stoneBonus: 0,
-    xpBonus: 0,
-    preventXPLoss: false,
-    encounter: chosen
-  };
-  runBuffHook(user, 'onBattleCheck', buffState);
-*/
+  /*
+    const buffState = {
+      winChance: 0,
+      stoneBonus: 0,
+      xpBonus: 0,
+      preventXPLoss: false,
+      encounter: chosen
+    };
+    runBuffHook(user, 'onBattleCheck', buffState);
+  */
   switch (chosen) {
- 
+
     case "gặp yêu thú": {
-      const win = Math.random() <  (0.5 /*+ buffState.winChance*/);
+      const win = Math.random() < (0.5 /*+ buffState.winChance*/);
       if (win) {
-        const reward = getRandom(40,150);//+buffState.stoneBonus; //
+        const reward = getRandom(60, 150);//+buffState.stoneBonus; //
         user.stone += reward;
         result += `🗡️ Chiến thắng yêu thú! Nhận ${reward} linh thạch.`;
       } else {
-        const xpLost = getRandom(40,100) ;//+  buffState.xpBonus;
-              //if (!buffState.preventXPLoss) {
-          user.xp = Math.max(0, user.xp - xpLost);
-       // }
+        const xpLost = getRandom(80, 160);//+  buffState.xpBonus;
+        //if (!buffState.preventXPLoss) {
+        user.xp = Math.max(0, user.xp - xpLost);
+        // }
         result += `🛡️ Thất bại... Mất ${xpLost} XP.`;
       }
       break;
     }
     case "gặp cường giả": {
-      const xpGain = getRandom(50, 150); //+ buffState.xpBonus;
+      const xpGain = getRandom(50, 250); //+ buffState.xpBonus;
       await addXP(userId, guildId, xpGain, interaction);
       result += `🧙 Cường giả chỉ điểm, nhận ${xpGain} XP.`;
       break;
     }
     case "cuốc trúng mỏ linh thạch": {
-      const stones = getRandom(5, 150); //+ buffState.stoneBonus;
+      const stones = getRandom(5, 250); //+ buffState.stoneBonus;
       user.stone += stones;
       result += `⛏️ Khai thác mỏ linh thạch, nhận ${stones} linh thạch.`;
       break;
     }
     case "mở được kho báu bí cảnh": {
-      const xp = getRandom(100, 150) ;// + buffState.xpBonus;
-      const stones = getRandom(100, 150); //+ buffState.stoneBonus;
+      const xp = getRandom(100, 250);// + buffState.xpBonus;
+      const stones = getRandom(100, 250); //+ buffState.stoneBonus;
       user.stone += stones;
       await addXP(userId, guildId, xp, interaction);
       result += `🎁 Kho báu chứa ${xp} XP và ${stones} linh thạch!`;
       break;
     }
     case "gặp đỉnh cấp yêu thú": {
-      const win = Math.random() < (0.35 /* + buffState.winChance*/); 
+      const win = Math.random() < (0.35 /* + buffState.winChance*/);
       if (win) {
-        const xpGain = getRandom(300, 500) ;//+buffState.xpBonus;
-        const stones = getRandom(100, 300);//+buffState.stoneBonus;
-         user.stone += stones;
+        const xpGain = getRandom(300, 550);//+buffState.xpBonus;
+        const stones = getRandom(100, 400);//+buffState.stoneBonus;
+        user.stone += stones;
         await addXP(userId, guildId, xpGain, interaction);
         result += `🐉 Chiến thắng đỉnh cấp yêu thú! Nhận ${xpGain} XP và ${stones}💎.`;
       } else {
-        const xpLost = getRandom(150, 400) ; // + buffState.xpBonus;
+        const xpLost = getRandom(150, 400); // + buffState.xpBonus;
         user.xp = Math.max(0, user.xp - xpLost); // đảm bảo không âm XP 
         result += `🪫 Đạo hữu đã thua... Mất ${xpLost} XP.`;
       }
       break;
     }
     case "kích hoạt trận pháp ẩn": {
-         const win = Math.random() < 0.3; 
+      const win = Math.random() < 0.3;
       if (win) {
         const stones = getRandom(300, 500);
-         user.stone += stones;
+        user.stone += stones;
         result += `🧭 May mắn thoát khỏi trận pháp ẩn! Nhận ${stones}💎.`;
       } else {
-        const xpLost = getRandom(500, 1000);
+        const xpLost = getRandom(800, 1200);
         user.xp = Math.max(0, user.xp - xpLost); // đảm bảo không âm XP 
         result += `🧮 Đạo hữu không thể thoát ra... Tự động trừ ${xpLost} XP.`;
       }
 
+      break;
+    }
+    case "gặp cường giả Hắc Ảnh Môn": {
+      const win = Math.random() < 0.2;
+      if (win) {
+        const xpGain = getRandom(300, 500);
+        await addXP(userId, guildId, xpGain, interaction);
+        result += `🖤 Chiến thắng cường giả Hắc Ảnh Môn! Nhận ${xpGain} XP.`;
+      } else {
+        const xpLost = getRandom(200, 300);
+        const stones = getRandom(500, 700);
+        user.stone = Math.max(0, user.stone - stones); // đảm bảo không âm stone
+        user.xp = Math.max(0, user.xp - xpLost); // đảm bảo không âm XP 
+        result += `💣 Thất bại trước cường giả Hắc Ảnh Môn... Mất ${xpLost} XP và ${stones}💎 để chạy thoát...`;
+      }
       break;
     }
     case "gặp được truyền thừa ẩn giấu": {
@@ -192,14 +209,14 @@ async function handleSecretRealm(interaction) {
         description: chosen.description
       };
       await addItemToInventory(user, item);
-      
+
       result += `⚡ Tìm thấy vật phẩm ẩn giấu: **${item.name}**. \n ${item.description}`;
 
       break;
     }
 
   }
- // runBuffHook(user, 'onRewardCalculated', buffState);
+  // runBuffHook(user, 'onRewardCalculated', buffState);
   await user.save();
   return result;
 }
