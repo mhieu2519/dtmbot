@@ -8,7 +8,7 @@ const hiddenItem = require("../shops/hiddenItems");
 //const COOLDOWN = 60 * 60 * 1000; // 1 hour cooldown
 // Thay đổi cooldown thành 45 seconds
 const COOLDOWN = 45 * 1000;
-const ENTRY_FEE = 100;
+//const ENTRY_FEE = 100; // phí vào bí cảnh
 
 function chooseWeighted(scenarios) {
   const totalWeight = scenarios.reduce((sum, item) => sum + item.weight, 0);
@@ -74,6 +74,8 @@ async function handleSecretRealm(interaction) {
     return `⏳ Đạo hữu cần nghỉ ngơi. Quay lại sau ${remaining} giây nữa.`;
   }
 
+  // Phí vào bí cảnh
+  const ENTRY_FEE = getRandom(50, 100);
   // Không đủ phí
   if (user.stone < ENTRY_FEE) {
     return `💎 Đạo hữu không đủ ${ENTRY_FEE} linh thạch để vào bí cảnh!`;
@@ -181,13 +183,13 @@ async function handleSecretRealm(interaction) {
       if (win) {
         const xpGain = getRandom(300, 500);
         await addXP(userId, guildId, xpGain, interaction);
-        result += `🖤 Chiến thắng cường giả Hắc Ảnh Môn! Nhận ${xpGain} XP.`;
+        result += `⚔️ Chiến thắng cường giả Hắc Ảnh Môn! Nhận ${xpGain} XP.`;
       } else {
         const xpLost = getRandom(200, 300);
         const stones = getRandom(500, 700);
         user.stone = Math.max(0, user.stone - stones); // đảm bảo không âm stone
         user.xp = Math.max(0, user.xp - xpLost); // đảm bảo không âm XP 
-        result += `💣 Thất bại trước cường giả Hắc Ảnh Môn... Mất ${xpLost} XP và ${stones}💎 để chạy thoát...`;
+        result += `🎭 Thất bại trước cường giả Hắc Ảnh Môn... Mất ${xpLost} XP và ${stones}💎 để chạy thoát...`;
       }
       break;
     }
