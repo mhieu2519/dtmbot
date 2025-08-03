@@ -10,7 +10,7 @@ const userXPSchema = new mongoose.Schema({
   lastDaily: { type: Date, default: null }, // ⬅️ Thêm dòng này
   lastSecretRealmTime: { type: Date, default: null }, // ⬅️ Thêm dòng này
   lastTransfer: { type: Date, default: null },
-    // Inventory chi tiết
+  // Inventory chi tiết
   inventory: [
     {
       itemId: String,         // ID duy nhất của vật phẩm
@@ -21,15 +21,15 @@ const userXPSchema = new mongoose.Schema({
       obtainedAt: { type: Date, default: Date.now } // Ngày nhận
     }
   ],
-// ✅ Thêm phần buff ở đây
-  buffs: {
-    type: Map,
-    of: new mongoose.Schema({
-      value: Number,     // hệ số nhân, tỉ lệ cộng,...
-      uses: Number       // số lần sử dụng còn lại
-    }, { _id: false }),
-    default: {}
-  }
+  // ✅ Thêm phần buff ở đây
+  // ✅ Lưu danh sách buff đang hoạt động
+  activeBuffs: [
+    {
+      effect: String,
+      value: Number,
+      duration: Number
+    }
+  ]
 
 });
 

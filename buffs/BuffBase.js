@@ -7,16 +7,16 @@ class BuffBase {
   }
 
   tickDuration() {
-    this.duration -= 1;
+    this.duration = Math.max(0, this.duration - 1);
   }
 
   isExpired() {
     return this.duration <= 0;
   }
 
-  onBattleCheck(state) {}
-  onRewardCalculated(state) {}
-  onScenarioWeightModify(scenarios) {}
+  onBattleCheck(state) { }
+  onRewardCalculated(state) { }
+  onScenarioWeightModify(scenarios) { }
 }
 
 module.exports = BuffBase;

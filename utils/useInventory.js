@@ -1,60 +1,37 @@
-const { 
-  SlashCommandBuilder, 
-  MessageFlags, 
-  ActionRowBuilder, 
-  ButtonBuilder, 
-  ButtonStyle, 
-  StringSelectMenuBuilder 
+// utils/useInventory.js
+const {
+  MessageFlags,
+  ActionRowBuilder,
+  StringSelectMenuBuilder
 } = require('discord.js');
 
 const usableItems = require('../shops/usableItems');
 const UserXP = require('../models/UserXP');
-const { removeItemFromInventory} = require('../utils/inventory'); 
-const { addXP} = require('../utils/xpSystem');
+const { removeItemFromInventory } = require('./inventory');
+const { addXP } = require('./xpSystem');
+const BuffClasses = require('../buffs'); // mapping buffName => class
 
+// 🎯 Thêm hoặc cập nhật buff (stack duration, chọn value lớn nhất)
+async function addBuff(user, effect, value, duration) {
+  user.activeBuffs = user.activeBuffs || [];
 
-// xử lí hiệu ứng buff dùng đồ
-
-async function addBuff(user, buffName, value, uses) {
-  if (!user.buffs) user.buffs = {};
-
-  if (user.buffs[buffName]) {
-    user.buffs[buffName].uses += uses;
-    user.buffs[buffName].value = Math.max(user.buffs[buffName].value, value); // giữ giá trị lớn hơn
+  const existing = user.activeBuffs.find(b => b.effect === effect);
+  if (existing) {
+    existing.duration += duration;
+    existing.value = Math.max(existing.value, value);
   } else {
-    user.buffs[buffName] = { value, uses };
+    user.activeBuffs.push({ effect, value, duration });
   }
 
   await user.save();
 }
-async function consumeBuff(user, buffName, uses = 1) {
-  if (!user.buffs || !user.buffs[buffName]) return null;
 
-  user.buffs[buffName].uses -= uses;
-
-  const value = user.buffs[buffName].value;
-
-  if (user.buffs[buffName].uses <= 0) {
-    delete user.buffs[buffName];
-  }
-
-  await user.save();
-
-  return value;
-}
-function getBuffValue(user, buffName) {
-  if (!user.buffs || !user.buffs[buffName]) return null;
-  return user.buffs[buffName];
-}
-
-
-
-// xử lí chọn vật phẩm
+// 🩸 Giao diện chọn vật phẩm để dùng
 async function handleUseItem(interaction) {
-
   const userId = interaction.user.id;
   const guildId = interaction.guild.id;
   const user = await UserXP.findOne({ userId, guildId });
+
   const usableInInventory = user.inventory.filter(item =>
     usableItems.find(u => u.id === item.itemId)
   );
@@ -66,13 +43,13 @@ async function handleUseItem(interaction) {
     });
   }
 
-    const options = usableInInventory.map(item => {
-        const info = usableItems.find(i => i.id === item.itemId);
-        return {
-        label: `${info.name} x${item.quantity}`,
-        description: info.description,
-        value: `use::${item.itemId}`
-        };
+  const options = usableInInventory.map(item => {
+    const info = usableItems.find(i => i.id === item.itemId);
+    return {
+      label: `${info.name} x${item.quantity}`,
+      description: info.description,
+      value: `use::${item.itemId}`
+    };
   });
 
   const row = new ActionRowBuilder().addComponents(
@@ -89,21 +66,17 @@ async function handleUseItem(interaction) {
   });
 }
 
-// sau khi chọn vật phẩm + số lượng
+// 🧮 Chọn số lượng
 async function handleUseItemSelection(interaction) {
-
   const userId = interaction.user.id;
   const guildId = interaction.guild.id;
   const user = await UserXP.findOne({ userId, guildId });
 
   const [_, itemId] = interaction.values[0].split('::');
   const item = usableItems.find(i => i.id === itemId);
- 
-// Tìm vật phẩm trong túi đồ
   const invItem = user.inventory.find(i => i.itemId === itemId);
- // Giới hạn chọn từ 1 đến số lượng đang có (tối đa 25 cho menu Discord)
-  const maxQuantity = Math.min(invItem.quantity, 25);
 
+  const maxQuantity = Math.min(invItem.quantity, 25);
 
   const row = new ActionRowBuilder().addComponents(
     new StringSelectMenuBuilder()
@@ -112,7 +85,7 @@ async function handleUseItemSelection(interaction) {
       .addOptions(
         Array.from({ length: maxQuantity }, (_, i) => ({
           label: `${i + 1}`,
-          value:  `use::${itemId}::${i + 1}`
+          value: `use::${itemId}::${i + 1}`
         }))
       )
   );
@@ -123,50 +96,81 @@ async function handleUseItemSelection(interaction) {
   });
 }
 
-// thực hiện chức năng đã định sẵn
+// ✅ Thực hiện khi người dùng xác nhận sử dụng
 async function handleUseItemConfirm(interaction, itemId, quantity) {
-
   const userId = interaction.user.id;
   const guildId = interaction.guild.id;
   const user = await UserXP.findOne({ userId, guildId });
-
   const itemInfo = usableItems.find(i => i.id === itemId);
 
-  // Trừ vật phẩm khỏi túi
+  if (!itemInfo) {
+    return interaction.reply({
+      content: `⚠️ Không tìm thấy vật phẩm.`,
+      flags: MessageFlags.Ephemeral
+    });
+  }
+
+  // Trừ khỏi túi đồ
   await removeItemFromInventory(user, itemId, quantity);
 
-  // Gọi hàm theo chức năng
-  switch (itemInfo.effect) {
-    case 'gainExp':
-      await addXP(userId, guildId, itemInfo.amount * quantity, interaction.client);
-      break;
-    case 'gainStone':
-     // await addStone(user, itemInfo.amount * quantity);
-      break;
-    // Mở rộng thêm ở đây
+  let effectResultText = '';
 
-
-    
-  }
-  const userMember = await interaction.guild.members.fetch(userId);
-  const userDisplayName = userMember.displayName;
-  const levelUpChannel = await interaction.client.channels.fetch(process.env.LEVELUP_CHANNEL_ID);
-  if (levelUpChannel) {
-    await levelUpChannel.send({
-        content: `✅ Đạo hữu ${userDisplayName} đã sử dụng **${itemInfo.name}** x${quantity} thành công!\n` +
-                 `💎 Nhận ${itemInfo.amount * quantity} exp`
-    });
-    } else {
-      console.warn("Không tìm thấy kênh thông báo level up!");
+  if (typeof itemInfo.effect === 'object' && itemInfo.effect.type) {
+    // ⚡ Là buff
+    const BuffClass = BuffClasses[itemInfo.effect.type];
+    if (!BuffClass) {
+      return interaction.reply({
+        content: `⚠️ Buff '${itemInfo.effect.type}' chưa được hỗ trợ.`,
+        flags: MessageFlags.Ephemeral
+      });
     }
 
+    // Áp dụng buff
+    await addBuff(user, itemInfo.effect.type, itemInfo.effect.value, itemInfo.effect.duration * quantity);
+
+    const tempBuff = new BuffClass(itemInfo.effect);
+    effectResultText = `🧪 Nhận buff **${tempBuff.name}**: ${tempBuff.description || `+${tempBuff.value}`}.\n` +
+      `⏳ Kéo dài ${itemInfo.effect.duration * quantity} lượt.`;
+  } else {
+    // ⭐ Là item thường
+    switch (itemInfo.effect) {
+      case 'gainExp':
+        const xp = itemInfo.amount * quantity;
+        await addXP(userId, guildId, xp, interaction.client);
+        effectResultText = `✨ Nhận ${xp} XP.`;
+        break;
+
+      case 'gainStone':
+        const stones = itemInfo.amount * quantity;
+        user.stone = (user.stone || 0) + stones;
+        await user.save();
+        effectResultText = `💎 Nhận ${stones} linh thạch.`;
+        break;
+
+      default:
+        effectResultText = `⚠️ Hiệu ứng chưa hỗ trợ: ${itemInfo.effect}`;
+        break;
+    }
+  }
+
+  // Thông báo ra channel (nếu có)
+  try {
+    const member = await interaction.guild.members.fetch(userId);
+    const displayName = member.displayName;
+    const channel = await interaction.client.channels.fetch(process.env.LEVELUP_CHANNEL_ID);
+
+    if (channel) {
+      await channel.send(`✅ Đạo hữu **${displayName}** đã sử dụng **${itemInfo.name} x${quantity}**.\n${effectResultText}`);
+    }
+  } catch (err) {
+    console.warn('Không gửi được thông báo sử dụng vật phẩm:', err.message);
+  }
+
   return interaction.update({
-    content: `✅ Đạo hữu đã sử dụng thành công **${itemInfo.name} x${quantity}**.\n` +
-             `🎁 Tác dụng: ${itemInfo.effect.replace('_', ' ')} +${itemInfo.amount * quantity}`,
+    content: `✅ Đạo hữu đã sử dụng **${itemInfo.name} x${quantity}**.\n${effectResultText}`,
     components: []
   });
 }
-
 
 module.exports = {
   handleUseItem,

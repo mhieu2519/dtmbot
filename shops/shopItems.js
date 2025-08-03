@@ -27,5 +27,15 @@ module.exports = [
     sellPrice: 400,
     rarity: 'rare',
     maxQuantity: 2,
+  },
+  {
+    id: 'luckyCharm',
+    name: 'Bùa May Mắn 🍀',
+    description: 'Tăng 25% tỉ lệ thắng yêu thú trong 3 lượt',
+    price: 120,
+    sellPrice: 100,
+    rarity: 'uncommon',
+    maxQuantity: 3
   }
+
 ];

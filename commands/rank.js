@@ -1,7 +1,7 @@
 const { createCanvas, loadImage, registerFont } = require("canvas");
 const UserXP = require("../models/UserXP");
 const { getXPForNextLevel, getUserRank } = require("../utils/xpSystem");
-const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle,  MessageFlags  } = require("discord.js");
+const { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, MessageFlags } = require("discord.js");
 
 const path = require("path");
 registerFont(path.join(__dirname, "../assets/fonts/Allura-Regular.ttf"), { family: "Allura" });
@@ -11,27 +11,27 @@ registerFont(path.join(__dirname, "../assets/fonts/Qwigley-Regular.ttf"), { fami
 registerFont(path.join(__dirname, "../assets/fonts/comici.ttf"), { family: "Comic Sans MS" });
 registerFont(path.join(__dirname, "../assets/fonts/Updock-Regular.ttf"), { family: "Updock" });
 function getBackgroundByLevel(level) {
-    if (level <3) return "./assets/backgrounds/level_0.png";
-    if (level >= 3 && level < 5) return "./assets/backgrounds/level_1_5.png";
-    if (level >= 5 && level < 15) return "./assets/backgrounds/level_5_10.png";
-    if (level >= 15 && level < 50) return "./assets/backgrounds/level_10_50.png";
-    if (level >= 50 && level < 100) return "./assets/backgrounds/level_50_100.png";
-    if (level >= 100 && level < 300) return "./assets/backgrounds/level_100_300.png";
-    return "./assets/backgrounds/level_300_plus.png";
+  if (level < 3) return "./assets/backgrounds/level_0.png";
+  if (level >= 3 && level < 5) return "./assets/backgrounds/level_1_5.png";
+  if (level >= 5 && level < 15) return "./assets/backgrounds/level_5_10.png";
+  if (level >= 15 && level < 50) return "./assets/backgrounds/level_10_50.png";
+  if (level >= 50 && level < 100) return "./assets/backgrounds/level_50_100.png";
+  if (level >= 100 && level < 300) return "./assets/backgrounds/level_100_300.png";
+  return "./assets/backgrounds/level_300_plus.png";
 }
 function getTitle(level) {
   if (level < 5) return "Phàm Nhân";
-  if (level < 15) return `Luyện Khí tầng ${level -4}`;
+  if (level < 15) return `Luyện Khí tầng ${level - 4}`;
   if (level < 26) return "Trúc Cơ sơ kỳ";
   if (level < 37) return "Trúc Cơ trung kỳ";
   if (level < 50) return "Trúc Cơ hậu kỳ";
   if (level < 66) return "Kết Đan sơ kỳ";
-  if (level < 82) return "Kết Đan trung kỳ";  
+  if (level < 82) return "Kết Đan trung kỳ";
   if (level < 100) return "Kết Đan hậu kỳ";
   if (level < 150) return "Nguyên Anh sơ kỳ";
   if (level < 200) return "Nguyên Anh trung kỳ";
   if (level < 300) return "Nguyên Anh hậu kỳ";
-      return "Hoá Thần";
+  return "Hoá Thần";
 }
 function getGlowColor(level) {
   if (level < 5) return "#c0c0c0";          // Xám nhẹ bạc
@@ -49,7 +49,7 @@ function setFont(level) {
   if (level < 100) return "40px MeowScript";
   if (level < 300) return "40px Updock";
   return "40px Allura";
-} 
+}
 
 // Hàm hỗ trợ vẽ thanh bo góc
 function drawRoundedRect(ctx, x, y, width, height, radius) {
@@ -110,12 +110,12 @@ async function showRank(interaction) {
   const diamond = await loadImage("./assets/icons/diamond.png");
 
   //const member = interaction.member;
-/*
-  const displayName= interaction.member?.nickname ||
-    interaction.member?.user?.globalName ||
-    interaction.member?.user?.username ||
-    "Ẩn Danh";
-*/
+  /*
+    const displayName= interaction.member?.nickname ||
+      interaction.member?.user?.globalName ||
+      interaction.member?.user?.username ||
+      "Ẩn Danh";
+  */
   const displayName = interaction.member.displayName;
   // 🖼️ Nền gradient
   const gradient = ctx.createLinearGradient(0, 0, 800, 250);
@@ -124,11 +124,11 @@ async function showRank(interaction) {
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-   // Vẽ ảnh nền
+  // Vẽ ảnh nền
   const backgroundPath = getBackgroundByLevel(userData.level);
   const background = await loadImage(backgroundPath);
   ctx.drawImage(background, 0, 0, canvas.width, canvas.height);
-//console.log(userData.level, backgroundPath);
+  //console.log(userData.level, backgroundPath);
 
   // Phủ lớp mờ tối để dễ nhìn chữ
   ctx.fillStyle = "rgba(0, 0, 0, 0.4)";
@@ -157,13 +157,13 @@ async function showRank(interaction) {
   // ✍️ Text: tên
   ctx.shadowColor = getGlowColor(userData.level);
   ctx.shadowBlur = 5;
-  ctx.fillStyle = "#fff"; 
+  ctx.fillStyle = "#fff";
   ctx.font = setFont(userData.level);
   //ctx.fillText(`${interaction.member?.nickname || interaction.user.username}`, 250, 70);
   ctx.fillText(displayName, 250, 70);
 
   // Thông tin level/xp/rank
-  ctx.fillStyle = "#fff"; 
+  ctx.fillStyle = "#fff";
   ctx.shadowBlur = 20;
   ctx.font = "Italic 24px Comic Sans MS";
   ctx.fillText(`Level: ${userData.level}`, 250, 110);
@@ -188,10 +188,10 @@ async function showRank(interaction) {
   const barY = 210;
   const barWidth = 500;
   const barHeight = 20;
-/*// nền
-  ctx.fillStyle = "#333";
-  drawRoundedRect(ctx, barX, barY, barWidth, barHeight, 10); // 10 là độ bo góc
-*/
+  /*// nền
+    ctx.fillStyle = "#333";
+    drawRoundedRect(ctx, barX, barY, barWidth, barHeight, 10); // 10 là độ bo góc
+  */
   // Vẽ phần tiến độ XP
   ctx.fillStyle = "#34a853"; // màu thanh xp
   drawRoundedRect(ctx, barX, barY, barWidth * percent, barHeight, 10); // radius = 10
@@ -203,7 +203,7 @@ async function showRank(interaction) {
 
   const buffer = canvas.toBuffer("image/png");
 
- return buffer;
+  return buffer;
 }
 
 async function createInventoryImage(displayName, stone, inventory, page = 1, itemsPerPage = 3) {
@@ -219,7 +219,7 @@ async function createInventoryImage(displayName, stone, inventory, page = 1, ite
 
 
   ctx.font = '28px Updock';
-  ctx.fillStyle = '#1A2A4F'; 
+  ctx.fillStyle = '#1A2A4F';
   ctx.fillText(`💰 Túi trữ vật – Trang ${page}`, 40, 50);
 
   const startIndex = (page - 1) * itemsPerPage;
@@ -236,14 +236,14 @@ async function createInventoryImage(displayName, stone, inventory, page = 1, ite
     ctx.font = '28px Updock';
   });
 
-      // Hiển thị tên và linh thạch
+  // Hiển thị tên và linh thạch
   ctx.font = '26px Updock';
   ctx.fillStyle = '#ffd700';
   ctx.drawImage(diamond, 700, 45, 24, 24);
-   ctx.fillText(`${stone}`, 730, 60);
+  ctx.fillText(`${stone}`, 730, 60);
   ctx.textAlign = "right";
   ctx.fillText(`${displayName}`, 750, 35);
- 
+
 
 
   return canvas.toBuffer('image/png');
@@ -283,6 +283,12 @@ function createInventoryButtons(currentPage, totalPages) {
       .setLabel('🩸 Sử dụng vật phẩm')
       .setStyle(ButtonStyle.Secondary)
   );
+  row.addComponents(
+    new ButtonBuilder()
+      .setCustomId('check_buffs')
+      .setLabel('🧪 Buff hiện tại')
+      .setStyle(ButtonStyle.Success)
+  );
 
   return [row];
 }
@@ -290,4 +296,4 @@ function createInventoryButtons(currentPage, totalPages) {
 
 
 
-module.exports = { showRank,getTitle, createInventoryImage, createInventoryButtons };
+module.exports = { showRank, getTitle, createInventoryImage, createInventoryButtons };

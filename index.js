@@ -1,14 +1,14 @@
-const { 
-  Client, 
-  GatewayIntentBits, 
-  ActionRowBuilder, 
-  AttachmentBuilder,  
-  ButtonBuilder, 
-  ButtonStyle, 
-  MessageFlags, 
-  StringSelectMenuBuilder ,
+const {
+  Client,
+  GatewayIntentBits,
+  ActionRowBuilder,
+  AttachmentBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  MessageFlags,
+  StringSelectMenuBuilder,
 
-  } = require("discord.js");
+} = require("discord.js");
 
 const keepAlive = require("./server");
 require("dotenv").config(); // Đảm bảo bạn đã cài dotenv để lấy token từ .env
@@ -42,25 +42,26 @@ const UserXP = require("./models/UserXP");
 
 const geminiApiKey = process.env["gemini_api_key"];
 const { loadQuestions, findMatches } = require('./utils/questions');
-const { chatWithGemini,sendMessageInChunks, handleReplyToBot } = require('./utils/chat');
-const { loadScheduledMessages, excelTimeToISO, scheduleMessages  } = require('./utils/schedule');
+const { chatWithGemini, sendMessageInChunks, handleReplyToBot } = require('./utils/chat');
+const { loadScheduledMessages, excelTimeToISO, scheduleMessages } = require('./utils/schedule');
 const { canUseCommand } = require('./utils/cooldown');
 const { createCanvas, loadImage } = require("canvas");
 const { addXP, getRandom, handleDailyAutoXP } = require("./utils/xpSystem");
 const { showRank, createInventoryImage, createInventoryButtons } = require("./commands/rank");
 const { showLeaderboard } = require("./commands/leaderboard");
 const { handleSecretRealm } = require("./commands/secretRealm");
+const { handleBuffCheck } = require("./utils/buttonActiveBuffs");
 
-const { 
-  handleShopCommand, 
+const {
+  handleShopCommand,
   handleConfirmSell,
-  handleShopBuy, 
-  handleShopSell, 
-  handleBuyItemSelection, 
-  handleBuyQuantitySelection, 
+  handleShopBuy,
+  handleShopSell,
+  handleBuyItemSelection,
+  handleBuyQuantitySelection,
   handleConfirmPurchase,
   handleSellQuantitySelection
-  } = require("./commands/shop");
+} = require("./commands/shop");
 const {
   handleUseItem,
   handleUseItemSelection,
@@ -74,70 +75,72 @@ const mongoose = require("mongoose");
 
 // Kết nối đến MongoDB Atlas
 mongoose.connect(process.env.MONGODB_URI)
-.then(() => console.log("✅ Connected to MongoDB Atlas"))
-.catch((err) => console.error("❌ MongoDB connection error:", err));
+  .then(() => console.log("✅ Connected to MongoDB Atlas"))
+  .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 
 
 // Command "/" schedule
 bot.on("interactionCreate", async (interaction) => {
 
-  if (interaction.isCommand()){
+  if (interaction.isCommand()) {
     switch (interaction.commandName) {
-      case "schedule":{
+      case "schedule": {
         try {
-            // Trả lời ngay lập tức để tránh lỗi timeout
-            await interaction.deferReply();
+          // Trả lời ngay lập tức để tránh lỗi timeout
+          await interaction.deferReply();
 
-            const messages = loadScheduledMessages(); // Lấy danh sách lịch trình
-            let response = "📅 **Danh sách lịch trình đã thiết kế:**\n";
+          const messages = loadScheduledMessages(); // Lấy danh sách lịch trình
+          let response = "📅 **Danh sách lịch trình đã thiết kế:**\n";
 
-            messages.forEach((msg, index) => {
-              const timeValue = msg["Thời gian"];
-              const time = new Date((timeValue - 25569) * 86400 * 1000)
-                .toISOString()
-                .substring(11, 16);
+          messages.forEach((msg, index) => {
+            const timeValue = msg["Thời gian"];
+            const time = new Date((timeValue - 25569) * 86400 * 1000)
+              .toISOString()
+              .substring(11, 16);
 
-              response += `\n**${index + 1}.** 🕒 ${time}\n✉️ ${msg["Nội dung"]}\n`;
-            });
+            response += `\n**${index + 1}.** 🕒 ${time}\n✉️ ${msg["Nội dung"]}\n`;
+          });
 
-            // Cập nhật phản hồi sau khi xử lý xong
-            await interaction.editReply(response);
-          } catch (error) {
-            console.error("Lỗi khi xử lý lệnh schedule:", error);
-            await interaction.followUp("❌ Lão phu không thể xử lý yêu cầu này!");
+          // Cập nhật phản hồi sau khi xử lý xong
+          await interaction.editReply(response);
+        } catch (error) {
+          console.error("Lỗi khi xử lý lệnh schedule:", error);
+          await interaction.followUp("❌ Lão phu không thể xử lý yêu cầu này!");
+        }
+        break;
+      }
+      case "profile": {
+        try {
+          await interaction.deferReply(); // defer trả lời trước (tránh timeout)
+
+          const buffer = await showRank(interaction); // lấy buffer ảnh từ hàm
+
+          const buttons = [
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setCustomId("open_inventory")
+                .setLabel("📦 Túi trữ vật")
+                .setStyle(ButtonStyle.Primary)
+            )
+          ];
+
+          await interaction.editReply({
+            files: [{ attachment: buffer, name: "profile.png" }],
+            components: buttons,
+          });
+        } catch (error) {
+          console.error("Lỗi khi hiển thị profile:", error);
+          if (!interaction.replied) {
+            await interaction.followUp("❌ Không thể hiển thị profile.");
           }
-        break;}
-      case "profile":{
-         try {
-              await interaction.deferReply(); // defer trả lời trước (tránh timeout)
-
-              const buffer = await showRank(interaction); // lấy buffer ảnh từ hàm
-
-              const buttons = [
-                new ActionRowBuilder().addComponents(
-                  new ButtonBuilder()
-                    .setCustomId("open_inventory")
-                    .setLabel("📦 Túi trữ vật")
-                    .setStyle(ButtonStyle.Primary)
-                )
-              ];
-
-            await interaction.editReply({
-              files: [{ attachment: buffer, name: "profile.png" }],
-              components: buttons,
-            });
-          } catch (error) {
-            console.error("Lỗi khi hiển thị profile:", error);
-            if (!interaction.replied) {
-              await interaction.followUp("❌ Không thể hiển thị profile.");
-            }
-          }
-          break;
-      } 
-      case "leaderboard": {    
+        }
+        break;
+      }
+      case "leaderboard": {
         await showLeaderboard(interaction);
-        break; }
+        break;
+      }
       case "bicanh": {
         try {
           await interaction.deferReply(); // Đảm bảo bot có thêm thời gian
@@ -149,7 +152,8 @@ bot.on("interactionCreate", async (interaction) => {
           console.error("❌ Lỗi khi xử lý bí cảnh:", error);
           await interaction.editReply("😢 Đã xảy ra lỗi khi khám phá bí cảnh. Hãy thử lại sau.");
         }
-        break; }
+        break;
+      }
       case "transfer": {
         const senderId = interaction.user.id;
         const guildId = interaction.guild.id;
@@ -167,15 +171,15 @@ bot.on("interactionCreate", async (interaction) => {
         const cooldownMs = 1 * 60 * 1000; // 10 phút
 
         if (receiver.bot) {
-          return await interaction.reply({ 
-            content: "❌ Không thể chuyển cho bot.", 
+          return await interaction.reply({
+            content: "❌ Không thể chuyển cho bot.",
             flags: MessageFlags.Ephemeral,
           });
         }
 
         if (receiver.id === senderId) {
-          return await interaction.reply({ 
-            content: "❌ Không thể tự chuyển cho chính mình.", 
+          return await interaction.reply({
+            content: "❌ Không thể tự chuyển cho chính mình.",
             flags: MessageFlags.Ephemeral,
           });
         }
@@ -188,8 +192,8 @@ bot.on("interactionCreate", async (interaction) => {
         );
 
         if (!senderData || senderData.stone < amount) {
-          return await interaction.reply({ 
-            content: "❌ Bạn không đủ linh thạch để chuyển.", 
+          return await interaction.reply({
+            content: "❌ Bạn không đủ linh thạch để chuyển.",
             flags: MessageFlags.Ephemeral,
           });
         }
@@ -198,7 +202,7 @@ bot.on("interactionCreate", async (interaction) => {
         if (senderData.lastTransfer && now - senderData.lastTransfer.getTime() < cooldownMs) {
           const remaining = Math.ceil((cooldownMs - (now - senderData.lastTransfer.getTime())) / 60000);
           return await interaction.reply({
-            content: `❌ Đạo hữu cần chờ **${remaining} phút** nữa mới có thể chuyển tiếp.`, 
+            content: `❌ Đạo hữu cần chờ **${remaining} phút** nữa mới có thể chuyển tiếp.`,
             flags: MessageFlags.Ephemeral,
           });
         }
@@ -207,42 +211,50 @@ bot.on("interactionCreate", async (interaction) => {
         senderData.stone -= amount;
         receiverData.stone += amount;
         senderData.lastTransfer = new Date();
-        
+
         await senderData.save();
         await receiverData.save();
-        
 
-       // const logChannel = interaction.guild.channels.cache.get('LOG_CHANNEL_ID');
-       const logChannel = await interaction.client.channels.fetch(LOG_CHANNEL_ID);
+
+        // const logChannel = interaction.guild.channels.cache.get('LOG_CHANNEL_ID');
+        const logChannel = await interaction.client.channels.fetch(LOG_CHANNEL_ID);
         if (logChannel && logChannel.isTextBased()) {
-            await logChannel.send({
-              content: `📜 **Log chuyển linh thạch**\n` +
-                      `Người gửi: ${senderDisplayName} - ${interaction.user.tag} (${interaction.user.id})\n` +
-                      `Người nhận: ${receiverMember.displayName} - ${receiver.tag} (${receiver.id})\n` +
-                      `Số lượng: ${amount}\n` +
-                      `Thời gian: <t:${Math.floor(Date.now() / 1000)}:F>`,
-            });
-          } else {
-            console.warn("⚠️ Không thể gửi log – không tìm thấy kênh hoặc không phải kênh text.");
-          }
+          await logChannel.send({
+            content: `📜 **Log chuyển linh thạch**\n` +
+              `Người gửi: ${senderDisplayName} - ${interaction.user.tag} (${interaction.user.id})\n` +
+              `Người nhận: ${receiverMember.displayName} - ${receiver.tag} (${receiver.id})\n` +
+              `Số lượng: ${amount}\n` +
+              `Thời gian: <t:${Math.floor(Date.now() / 1000)}:F>`,
+          });
+        } else {
+          console.warn("⚠️ Không thể gửi log – không tìm thấy kênh hoặc không phải kênh text.");
+        }
 
         await interaction.reply({
           content: `✅ Đạo hữu đã chuyển **${amount}** linh thạch cho ${receiverMember.displayName}.`,
         });
- 
 
-        break;}
+
+        break;
+      }
       case "shop": {
         try {
-            await handleShopCommand(interaction); 
-          } catch (error) {
-            console.error("Lỗi khi xử lý shop:", error);
-            await interaction.reply("❌ Lỗi khi mở cửa hàng.");
-          }
-        break; 
+          await handleShopCommand(interaction);
+        } catch (error) {
+          console.error("Lỗi khi xử lý shop:", error);
+          await interaction.reply("❌ Lỗi khi mở cửa hàng.");
+        }
+        break;
       }
-     
-}}
+      case "random": {
+        const randomNumber = Math.floor(Math.random() * 10); // số ngẫu nhiên từ 0 đến 9
+        await interaction.reply(`🎲 Số mà lão phu quay ra là: ${randomNumber}`);
+        break;
+      }
+
+
+    }
+  }
 
   // Xử lý các lệnh tương tác khác
   if (interaction.isStringSelectMenu()) {
@@ -264,7 +276,7 @@ bot.on("interactionCreate", async (interaction) => {
 
     //bán 
     if (id === "select_sell_item") {
-        // Người chơi chọn vật phẩm → tạo menu chọn số lượng
+      // Người chơi chọn vật phẩm → tạo menu chọn số lượng
       const selectedValue = interaction.values[0]; // ví dụ: "sell_pharmaBamboo"
       const itemId = selectedValue.replace('sell::', '');
 
@@ -299,7 +311,7 @@ bot.on("interactionCreate", async (interaction) => {
       });
 
       return;
-    
+
     }
 
     if (id.startsWith("select::sell::quantity::")) {
@@ -313,19 +325,19 @@ bot.on("interactionCreate", async (interaction) => {
 
 
     // Chọn vật phẩm để dùng
-    if (id === "select_use_item"){
+    if (id === "select_use_item") {
       await handleUseItemSelection(interaction);
     }
     // Chọn số lượng vật phẩm sử dụng
-    if (id === "confirm_use_quantity"){
+    if (id === "confirm_use_quantity") {
       const [_, itemId, quantityStr] = interaction.values[0].split("::");
       const quantity = parseInt(quantityStr);
-      await handleUseItemConfirm (interaction, itemId, quantity);
+      await handleUseItemConfirm(interaction, itemId, quantity);
 
     }
 
     const [action, itemId, quantityStr] = values[0]?.split('::') || [];
-  
+
     if (!action || !itemId) {
       console.warn('⚠️ Không thể phân tích giá trị từ SelectMenu:', values[0]);
       return;
@@ -335,7 +347,7 @@ bot.on("interactionCreate", async (interaction) => {
       case 'buy':
         if (quantityStr) {
           await handleConfirmPurchase(interaction, itemId, parseInt(quantityStr));
-        } 
+        }
         break;
 
       case 'sell':
@@ -380,17 +392,17 @@ bot.on("interactionCreate", async (interaction) => {
     }
 
     if (id === "back_to_profile") {
-      await interaction.deferUpdate ();
+      await interaction.deferUpdate();
       const buffer = await showRank(interaction); // Ảnh profile
-        const buttons = [
+      const buttons = [
         new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setCustomId('open_inventory')
             .setLabel('📦 Túi trữ vật')
             .setStyle(ButtonStyle.Secondary)
-            )
-          ];
-        await interaction.editReply({
+        )
+      ];
+      await interaction.editReply({
         files: [{ attachment: buffer, name: 'profile.png' }],
         components: buttons
       });
@@ -402,17 +414,17 @@ bot.on("interactionCreate", async (interaction) => {
     }
 
     if (id.startsWith('confirm::buy::')) {
-      
+
       const parts = id.split('::'); // ['confirm', 'buy', 'pharmaBamboo', '2']
       const quantity = parseInt(parts.pop(), 10);
-      const itemId = parts.slice(2).join('::'); 
+      const itemId = parts.slice(2).join('::');
       await handleConfirmPurchase(interaction, itemId, quantity);
-       
+
     }
     if (id === 'select_quantity_item') {
-      await handleBuyQuantitySelection(interaction,userData);
+      await handleBuyQuantitySelection(interaction, userData);
     }
-    if (id=== 'shop_sell') {
+    if (id === 'shop_sell') {
       await handleShopSell(interaction);
     }
     // Xử lý sau khi chọn số lượng
@@ -427,12 +439,17 @@ bot.on("interactionCreate", async (interaction) => {
       });
       return handleConfirmSell(interaction, itemId, quantity);
 
-     }
+    }
     // Dùng vật phẩm
     if (id === 'use_item') {
       await handleUseItem(interaction);
 
     }
+    //check buff active
+    if (id === 'check_buffs') {
+      await handleBuffCheck(interaction);
+    }
+
   }
 });
 
@@ -450,19 +467,19 @@ bot.on("guildMemberAdd", async (member) => {
 bot.on("messageCreate", async (message) => {
 
   if (message.author.bot) return; // Bỏ qua tin nhắn từ bot khác
-  
+
   // Thưởng XP cho tin nhắn đầu tiên trong ngày
   await handleDailyAutoXP(message.author.id, message.guild.id, message)
-    // Nếu trong kênh bí mật -> cộng nhiều XP hơn
+  // Nếu trong kênh bí mật -> cộng nhiều XP hơn
   const isPrivateChannel = message.channel.id === process.env.PRIVATE_CHANNEL_ID;
-  const xpToAdd  = isPrivateChannel ? getRandom(40, 80) : getRandom(10, 30);
+  const xpToAdd = isPrivateChannel ? getRandom(40, 80) : getRandom(10, 30);
 
   await addXP(message.author.id, message.guild.id, xpToAdd, message);
 
-  const nickname = message.member?.displayName ||message.author.globalName|| message.author.username;
+  const nickname = message.member?.displayName || message.author.globalName || message.author.username;
   const content = message.content.trim(); // Lấy nội dung tin nhắn
   const lowerContent = content.toLowerCase(); // Chuyển về chữ thường để kiểm tra PREFIX
-  
+
   //console.dir(lowerContent);
   // Cắt bỏ phần PREFIX mà không phân biệt hoa/thường
   const commandBody = content.slice(PREFIX.length).trim();
@@ -475,15 +492,15 @@ bot.on("messageCreate", async (message) => {
     return;
   }
 
-    // 📌 Nếu là tin nhắn reply của bot, tương tác lại với bot
+  // 📌 Nếu là tin nhắn reply của bot, tương tác lại với bot
   if (message.reference) {
     await handleReplyToBot(message, lastRequestTime, conversationHistory);
     return; // Tránh xử lý tiếp
   }
-  
+
   // 📌 Chỉ xử lý các lệnh bắt đầu bằng PREFIX
 
- if (!lowerContent.startsWith(PREFIX.toLowerCase())) return; // Kiểm tra tiền tố bất kể hoa/thường
+  if (!lowerContent.startsWith(PREFIX.toLowerCase())) return; // Kiểm tra tiền tố bất kể hoa/thường
 
   switch (command) {
     // 📌 Lệnh hiển thị danh sách lệnh
@@ -542,10 +559,10 @@ bot.on("messageCreate", async (message) => {
       const query = args.join(" ");
       if (!query)
         return message.reply("⚠️ Đạo hữu vui lòng nhập nội dung câu hỏi!");
-      
+
       // Phản hồi ngay lập tức để tránh bot có vẻ bị lag
       const sentMessage = await message.reply("Lão phu đang suy ngẫm...");
-   
+
       const reply = await chatWithGemini(query);
       // Gọi hàm để gửi tin nhắn
       await sendMessageInChunks(sentMessage, reply);
@@ -555,46 +572,46 @@ bot.on("messageCreate", async (message) => {
     // 📌 Lệnh xem bảng dữ liệu 
     case "t": {
       message.channel.send(
-          `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
+        `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
       );
       processData().then((data) => {
-          if (data.length === 0) {
-              message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
-              return;
-          }
-          const recentData = data.slice(-30); // Lấy 30 dòng cuối cùng
-                // Gọi hàm để vẽ biểu đồ
-          const buffer = drawTable(recentData);
+        if (data.length === 0) {
+          message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
+          return;
+        }
+        const recentData = data.slice(-30); // Lấy 30 dòng cuối cùng
+        // Gọi hàm để vẽ biểu đồ
+        const buffer = drawTable(recentData);
 
-          if (!Buffer.isBuffer(buffer)) {
-            console.error("Lỗi: drawScatterPlot không trả về Buffer!");
-            message.channel.send("❌ Lỗi khi tạo biểu đồ!");
-            return;
+        if (!Buffer.isBuffer(buffer)) {
+          console.error("Lỗi: drawScatterPlot không trả về Buffer!");
+          message.channel.send("❌ Lỗi khi tạo biểu đồ!");
+          return;
         }
 
-          // Tạo attachment từ buffer
-          const attachment = new AttachmentBuilder(buffer, { name: "table.png" });
+        // Tạo attachment từ buffer
+        const attachment = new AttachmentBuilder(buffer, { name: "table.png" });
 
-          // Gửi ảnh vào kênh Discord
-          message.channel.send({ files: [attachment] });
+        // Gửi ảnh vào kênh Discord
+        message.channel.send({ files: [attachment] });
 
       }).catch((error) => {
-          console.error("Lỗi khi đọc Google Sheets:", error);
-          message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
+        console.error("Lỗi khi đọc Google Sheets:", error);
+        message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
       });
-  
+
       break;
     }
 
     // 📌 Lệnh xem biểu đồ kết quả
     case "c": {
       message.channel.send(
-          `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
+        `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
       );
       processData().then((data) => {
         if (data.length === 0) {
-            message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
-            return;
+          message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
+          return;
         }
 
         // Gọi hàm để vẽ biểu đồ
@@ -613,21 +630,21 @@ bot.on("messageCreate", async (message) => {
         message.channel.send({ files: [attachment] });
 
       }).catch((error) => {
-          console.error("Lỗi khi đọc Google Sheets:", error);
-          message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
+        console.error("Lỗi khi đọc Google Sheets:", error);
+        message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
       });
-  
+
       break;
     }
     // 📌 Lệnh xem biểu đồ kết quả 2
     case "cr": {
       message.channel.send(
-          `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
+        `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
       );
       processData().then((data) => {
         if (data.length === 0) {
-            message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
-            return;
+          message.channel.send("❌ Không có dữ liệu trong Google Sheet.");
+          return;
         }
 
         // Gọi hàm để vẽ biểu đồ
@@ -648,10 +665,10 @@ bot.on("messageCreate", async (message) => {
         message.channel.send({ files: [attachment] });
 
       }).catch((error) => {
-          console.error("Lỗi khi đọc Google Sheets:", error);
-          message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
+        console.error("Lỗi khi đọc Google Sheets:", error);
+        message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
       });
-  
+
       break;
     }
     default:
@@ -662,8 +679,8 @@ bot.on("messageCreate", async (message) => {
 
 bot.once("ready", async () => {
   console.log("✅ Bot is now online!");
-   scheduleMessages(bot);
- 
+  scheduleMessages(bot);
+
 });
 bot.on('error', (err) => {
   console.error('❌ Discord bot error:', err);

@@ -6,7 +6,7 @@ module.exports = [
     effect: 'gainExp',
     amount: 200,
     description: '+200 exp'
-},
+  },
   {
     id: 'pharmaEra',
     name: 'Tẩy Tủy Đan 🫐',
@@ -71,6 +71,17 @@ module.exports = [
     effect: 'gainStone',
     amount: 300,
     description: '+300 stone'
+  },
+  {
+    id: 'luckyCharm',
+    name: 'Bùa May Mắn 🍀',
+    effect: {
+      type: 'winRateVsMonster',
+      value: 0.25,
+      duration: 3
+    },
+    description: 'Tăng 25% tỉ lệ chiến thắng khi gặp yêu thú trong 3 lượt.'
   }
-    
+
+
 ];

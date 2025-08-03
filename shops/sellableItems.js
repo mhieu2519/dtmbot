@@ -22,31 +22,37 @@ const sellableItems = [
     id: "spiritStone",
     name: "Đá thiên nhiên 🪨",
     sellPrice: 200,
-    bonusExp: 50  
+    bonusExp: 50
   },
   {
     id: "shield",
     name: "Khiên Bất Diệt 🛡️",
     sellPrice: 500,
-    bonusExp: 200  
+    bonusExp: 200
   },
   {
     id: "ancientSword",
     name: "Cổ Kiếm Linh 🗡️",
     sellPrice: 800,
-    bonusExp: 200  
+    bonusExp: 200
   },
   {
     id: "fragMap",
     name: "Mảnh Ghép Tàn Đồ 🗺️",
     sellPrice: 1500,
-    bonusExp: 400  
+    bonusExp: 400
   },
   {
     id: "fragKey",
     name: "Chìa khóa bảo tàng 🔑",
     sellPrice: 2000,
-    bonusExp: 500  
+    bonusExp: 500
+  },
+  {
+    id: 'luckyCharm',
+    name: 'Bùa May Mắn 🍀',
+    sellPrice: 100,
+    bonusExp: 1
   }
 
 ];
