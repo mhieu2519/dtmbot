@@ -44,7 +44,8 @@ async function handleBuffCheck(interaction) {
     const userId = interaction.user.id;
     const guildId = interaction.guild.id;
     const user = await UserXP.findOne({ userId, guildId });
-
+    const senderMember = await interaction.guild.members.fetch(userId);
+    const senderDisplayName = senderMember.displayName;
     if (!user) {
         return interaction.reply({
             content: "❌ Không tìm thấy dữ liệu người dùng.",
@@ -55,7 +56,7 @@ async function handleBuffCheck(interaction) {
     const content = renderActiveBuffs(user);
 
     return interaction.reply({
-        content: `🧪 **Buff đang kích hoạt của đạo hữu:**\n\n${content}`,
+        content: `🧪 **Buff đang kích hoạt của ${senderDisplayName} đạo hữu:**\n\n${content}`,
         // flags: MessageFlags.Ephemeral
     });
 }

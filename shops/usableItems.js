@@ -77,10 +77,10 @@ module.exports = [
     name: 'Bùa May Mắn 🍀',
     effect: {
       type: 'winRateVsMonster',
-      value: 0.25,
+      value: 0.35,
       duration: 3
     },
-    description: 'Tăng 25% tỉ lệ chiến thắng khi gặp yêu thú trong 3 lượt.'
+    description: 'Tăng 35% tỉ lệ chiến thắng khi gặp yêu thú trong 3 lượt.'
   }
 
 
