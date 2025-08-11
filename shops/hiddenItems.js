@@ -5,7 +5,7 @@ module.exports = [
     description: "Thanh kiếm từng thuộc về đại năng cổ xưa.",
     rarity: "legendary",
     quantity: 1,
-    weight: 1 // xác suất thấp
+    weight: 3 // xác suất thấp
   },
   {
     id: "phoenixFeather",
@@ -13,13 +13,13 @@ module.exports = [
     description: "Mang theo hơi thở bất tử.",
     rarity: "epic",
     quantity: 1,
-    weight: 5
+    weight: 3
   },
   {
     id: "spiritStone",
     name: "Đá thiên nhiên 🪨",
     description: "Đá chứa linh khí của đất trời.",
-    rarity: "common", 
+    rarity: "common",
     quantity: 2,
     weight: 40 // rơi thường xuyên
   },
@@ -27,7 +27,7 @@ module.exports = [
     id: "rareGem",
     name: "Huyết Ngọc 🔶",
     description: "Đá tồn tại từ thượng cổ.",
-    rarity: "common", 
+    rarity: "common",
     quantity: 2,
     weight: 10
   },
@@ -35,7 +35,7 @@ module.exports = [
     id: "shield",
     name: "Khiên Bất Diệt 🛡️",
     description: "Khiên đến từ thượng cổ đại năng.",
-    rarity: "rare", 
+    rarity: "rare",
     quantity: 1,
     weight: 5 // xác suất trung bình
   },
@@ -61,18 +61,18 @@ module.exports = [
     id: "jadeGem",
     name: "Lam Ngọc 💧",
     description: "Chứa sức mạnh linh khí đặc biệt.",
-    rarity: "common", 
+    rarity: "common",
     quantity: 1,
-    weight: 10 
+    weight: 10
   },
   // mảnh ghép tàn đồ
   {
     id: "fragMap",
     name: "Mảnh Ghép Tàn Đồ 🗺️",
     description: "Tàn đồ di chỉ thượng cổ.",
-    rarity: "legendary", 
+    rarity: "legendary",
     quantity: 1,
-    weight: 1 
+    weight: 1
 
   },
   // chìa khóa bảo tàng
@@ -80,9 +80,9 @@ module.exports = [
     id: "fragKey",
     name: "Chìa khóa bảo tàng 🔑",
     description: "Đến từ di chỉ thượng cổ (không rõ).",
-    rarity: "legendary", 
+    rarity: "legendary",
     quantity: 1,
-    weight: 1 
+    weight: 1
   }
 
 ];

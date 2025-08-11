@@ -43,13 +43,7 @@ module.exports = [
     amount: 500,
     description: '+500 stone'
   },
-  {
-    id: "ancientSword",
-    name: "Cổ Kiếm Linh 🗡️",
-    effect: 'buffYeuthu',
-    amount: 500,
-    description: '+500 stone'
-  },
+
   {
     id: 'fragMap',
     name: 'Mảnh Ghép Tàn Đồ 🗺️',
@@ -68,9 +62,24 @@ module.exports = [
   {
     id: 'shield',
     name: 'Khiên Bất Diệt 🛡️',
-    effect: 'gainStone',
-    amount: 300,
-    description: '+300 stone'
+    effect: {
+      type: 'winRateVsMonster',
+      value: 0.5,
+      duration: 5
+    },
+    description: 'Tăng 50% tỉ lệ chiến thắng khi gặp yêu thú các loại trong 5 lượt.'
+
+  },
+  {
+    id: "ancientSword",
+    name: "Cổ Kiếm Linh 🗡️",
+    effect: {
+      type: 'winRateVsMonster',
+      value: 0.62,
+      duration: 2
+    },
+    description: 'Tăng 62% tỉ lệ chiến thắng khi gặp yêu thú các loại trong 2 lượt.'
+
   },
   {
     id: 'luckyCharm',

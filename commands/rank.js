@@ -25,10 +25,10 @@ function getTitle(level) {
   if (level < 26) return "Trúc Cơ sơ kỳ";
   if (level < 37) return "Trúc Cơ trung kỳ";
   if (level < 50) return "Trúc Cơ hậu kỳ";
-  if (level < 66) return "Kết Đan sơ kỳ";
-  if (level < 82) return "Kết Đan trung kỳ";
-  if (level < 100) return "Kết Đan hậu kỳ";
-  if (level < 150) return "Nguyên Anh sơ kỳ";
+  if (level < 60) return "Kết Đan sơ kỳ";
+  if (level < 70) return "Kết Đan trung kỳ";
+  if (level < 80) return "Kết Đan hậu kỳ";
+  if (level < 100) return "Nguyên Anh sơ kỳ";
   if (level < 200) return "Nguyên Anh trung kỳ";
   if (level < 300) return "Nguyên Anh hậu kỳ";
   return "Hoá Thần";
@@ -233,7 +233,7 @@ async function createInventoryImage(displayName, stone, inventory, page = 1, ite
     ctx.font = '28px Updock';
     ctx.fillStyle = '#ffe2e7';
     ctx.fillText(`${item.description}`, 60, y + 25);
-    ctx.font = '28px Updock';
+    ctx.font = '24px Updock';
   });
 
   // Hiển thị tên và linh thạch
