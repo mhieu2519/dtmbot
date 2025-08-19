@@ -8,7 +8,7 @@ module.exports = [
     price: 100,
     sellPrice: 50,
     rarity: 'common',
-    maxQuantity: 10,
+    maxQuantity: 15,
   },
   {
     id: 'pharmaEra',
@@ -26,7 +26,7 @@ module.exports = [
     price: 480,
     sellPrice: 400,
     rarity: 'rare',
-    maxQuantity: 2,
+    maxQuantity: 10,
   },
   {
     id: 'luckyCharm',
@@ -35,7 +35,7 @@ module.exports = [
     price: 160,
     sellPrice: 100,
     rarity: 'uncommon',
-    maxQuantity: 3
+    maxQuantity: 10
   }
 
 ];

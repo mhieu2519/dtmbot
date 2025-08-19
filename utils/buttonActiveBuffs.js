@@ -33,7 +33,7 @@ function renderActiveBuffs(user) {
     const lines = buffs.map((buff, index) => {
         const name = buffNames[buff.effect] || `Hiệu ứng: ${buff.effect}`;
         const desc = buffDescriptions[buff.effect] || "";
-        return `🧪 **${name}**\n${desc}\n✨ Giá trị: +${buff.value * 100}% | ⏳ Còn ${buff.duration} lượt\n`;
+        return `🔥 **${name}**\n${desc}\n✨ Giá trị: +${buff.value * 100}% | ⏳ Còn ${buff.duration} lượt\n`;
     });
 
     return lines.join("\n");

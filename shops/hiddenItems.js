@@ -82,7 +82,15 @@ module.exports = [
     description: "Đến từ di chỉ thượng cổ (không rõ).",
     rarity: "legendary",
     quantity: 1,
-    weight: 1
+    weight: 1,
+  },
+  {
+    id: 'luckyCharm',
+    name: 'Bùa May Mắn 🍀',
+    description: 'Tăng 35% tỉ lệ thắng yêu thú trong 3 lượt',
+    rarity: "epic",
+    quantity: 1,
+    weight: 50,
   }
 
 ];
