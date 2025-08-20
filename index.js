@@ -122,6 +122,12 @@ bot.on("interactionCreate", async (interaction) => {
                 .setCustomId("open_inventory")
                 .setLabel("📦 Túi trữ vật")
                 .setStyle(ButtonStyle.Primary)
+            ),
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setCustomId("open_shop")
+                .setLabel("🛒 Cửa hàng")
+                .setStyle(ButtonStyle.Secondary)
             )
           ];
 
@@ -379,7 +385,9 @@ bot.on("interactionCreate", async (interaction) => {
         components: buttons
       });
     }
-
+    if (id === 'open_shop') {
+      await handleShopCommand(interaction);
+    }
     if (id.startsWith('prev_inventory_') || id.startsWith('next_inventory_')) {
       const page = parseInt(interaction.customId.split('_').pop());
       const buffer = await createInventoryImage(displayName, userData.stone, inventory, page);
