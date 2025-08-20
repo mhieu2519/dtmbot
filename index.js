@@ -396,11 +396,11 @@ bot.on("interactionCreate", async (interaction) => {
     }
     if (id === 'open_bicanh') {
       try {
-        await interaction.deferReply(); // Đảm bảo bot có thêm thời gian
+        await interaction.deferReply(); // Đảm bảo bot có thêm thời gian   
 
         const result = await handleSecretRealm(interaction);
-
-        await interaction.editReply(result); // Trả kết quả sau khi xử lý xong
+        const mess = `🗝️ **Đạo hữu ${displayName} đã sử dụng bí cảnh!:**\n\n${result}`;
+        await interaction.editReply(mess); // Trả kết quả sau khi xử lý xong
       } catch (error) {
         console.error("❌ Lỗi khi xử lý bí cảnh:", error);
         await interaction.editReply("😢 Đã xảy ra lỗi khi khám phá bí cảnh. Hãy thử lại sau.");
