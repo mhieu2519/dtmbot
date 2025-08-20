@@ -273,7 +273,7 @@ function createInventoryButtons(currentPage, totalPages) {
   row.addComponents(
     new ButtonBuilder()
       .setCustomId(`back_to_profile`)
-      .setLabel('🔙🖼️ Profile')
+      .setLabel('👤 Profile')
       .setStyle(ButtonStyle.Secondary)
   );
 

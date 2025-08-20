@@ -121,13 +121,19 @@ bot.on("interactionCreate", async (interaction) => {
               new ButtonBuilder()
                 .setCustomId("open_inventory")
                 .setLabel("📦 Túi trữ vật")
-                .setStyle(ButtonStyle.Primary)
+                .setStyle(ButtonStyle.Secondary)
+            ),
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setCustomId("open_bicanh")
+                .setLabel("🗝️ Bí cảnh")
+                .setStyle(ButtonStyle.Secondary)
             ),
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
                 .setCustomId("open_shop")
                 .setLabel("🛒 Cửa hàng")
-                .setStyle(ButtonStyle.Secondary)
+                .setStyle(ButtonStyle.Success)
             )
           ];
 
@@ -388,6 +394,18 @@ bot.on("interactionCreate", async (interaction) => {
     if (id === 'open_shop') {
       await handleShopCommand(interaction);
     }
+    if (id === 'open_bicanh') {
+      try {
+        await interaction.deferReply(); // Đảm bảo bot có thêm thời gian
+
+        const result = await handleSecretRealm(interaction);
+
+        await interaction.editReply(result); // Trả kết quả sau khi xử lý xong
+      } catch (error) {
+        console.error("❌ Lỗi khi xử lý bí cảnh:", error);
+        await interaction.editReply("😢 Đã xảy ra lỗi khi khám phá bí cảnh. Hãy thử lại sau.");
+      }
+    }
     if (id.startsWith('prev_inventory_') || id.startsWith('next_inventory_')) {
       const page = parseInt(interaction.customId.split('_').pop());
       const buffer = await createInventoryImage(displayName, userData.stone, inventory, page);
@@ -408,6 +426,18 @@ bot.on("interactionCreate", async (interaction) => {
             .setCustomId('open_inventory')
             .setLabel('📦 Túi trữ vật')
             .setStyle(ButtonStyle.Secondary)
+        ),
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId('open_bicanh')
+            .setLabel('🗝️ Bí cảnh')
+            .setStyle(ButtonStyle.Secondary)
+        ),
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId('open_shop')
+            .setLabel('🛒 Cửa hàng')
+            .setStyle(ButtonStyle.Success)
         )
       ];
       await interaction.editReply({
