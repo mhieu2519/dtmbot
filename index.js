@@ -399,7 +399,7 @@ bot.on("interactionCreate", async (interaction) => {
         await interaction.deferReply(); // Đảm bảo bot có thêm thời gian   
 
         const result = await handleSecretRealm(interaction);
-        const mess = `🗝️ **Đạo hữu ${displayName} đã sử dụng bí cảnh!:**\n\n${result}`;
+        const mess = `🔑 **${displayName} đạo hữu đã sử dụng bí cảnh!**\n\n${result}`;
         await interaction.editReply(mess); // Trả kết quả sau khi xử lý xong
       } catch (error) {
         console.error("❌ Lỗi khi xử lý bí cảnh:", error);
