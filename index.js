@@ -115,21 +115,21 @@ bot.on("interactionCreate", async (interaction) => {
           await interaction.deferReply(); // defer trả lời trước (tránh timeout)
 
           const buffer = await showRank(interaction); // lấy buffer ảnh từ hàm
-
+          const row = new ActionRowBuilder();
           const buttons = [
-            new ActionRowBuilder().addComponents(
+            row.addComponents(
               new ButtonBuilder()
                 .setCustomId("open_inventory")
                 .setLabel("📦 Túi trữ vật")
                 .setStyle(ButtonStyle.Secondary)
             ),
-            new ActionRowBuilder().addComponents(
+            row.addComponents(
               new ButtonBuilder()
                 .setCustomId("open_bicanh")
                 .setLabel("🗝️ Bí cảnh")
                 .setStyle(ButtonStyle.Secondary)
             ),
-            new ActionRowBuilder().addComponents(
+            row.addComponents(
               new ButtonBuilder()
                 .setCustomId("open_shop")
                 .setLabel("🛒 Cửa hàng")
@@ -420,20 +420,21 @@ bot.on("interactionCreate", async (interaction) => {
     if (id === "back_to_profile") {
       await interaction.deferUpdate();
       const buffer = await showRank(interaction); // Ảnh profile
+      const row = new ActionRowBuilder();
       const buttons = [
-        new ActionRowBuilder().addComponents(
+        row.addComponents(
           new ButtonBuilder()
             .setCustomId('open_inventory')
             .setLabel('📦 Túi trữ vật')
             .setStyle(ButtonStyle.Secondary)
         ),
-        new ActionRowBuilder().addComponents(
+        row.addComponents(
           new ButtonBuilder()
             .setCustomId('open_bicanh')
             .setLabel('🗝️ Bí cảnh')
             .setStyle(ButtonStyle.Secondary)
         ),
-        new ActionRowBuilder().addComponents(
+        row.addComponents(
           new ButtonBuilder()
             .setCustomId('open_shop')
             .setLabel('🛒 Cửa hàng')
