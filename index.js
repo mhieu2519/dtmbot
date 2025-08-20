@@ -115,21 +115,21 @@ bot.on("interactionCreate", async (interaction) => {
           await interaction.deferReply(); // defer trả lời trước (tránh timeout)
 
           const buffer = await showRank(interaction); // lấy buffer ảnh từ hàm
-          const row = new ActionRowBuilder();
+          const rows = new ActionRowBuilder();
           const buttons = [
-            row.addComponents(
+            rows.addComponents(
               new ButtonBuilder()
                 .setCustomId("open_inventory")
                 .setLabel("📦 Túi trữ vật")
                 .setStyle(ButtonStyle.Secondary)
             ),
-            row.addComponents(
+            rows.addComponents(
               new ButtonBuilder()
                 .setCustomId("open_bicanh")
                 .setLabel("🗝️ Bí cảnh")
                 .setStyle(ButtonStyle.Secondary)
             ),
-            row.addComponents(
+            rows.addComponents(
               new ButtonBuilder()
                 .setCustomId("open_shop")
                 .setLabel("🛒 Cửa hàng")
