@@ -21,7 +21,7 @@ module.exports = [
     description: "Đá chứa linh khí của đất trời.",
     rarity: "common",
     quantity: 2,
-    weight: 40 // rơi thường xuyên
+    weight: 10 // rơi thường xuyên
   },
   {
     id: "rareGem",
@@ -90,7 +90,7 @@ module.exports = [
     description: 'Tăng 35% tỉ lệ thắng yêu thú trong 3 lượt',
     rarity: "epic",
     quantity: 1,
-    weight: 50,
+    weight: 20,
   }
 
 ];
