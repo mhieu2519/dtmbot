@@ -37,7 +37,7 @@ module.exports = [
     description: "Khiên đến từ thượng cổ đại năng.",
     rarity: "rare",
     quantity: 1,
-    weight: 5 // xác suất trung bình
+    weight: 4
   },
   {
     id: "mysticScroll",
@@ -85,12 +85,83 @@ module.exports = [
     weight: 1,
   },
   {
-    id: 'luckyCharm',
-    name: 'Bùa May Mắn 🍀',
-    description: 'Tăng 35% tỉ lệ thắng yêu thú trong 3 lượt',
+    id: "luckyCharm",
+    name: "Bùa May Mắn 🍀",
+    description: "Tăng 35% tỉ lệ thắng yêu thú trong 3 lượt",
     rarity: "epic",
     quantity: 1,
     weight: 30,
+  },
+  {
+    id: "witheredHerb",
+    name: "Linh Thảo Khô Héo 🌾",
+    description: "Thảo dược từng có linh tính, nay đã mất đi sinh khí.",
+    rarity: "common",
+    quantity: 1,
+    weight: 50
+  },
+  {
+    id: "brokenMirror",
+    name: "Mảnh Gương Vỡ 🪞",
+    description: "Từng là một phần của gương soi vận mệnh.",
+    rarity: "common",
+    quantity: 1,
+    weight: 3
+  },
+  {
+    id: "phoenixFlameFruit",
+    name: "Phượng Diễm Quả 🔥",
+    description: "Quả đỏ rực, nóng như lửa, kết tinh từ hơi thở Phượng Hoàng.",
+    rarity: "epic",
+    quantity: 1,
+    weight: 2
+  },
+  {
+    id: "soulReviveFruit",
+    name: "Tử Linh Quả 👻",
+    description: "Quả hiếm mọc ở nơi có linh khí tử khí, dùng để luyện đan hồi sinh.",
+    rarity: "legendary",
+    quantity: 1,
+    weight: 1
+  },
+  {
+    id: "iceLeafHerb",
+    name: "Băng Diệp Thảo ❄️",
+    description: "Lá cây lạnh như băng, mọc ở vùng cực hàn.",
+    rarity: "rare",
+    quantity: 1,
+    weight: 10
+  },
+  {
+    id: "sevenColorFlower",
+    name: "Thất Sắc Linh Hoa 🌸",
+    description: "Hoa kì dị có 7 màu, mỗi cánh chứa một loại linh lực.",
+    rarity: "epic",
+    quantity: 1,
+    weight: 1
+  },
+  {
+    id: "mindClearHerb",
+    name: "Thanh Tâm Thảo 🌿",
+    description: "Thảo dược giúp thanh lọc tâm trí, ổn định linh hồn.",
+    rarity: "common",
+    quantity: 1,
+    weight: 10
+  },
+  {
+    id: "dragonScale",
+    name: "Long Cốt 🐉",
+    description: "Mảnh vật phẩm tàn phá long cốt( lai lịch không rõ).",
+    rarity: "legendary",
+    quantity: 1,
+    weight: 1
+  },
+  {
+    id: "bloodMoonHerb",
+    name: "Huyết Nguyệt Thảo 🌙",
+    description: "Chỉ nở vào đêm trăng máu, hấp thụ linh khí từ âm giới.",
+    rarity: "epic",
+    quantity: 1,
+    weight: 2,
   }
-
 ];

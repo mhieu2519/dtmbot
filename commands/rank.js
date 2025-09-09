@@ -10,6 +10,7 @@ registerFont(path.join(__dirname, "../assets/fonts/MeowScript-Regular.ttf"), { f
 registerFont(path.join(__dirname, "../assets/fonts/Qwigley-Regular.ttf"), { family: "Qwigley" });
 registerFont(path.join(__dirname, "../assets/fonts/comici.ttf"), { family: "Comic Sans MS" });
 registerFont(path.join(__dirname, "../assets/fonts/Updock-Regular.ttf"), { family: "Updock" });
+registerFont(path.join(__dirname, "../assets/fonts/Pacifico-Regular.ttf"), { family: "Pacifico" });
 function getBackgroundByLevel(level) {
   if (level < 3) return "./assets/backgrounds/level_0.png";
   if (level >= 3 && level < 5) return "./assets/backgrounds/level_1_5.png";
@@ -99,7 +100,7 @@ async function showRank(interaction) {
   const userId = interaction.user.id;
 
   const userData = await UserXP.findOne({ guildId, userId });
-  if (!userData) return interaction.editReply("Bạn chưa có dữ liệu XP nào.");
+  if (!userData) return interaction.editReply("Bạn chưa có dữ liệu Tuvi nào.");
 
   const nextXP = getXPForNextLevel(userData.level);
   const rank = await getUserRank(userId, guildId);
@@ -167,7 +168,7 @@ async function showRank(interaction) {
   ctx.shadowBlur = 20;
   ctx.font = "Italic 24px Comic Sans MS";
   ctx.fillText(`Level: ${userData.level}`, 250, 110);
-  ctx.fillText(`XP: ${userData.xp} / ${nextXP}`, 250, 150);
+  ctx.fillText(`Tuvi: ${userData.xp} / ${nextXP}`, 250, 150);
   ctx.fillText(`Rank: #${rank}`, 250, 190);
 
   ctx.drawImage(diamond, 370, 170, 24, 24); // vị trí và kích thước tùy chỉnh
@@ -218,7 +219,7 @@ async function createInventoryImage(displayName, stone, inventory, page = 1, ite
   ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
 
 
-  ctx.font = '28px Updock';
+  ctx.font = '28px Pacifico';
   ctx.fillStyle = '#1A2A4F';
   ctx.fillText(`💰 Túi trữ vật – Trang ${page}`, 40, 50);
 
@@ -229,11 +230,12 @@ async function createInventoryImage(displayName, stone, inventory, page = 1, ite
   pageItems.forEach((item, index) => {
     const y = 100 + index * itemHeight;
     ctx.fillStyle = getColorByRarity(item.rarity);
+
     ctx.fillText(`${item.name} x${item.quantity}`, 60, y);
-    ctx.font = '28px Updock';
-    ctx.fillStyle = '#ffe2e7';
-    ctx.fillText(`${item.description}`, 60, y + 25);
-    ctx.font = '24px Updock';
+    ctx.font = '20px Updock';
+    ctx.fillStyle = '#666666';
+    ctx.fillText(`${item.description}`, 70, y + 25);
+    ctx.font = '28px Pacifico';
   });
 
   // Hiển thị tên và linh thạch

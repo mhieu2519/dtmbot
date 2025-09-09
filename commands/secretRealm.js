@@ -56,7 +56,7 @@ async function handleSecretRealm(interaction) {
   user.lastSecretRealmTime = now;
 
   const scenarios = [
-    { text: "gặp yêu thú", weight: 20 },
+    { text: "gặp yêu thú", weight: 2000 },
     { text: "gặp cường giả", weight: 20 },
     { text: "kích hoạt trận pháp ẩn", weight: 5 },
     { text: "cuốc trúng mỏ linh thạch", weight: 50 },
@@ -135,6 +135,7 @@ async function handleSecretRealm(interaction) {
         }
         result += `🪫 Đạo hữu đã thua... Mất ${xpLost} XP.`;
       }
+
       break;
     }
     case "kích hoạt trận pháp ẩn": {

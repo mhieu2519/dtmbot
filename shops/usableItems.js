@@ -5,28 +5,28 @@ module.exports = [
     name: 'Trúc Cơ Đan 🎍',
     effect: 'gainExp',
     amount: 200,
-    description: '+200 exp'
+    description: '+200 tuvi'
   },
   {
     id: 'pharmaEra',
     name: 'Tẩy Tủy Đan 🫐',
     effect: 'gainExp',
     amount: 500,
-    description: '+500 exp'
+    description: '+500 tuvi'
   },
   {
     id: 'pharmaPure',
     name: 'Thanh Tâm Đan 🥑',
     effect: 'gainExp',
     amount: 1000,
-    description: '+1000 exp',
+    description: '+1000 tuvi',
   },
   {
-    id: "grassSorrow",
-    name: "Đoạn Trường Thảo 🌿",
+    id: 'grassSorrow',
+    name: 'Đoạn Trường Thảo 🌿',
     effect: 'gainExp',
     amount: 500,
-    description: '+500 exp'
+    description: '+500 tuvi'
   },
   /*
   {
@@ -71,8 +71,8 @@ module.exports = [
 
   },
   {
-    id: "ancientSword",
-    name: "Cổ Kiếm Linh 🗡️",
+    id: 'ancientSword',
+    name: 'Cổ Kiếm Linh 🗡️',
     effect: {
       type: 'winRateVsMonster',
       value: 0.62,
@@ -90,7 +90,21 @@ module.exports = [
       duration: 3
     },
     description: 'Tăng 35% tỉ lệ chiến thắng khi gặp yêu thú trong 3 lượt.'
-  }
+  },
+  {
+    id: 'spiritGatheringPill',
+    name: 'Tụ Linh Đan 🔮',
+    effect: 'gainExp',
+    amount: 1500,
+    description: '+1500 tuvi'
+  },
 
+  {
+    id: 'iceHeartPill',
+    name: 'Băng Tâm Đan ❄️',
+    effect: 'gainExp',
+    amount: 1500,
+    description: '+1500 tuvi'
+  },
 
 ];
