@@ -23,6 +23,38 @@ const buffNames = {
 };
 
 // 📦 Tạo mô tả cho danh sách buff
+/*
+function renderActiveBuffs(user) {
+    const buffs = user.activeBuffs || [];
+
+    if (buffs.length === 0) {
+        return "📭 Hiện không có buff nào đang được kích hoạt.";
+    }
+    
+        // 🔽 Gom nhóm theo effect + value
+        const grouped = {};
+        for (const buff of buffs) {
+            const key = `${buff.effect}-${buff.value}`;
+            if (!grouped[key]) {
+                grouped[key] = { ...buff, count: 1 };
+            } else {
+                grouped[key].count++;
+                grouped[key].duration += buff.duration; // tổng duration
+            }
+        }
+    
+        // 🔽 Sắp xếp theo value giảm dần
+        const sorted = Object.values(grouped).sort((a, b) => b.value - a.value);
+    
+    const lines = sorted.map(buff => {
+        const name = buffNames[buff.effect] || `Hiệu ứng: ${buff.effect}`;
+        const desc = buffDescriptions[buff.effect] || "";
+        return `🔥 **${name}**\n${desc}\n✨ Giá trị: +${Math.round(buff.value * 100)}% | ⏳ Tổng ${buff.duration} lượt `;
+    });
+
+    return lines.join("\n");
+}
+*/
 function renderActiveBuffs(user) {
     const buffs = user.activeBuffs || [];
 
@@ -30,28 +62,13 @@ function renderActiveBuffs(user) {
         return "📭 Hiện không có buff nào đang được kích hoạt.";
     }
 
-    // 🔽 Gom nhóm theo effect + value
-    const grouped = {};
-    for (const buff of buffs) {
-        const key = `${buff.effect}-${buff.value}`;
-        if (!grouped[key]) {
-            grouped[key] = { ...buff, count: 1 };
-        } else {
-            grouped[key].count++;
-            grouped[key].duration += buff.duration; // tổng duration
-        }
-    }
-
-    // 🔽 Sắp xếp theo value giảm dần
-    const sorted = Object.values(grouped).sort((a, b) => b.value - a.value);
-
-    const lines = sorted.map(buff => {
+    const lines = buffs.map((buff, index) => {
         const name = buffNames[buff.effect] || `Hiệu ứng: ${buff.effect}`;
         const desc = buffDescriptions[buff.effect] || "";
-        return `🔥 **${name}**\n${desc}\n✨ Giá trị: +${Math.round(buff.value * 100)}% | ⏳ Tổng ${buff.duration} lượt | 📦 Stack: x${buff.count}`;
+        return `🔥 **${name}**\n${desc}\n✨ Giá trị: +${buff.value * 100}% | ⏳ Còn ${buff.duration} lượt\n`;
     });
 
-    return lines.join("\n\n");
+    return lines.join("\n");
 }
 
 
