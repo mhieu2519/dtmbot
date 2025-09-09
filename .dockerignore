@@ -1,0 +1,20 @@
+# Dependencies cục bộ
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Env
+.env
+
+# Hệ thống
+.DS_Store
+*.swp
+
+# Logs
+logs
+*.log
+
+# Cache
+.cache
+dist
+build
