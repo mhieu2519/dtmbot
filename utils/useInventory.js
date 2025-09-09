@@ -11,20 +11,27 @@ const { removeItemFromInventory } = require('./inventory');
 const { addXP } = require('./xpSystem');
 const BuffClasses = require('../buffs'); // mapping buffName => class
 
-// 🎯 Thêm hoặc cập nhật buff (stack duration, chọn value lớn nhất)
+// 🎯 Thêm buff mới (không gộp, cho phép nhiều buff cùng effect nhưng khác value)
 async function addBuff(user, effect, value, duration) {
   user.activeBuffs = user.activeBuffs || [];
 
-  const existing = user.activeBuffs.find(b => b.effect === effect);
+  // Kiểm tra xem có buff giống hệt (effect + value) chưa
+  const existing = user.activeBuffs.find(b => b.effect === effect && b.value === value);
+
   if (existing) {
+    // Nếu đã có cùng effect + value -> chỉ cộng thêm duration (stack)
     existing.duration += duration;
-    existing.value = Math.max(existing.value, value);
   } else {
+    // Nếu khác value -> push thành buff mới
     user.activeBuffs.push({ effect, value, duration });
   }
 
+  // Sắp xếp lại: buff mạnh hơn đứng trước
+  user.activeBuffs.sort((a, b) => b.value - a.value);
+
   await user.save();
 }
+
 
 // 🩸 Giao diện chọn vật phẩm để dùng
 async function handleUseItem(interaction) {
