@@ -56,13 +56,13 @@ async function handleSecretRealm(interaction) {
   user.lastSecretRealmTime = now;
 
   const scenarios = [
-    { text: "gặp yêu thú", weight: 25 },
+    { text: "gặp yêu thú", weight: 50 },
     { text: "gặp cường giả", weight: 20 },
-    { text: "kích hoạt trận pháp ẩn", weight: 1 },
-    { text: "cuốc trúng mỏ linh thạch", weight: 30 },
+    { text: "kích hoạt trận pháp ẩn", weight: 5 },
+    { text: "cuốc trúng mỏ linh thạch", weight: 50 },
     { text: "mở được kho báu bí cảnh", weight: 25 },
-    { text: "gặp đỉnh cấp yêu thú", weight: 25 },
-    { text: "tìm thấy vật phẩm ẩn giấu", weight: 4 },
+    { text: "gặp đỉnh cấp yêu thú", weight: 5 },
+    { text: "tìm thấy vật phẩm ẩn giấu", weight: 2 },
     { text: "gặp được truyền thừa ẩn giấu", weight: 5 },
     { text: "gặp cường giả Hắc Ảnh Môn", weight: 5 }
   ];

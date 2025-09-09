@@ -5,7 +5,7 @@ module.exports = [
     description: "Thanh kiếm từng thuộc về đại năng cổ xưa.",
     rarity: "legendary",
     quantity: 1,
-    weight: 3 // xác suất thấp
+    weight: 2 // xác suất thấp
   },
   {
     id: "phoenixFeather",
@@ -13,7 +13,7 @@ module.exports = [
     description: "Mang theo hơi thở bất tử.",
     rarity: "epic",
     quantity: 1,
-    weight: 3
+    weight: 1
   },
   {
     id: "spiritStone",
@@ -21,7 +21,7 @@ module.exports = [
     description: "Đá chứa linh khí của đất trời.",
     rarity: "common",
     quantity: 2,
-    weight: 10 // rơi thường xuyên
+    weight: 20 // rơi thường xuyên
   },
   {
     id: "rareGem",
@@ -29,7 +29,7 @@ module.exports = [
     description: "Đá tồn tại từ thượng cổ.",
     rarity: "common",
     quantity: 2,
-    weight: 10
+    weight: 20
   },
   {
     id: "shield",
@@ -45,7 +45,7 @@ module.exports = [
     description: "Chứa đựng bí thuật cổ xưa.",
     rarity: "epic",
     quantity: 1,
-    weight: 3 // xác suất thấp
+    weight: 2 // xác suất thấp
   },
   // Cỏ đoạn trường
   {
@@ -63,7 +63,7 @@ module.exports = [
     description: "Chứa sức mạnh linh khí đặc biệt.",
     rarity: "common",
     quantity: 1,
-    weight: 10
+    weight: 20
   },
   // mảnh ghép tàn đồ
   {
@@ -90,7 +90,7 @@ module.exports = [
     description: 'Tăng 35% tỉ lệ thắng yêu thú trong 3 lượt',
     rarity: "epic",
     quantity: 1,
-    weight: 20,
+    weight: 30,
   }
 
 ];
