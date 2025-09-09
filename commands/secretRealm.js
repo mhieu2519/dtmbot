@@ -4,7 +4,7 @@ const { addItemToInventory } = require("../utils/inventory");
 const hiddenItem = require("../shops/hiddenItems");
 const BuffClasses = require('../buffs'); // ánh xạ effect -> class
 const { runBuffHook } = require('../buffs/utils/buffEngine');
-const COOLDOWN = 45 * 1000;
+const COOLDOWN = 30 * 1000; //giảm= 30S
 
 function chooseWeighted(scenarios) {
   const totalWeight = scenarios.reduce((sum, item) => sum + item.weight, 0);
