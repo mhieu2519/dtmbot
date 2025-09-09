@@ -1,34 +1,51 @@
-
 // buffs/utils/buffEngine.js
-
 const BuffClasses = require('../index');
+
+// Những effect chỉ nên tiêu thụ 1 buff / lượt
+const EXCLUSIVE_PER_HOOK = {
+    onBattleCheck: new Set(['winRateVsMonster'])
+};
 
 function runBuffHook(user, hookName, stateOrData) {
     if (!user.activeBuffs) return;
 
+    const exclusiveSet = EXCLUSIVE_PER_HOOK[hookName] || new Set();
     const updatedBuffs = [];
+    const consumedOnce = new Set(); // đánh dấu effect nào đã tiêu thụ rồi
 
-    for (let i = 0; i < user.activeBuffs.length; i++) {
-        const buffData = user.activeBuffs[i];
+    // Sắp xếp để buff mạnh hơn xử lý trước
+    const buffsSorted = [...user.activeBuffs].sort((a, b) => {
+        if (exclusiveSet.has(a.effect) && a.effect === b.effect) {
+            return b.value - a.value; // mạnh -> yếu
+        }
+        return 0;
+    });
+
+    for (const buffData of buffsSorted) {
         const BuffClass = BuffClasses[buffData.effect];
-        if (!BuffClass) continue;
-
-        const buff = new BuffClass(buffData);
-
-        let used = false;
-        if (typeof buff[hookName] === 'function') {
-            // Nếu hook trả về true thì xem là "buff đã dùng"
-            used = buff[hookName](stateOrData) === true;
+        if (!BuffClass) {
+            if (buffData.duration > 0) updatedBuffs.push(buffData);
+            continue;
         }
 
-        // Nếu được dùng -> trừ duration
+        const buff = new BuffClass(buffData);
+        let used = false;
+        const isExclusive = exclusiveSet.has(buffData.effect);
+
+        if (typeof buff[hookName] === 'function') {
+            if (isExclusive && consumedOnce.has(buffData.effect)) {
+                // đã có 1 buff effect này dùng rồi => bỏ qua
+            } else {
+                used = buff[hookName](stateOrData) === true;
+                if (used && isExclusive) consumedOnce.add(buffData.effect);
+            }
+        }
+
         if (used) {
             buff.tickDuration();
-            // console.log(`[BUFF] ${buff.name} (${buff.effect}) used - còn lại ${buff.duration} lượt.`);
         }
 
         buffData.duration = buff.duration;
-
         if (buff.duration > 0) {
             updatedBuffs.push(buffData);
         }
@@ -37,6 +54,4 @@ function runBuffHook(user, hookName, stateOrData) {
     user.activeBuffs = updatedBuffs;
 }
 
-module.exports = {
-    runBuffHook
-};
+module.exports = { runBuffHook };
