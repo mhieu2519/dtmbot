@@ -1,6 +1,6 @@
 // 📁 shops/shopItems.js
 //module.tuviorts = [
-modeule.exports = [
+module.exports = [
   {
     // trúc cơ đan
     id: 'pharmaBamboo',
