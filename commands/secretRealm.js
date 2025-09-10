@@ -57,20 +57,20 @@ async function handleSecretRealm(interaction) {
 
   const scenarios = [
     { text: "gặp yêu thú", weight: 20 },
-    { text: "gặp cường giả", weight: 20 },
+    { text: "gặp cường giả", weight: 30 },
     { text: "kích hoạt trận pháp ẩn", weight: 5 },
     { text: "cuốc trúng mỏ linh thạch", weight: 50 },
     { text: "mở được kho báu bí cảnh", weight: 25 },
     { text: "gặp đỉnh cấp yêu thú", weight: 25 },
-    { text: "tìm thấy vật phẩm ẩn giấu", weight: 2 },
+    { text: "tìm thấy vật phẩm ẩn giấu", weight: 10 },
     { text: "gặp được truyền thừa ẩn giấu", weight: 5 },
     { text: "gặp cường giả Hắc Ảnh Môn", weight: 5 },
-    { text: "bị cuốn vào không gian loạn lưu", weight: 3 },
-    { text: "phát hiện di tích cổ bị phong ấn", weight: 6 },
-    { text: "bị đánh lén bởi cường giả Hắc Ảnh Môn ", weight: 4 },
+    { text: "bị cuốn vào không gian loạn lưu", weight: 1 },
+    { text: "phát hiện di tích cổ bị phong ấn", weight: 10 },
+    { text: "bị đánh lén bởi đệ tử Hắc Ảnh Môn ", weight: 5 },
     //{ text: "phát hiện bí mật cổ xưa", weight: 7 },
-    { text: "gặp phải cạm bẫy linh lực", weight: 12 },
-    { text: "gặp cơ duyên ngộ đạo", weight: 8 },
+    { text: "gặp phải cạm bẫy linh lực", weight: 8 },
+    { text: "gặp cơ duyên ngộ đạo", weight: 1 },
 
   ];
 
@@ -128,7 +128,7 @@ async function handleSecretRealm(interaction) {
       break;
     }
     case "gặp đỉnh cấp yêu thú": {
-      const win = Math.random() < (0.15 + buffState.winChance);
+      const win = Math.random() < (0.25 + buffState.winChance);
       if (win) {
         const xpGain = getRandom(300, 550) + Math.floor(buffState.xpBonus);
         const stones = getRandom(100, 400) + Math.floor(buffState.stoneBonus);
@@ -159,13 +159,13 @@ async function handleSecretRealm(interaction) {
       break;
     }
     case "gặp cường giả Hắc Ảnh Môn": {
-      const win = Math.random() < 0.2;
+      const win = Math.random() < 0.3;
       if (win) {
         const xpGain = getRandom(300, 500) + Math.floor(buffState.xpBonus);
         await addXP(userId, guildId, xpGain, interaction);
         result += `⚔️ Chiến thắng cường giả Hắc Ảnh Môn! Tăng ${xpGain} Tuvi.`;
       } else {
-        const xpLost = getRandom(200, 300) - Math.floor(buffState.xpBonus);
+        const xpLost = getRandom(200, 500) - Math.floor(buffState.xpBonus);
         const stones = getRandom(500, 700) - Math.floor(buffState.stoneBonus);
         user.stone = Math.max(0, user.stone - stones);
         user.xp = Math.max(0, user.xp - xpLost);
@@ -211,11 +211,11 @@ async function handleSecretRealm(interaction) {
       result += '🏦 Di tích cổ đã bị phong ấn, chưa đến thời gian khai mở...';
       break;
     }
-    case "bị đánh lén bởi cường giả Hắc Ảnh Môn ": {
+    case "bị đánh lén bởi đệ tử Hắc Ảnh Môn ": {
 
-      const xpLost = getRandom(100, 200) - Math.floor(buffState.xpBonus);
+      const xpLost = getRandom(100, 400) - Math.floor(buffState.xpBonus);
       user.xp = Math.max(0, user.xp - xpLost);
-      result += `🥷 Đạo hữu... Mất ${xpLost} Tuvi và ${stones}💎.`;
+      result += `🥷 Đạo hữu... Mất ${xpLost} Tuvi.`;
 
       break;
     }

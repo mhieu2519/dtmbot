@@ -20,8 +20,8 @@ module.exports = [
     name: "Đá thiên nhiên 🪨",
     description: "Đá chứa linh khí của đất trời.",
     rarity: "common",
-    quantity: 2,
-    weight: 20 // rơi thường xuyên
+    quantity: 1,
+    weight: 50 // rơi thường xuyên
   },
   {
     id: "rareGem",
@@ -63,7 +63,7 @@ module.exports = [
     description: "Chứa sức mạnh linh khí đặc biệt.",
     rarity: "common",
     quantity: 1,
-    weight: 20
+    weight: 30
   },
   // mảnh ghép tàn đồ
   {
@@ -146,7 +146,7 @@ module.exports = [
     description: "Thảo dược giúp thanh lọc tâm trí, ổn định linh hồn.",
     rarity: "common",
     quantity: 1,
-    weight: 10
+    weight: 40
   },
   {
     id: "dragonScale",

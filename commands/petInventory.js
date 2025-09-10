@@ -17,7 +17,7 @@ async function createPetInventoryImage(displayName, inventoryPet, page = 1, item
     // Tiêu đề
     ctx.font = '28px Pacifico';
     ctx.fillStyle = '#1A2A4F';
-    ctx.fillText(`🪅 – Trang ${page}`, 40, 50);
+    ctx.fillText(`Túi 🪅 – Trang ${page}`, 40, 50);
     ctx.font = '20px Pacifico';
     ctx.fillText(`🔒 Túi hiện đang khóa.!`, 300, 150);
 

@@ -63,8 +63,8 @@ const sellableItems = [
   {
     id: "mindClearHerb",
     name: "Thanh Tâm Thảo 🌿",
-    sellPrice: 100,
-    bonusExp: 1
+    sellPrice: 150,
+    bonusExp: 2
   },
   {
     id: "bloodMoonHerb",
