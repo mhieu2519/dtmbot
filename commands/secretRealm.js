@@ -56,7 +56,7 @@ async function handleSecretRealm(interaction) {
   user.lastSecretRealmTime = now;
 
   const scenarios = [
-    { text: "gặp yêu thú", weight: 2000 },
+    { text: "gặp yêu thú", weight: 20 },
     { text: "gặp cường giả", weight: 20 },
     { text: "kích hoạt trận pháp ẩn", weight: 5 },
     { text: "cuốc trúng mỏ linh thạch", weight: 50 },
@@ -64,7 +64,14 @@ async function handleSecretRealm(interaction) {
     { text: "gặp đỉnh cấp yêu thú", weight: 25 },
     { text: "tìm thấy vật phẩm ẩn giấu", weight: 2 },
     { text: "gặp được truyền thừa ẩn giấu", weight: 5 },
-    { text: "gặp cường giả Hắc Ảnh Môn", weight: 5 }
+    { text: "gặp cường giả Hắc Ảnh Môn", weight: 5 },
+    { text: "bị cuốn vào không gian loạn lưu", weight: 3 },
+    { text: "phát hiện di tích cổ bị phong ấn", weight: 6 },
+    { text: "bị đánh lén bởi cường giả Hắc Ảnh Môn ", weight: 4 },
+    //{ text: "phát hiện bí mật cổ xưa", weight: 7 },
+    { text: "gặp phải cạm bẫy linh lực", weight: 12 },
+    { text: "gặp cơ duyên ngộ đạo", weight: 8 },
+
   ];
 
   // 👉 Buff ảnh hưởng trọng số kịch bản
@@ -96,14 +103,14 @@ async function handleSecretRealm(interaction) {
         if (!buffState.preventXPLoss) {
           user.xp = Math.max(0, user.xp - xpLost);
         }
-        result += `🛡️ Thất bại... Mất ${xpLost} XP.`;
+        result += `🛡️ Thất bại... Mất ${xpLost} Tuvi.`;
       }
       break;
     }
     case "gặp cường giả": {
       const xpGain = getRandom(50, 250) + Math.floor(buffState.xpBonus);
       await addXP(userId, guildId, xpGain, interaction);
-      result += `🧙 Cường giả chỉ điểm, nhận ${xpGain} XP.`;
+      result += `🧙 Cường giả chỉ điểm, tăng ${xpGain} Tuvi.`;
       break;
     }
     case "cuốc trúng mỏ linh thạch": {
@@ -117,7 +124,7 @@ async function handleSecretRealm(interaction) {
       const stones = getRandom(100, 250) + Math.floor(buffState.stoneBonus);
       user.stone += stones;
       await addXP(userId, guildId, xp, interaction);
-      result += `🎁 Kho báu chứa ${xp} XP và ${stones} linh thạch!`;
+      result += `🎁 Kho báu chứa ${stones} linh thạch và kích hoạt tăng ${xp} Tuvi!`;
       break;
     }
     case "gặp đỉnh cấp yêu thú": {
@@ -127,13 +134,13 @@ async function handleSecretRealm(interaction) {
         const stones = getRandom(100, 400) + Math.floor(buffState.stoneBonus);
         user.stone += stones;
         await addXP(userId, guildId, xpGain, interaction);
-        result += `🐉 Chiến thắng đỉnh cấp yêu thú! Nhận ${xpGain} XP và ${stones}💎.`;
+        result += `🐉 Chiến thắng đỉnh cấp yêu thú! Tăng ${xpGain} Tuvi và ${stones}💎.`;
       } else {
         const xpLost = getRandom(150, 400) - Math.floor(buffState.xpBonus);
         if (!buffState.preventXPLoss) {
           user.xp = Math.max(0, user.xp - xpLost);
         }
-        result += `🪫 Đạo hữu đã thua... Mất ${xpLost} XP.`;
+        result += `🪫 Đạo hữu đã thua... Mất ${xpLost} Tuvi.`;
       }
 
       break;
@@ -147,7 +154,7 @@ async function handleSecretRealm(interaction) {
       } else {
         const xpLost = getRandom(800, 1200) - Math.floor(buffState.xpBonus);
         user.xp = Math.max(0, user.xp - xpLost);
-        result += `🧮 Đạo hữu không thể thoát ra... Tự động trừ ${xpLost} XP.`;
+        result += `🧮 Đạo hữu không thể thoát ra... Tự động trừ ${xpLost} Tuvi.`;
       }
       break;
     }
@@ -156,13 +163,13 @@ async function handleSecretRealm(interaction) {
       if (win) {
         const xpGain = getRandom(300, 500) + Math.floor(buffState.xpBonus);
         await addXP(userId, guildId, xpGain, interaction);
-        result += `⚔️ Chiến thắng cường giả Hắc Ảnh Môn! Nhận ${xpGain} XP.`;
+        result += `⚔️ Chiến thắng cường giả Hắc Ảnh Môn! Tăng ${xpGain} Tuvi.`;
       } else {
         const xpLost = getRandom(200, 300) - Math.floor(buffState.xpBonus);
         const stones = getRandom(500, 700) - Math.floor(buffState.stoneBonus);
         user.stone = Math.max(0, user.stone - stones);
         user.xp = Math.max(0, user.xp - xpLost);
-        result += `🎭 Thất bại trước cường giả Hắc Ảnh Môn... Mất ${xpLost} XP và ${stones}💎 để chạy thoát...`;
+        result += `🎭 Thất bại trước cường giả Hắc Ảnh Môn... Mất ${xpLost} Tuvi và ${stones}💎 để chạy thoát...`;
       }
       break;
     }
@@ -171,7 +178,7 @@ async function handleSecretRealm(interaction) {
       const stones = getRandom(300, 500) + Math.floor(buffState.stoneBonus);
       user.stone += stones;
       await addXP(userId, guildId, xpGain, interaction);
-      result += `📜 Nhận được truyền thừa ẩn giấu, tăng ${xpGain} XP và ${stones} linh thạch.`;
+      result += `📜 Nhận được truyền thừa ẩn giấu, tăng ${xpGain} Tuvi và ${stones} linh thạch.`;
       break;
     }
     case "tìm thấy vật phẩm ẩn giấu": {
@@ -185,6 +192,51 @@ async function handleSecretRealm(interaction) {
       };
       await addItemToInventory(user, item);
       result += `⚡ Tìm thấy vật phẩm ẩn giấu: **${item.name}**.\n${item.description}`;
+      break;
+    }
+    case "bị cuốn vào không gian loạn lưu": {
+      const win = Math.random() < 0.2;
+      if (win) {
+        const stones = getRandom(600, 1000) + Math.floor(buffState.stoneBonus);
+        user.stone += stones;
+        result += `🌪️ Vượt qua không gian loạn lưu! Nhận ${stones} linh thạch.`;
+      } else {
+        const xpLost = getRandom(500, 1200) - Math.floor(buffState.xpBonus);
+        user.xp = Math.max(0, user.xp - xpLost);
+        result += `🌀 Bị lạc trong không gian loạn lưu... Mất ${xpLost} Tuvi.`;
+      }
+      break;
+    }
+    case "phát hiện di tích cổ bị phong ấn": {
+      result += '🏦 Di tích cổ đã bị phong ấn, chưa đến thời gian khai mở...';
+      break;
+    }
+    case "bị đánh lén bởi cường giả Hắc Ảnh Môn ": {
+
+      const xpLost = getRandom(100, 200) - Math.floor(buffState.xpBonus);
+      user.xp = Math.max(0, user.xp - xpLost);
+      result += `🥷 Đạo hữu... Mất ${xpLost} Tuvi và ${stones}💎.`;
+
+      break;
+    }
+    case "gặp phải cạm bẫy linh lực": {
+      const win = Math.random() < 0.35;
+      if (win) {
+        const stones = getRandom(150, 300) + Math.floor(buffState.stoneBonus)
+        user.stone += stones
+
+        result += `🪤 Thoát khỏi cạm bẫy linh lực! Nhận ${stones} linh thạch`
+      } else {
+        const xpLost = getRandom(100, 250) - Math.floor(buffState.xpBonus);
+        user.xp = Math.max(0, user.xp - xpLost);
+        result += `⚡ Bị thương bởi cạm bẫy linh lực... Mất ${xpLost} Tuvi.`;
+      }
+      break;
+    }
+    case "gặp cơ duyên ngộ đạo": {
+      const xpGain = getRandom(1000, 1600);
+      await addXP(userId, guildId, xpGain, interaction);
+      result += `🪷 Ngộ đạo thành công! Tăng ${xpGain} Tuvi.`;
       break;
     }
   }

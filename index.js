@@ -48,6 +48,7 @@ const { canUseCommand } = require('./utils/cooldown');
 const { createCanvas, loadImage } = require("canvas");
 const { addXP, getRandom, handleDailyAutoXP } = require("./utils/xpSystem");
 const { showRank, createInventoryImage, createInventoryButtons } = require("./commands/rank");
+const { createPetInventoryImage, createInventoryPetButtons } = require("./commands/petInventory");
 const { showLeaderboard } = require("./commands/leaderboard");
 const { handleSecretRealm } = require("./commands/secretRealm");
 const { handleBuffCheck } = require("./utils/buttonActiveBuffs");
@@ -121,6 +122,12 @@ bot.on("interactionCreate", async (interaction) => {
               new ButtonBuilder()
                 .setCustomId("open_inventory")
                 .setLabel("📦 Túi trữ vật")
+                .setStyle(ButtonStyle.Secondary)
+            ),
+            new ActionRowBuilder().addComponents(
+              new ButtonBuilder()
+                .setCustomId("open_petinventory")
+                .setLabel("🪅 Túi linh thú")
                 .setStyle(ButtonStyle.Secondary)
             ),
             new ActionRowBuilder().addComponents(
@@ -380,6 +387,8 @@ bot.on("interactionCreate", async (interaction) => {
 
     //const inventory = userData ? userData.inventory || [] : []; // Lấy túi đồ người chơi từ DB hoặc cache
     const inventory = Array.isArray(userData.inventory) ? userData.inventory : []; // Đảm bảo inventory là mảng
+    const inventoryPet = Array.isArray(userData.inventoryPet) ? userData.inventoryPet : []; // Đảm bảo inventory là mảng
+
     if (id === 'open_inventory') {
       //await interaction.deferUpdate(); // tránh lỗi Unknown interaction
       const page = 1;
@@ -390,6 +399,18 @@ bot.on("interactionCreate", async (interaction) => {
         files: [{ attachment: buffer, name: 'inventory.png' }],
         components: buttons
       });
+    }
+    if (id === 'open_petinventory') {
+      // await interaction.deferUpdate(); // tránh lỗi Unknown interaction
+      const page = 1;
+      const buffer = await createPetInventoryImage(displayName, inventoryPet, page);
+      const buttons = createInventoryPetButtons(page, Math.ceil(inventory.length / 3));
+      await interaction.update({
+        files: [{ attachment: buffer, name: 'pet_inventory.png' }],
+        components: buttons
+      });
+
+
     }
     if (id === 'open_shop') {
       await handleShopCommand(interaction);
@@ -416,7 +437,15 @@ bot.on("interactionCreate", async (interaction) => {
         components: buttons
       });
     }
-
+    if (id.startsWith('prev_petinventory_') || id.startsWith('next_petinventory_')) {
+      const page = parseInt(interaction.customId.split('_').pop());
+      const buffer = await createPetInventoryImage(displayName, inventoryPet, page);
+      const buttons = createInventoryPetButtons(page, Math.ceil(inventoryPet.length / 3));
+      await interaction.update({
+        files: [{ attachment: buffer, name: 'pet_inventory.png' }],
+        components: buttons
+      });
+    }
     if (id === "back_to_profile") {
       await interaction.deferUpdate();
       const buffer = await showRank(interaction); // Ảnh profile
@@ -426,6 +455,12 @@ bot.on("interactionCreate", async (interaction) => {
           new ButtonBuilder()
             .setCustomId('open_inventory')
             .setLabel('📦 Túi trữ vật')
+            .setStyle(ButtonStyle.Secondary)
+        ),
+        new ActionRowBuilder().addComponents(
+          new ButtonBuilder()
+            .setCustomId("open_petinventory")
+            .setLabel("🪅 Túi linh thú")
             .setStyle(ButtonStyle.Secondary)
         ),
         new ActionRowBuilder().addComponents(

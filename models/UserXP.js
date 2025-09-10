@@ -21,6 +21,17 @@ const userXPSchema = new mongoose.Schema({
       obtainedAt: { type: Date, default: Date.now } // Ngày nhận
     }
   ],
+  inventoryPet: [
+    {
+      petId: String,          // ID duy nhất của linh thú
+      name: String,           // Tên linh thú
+      type: String,           // Loại linh thú (ví dụ: "thú cưng", "huyền thoại")
+      level: { type: Number, default: 1 }, // Cấp độ linh thú
+      rarity: String,         // Độ hiếm (ví dụ: "thường", "hiếm", "truyền thuyết")
+      description: String,    // Mô tả linh thú
+      obtainedAt: { type: Date, default: Date.now } // Ngày nhận
+    }
+  ],
   // ✅ Thêm phần buff ở đây
   // ✅ Lưu danh sách buff đang hoạt động
   activeBuffs: [
