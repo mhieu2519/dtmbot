@@ -1,5 +1,6 @@
 // 📁 shops/shopItems.js
-module.tuviorts = [
+//module.tuviorts = [
+modeule.exports = [
   {
     // trúc cơ đan
     id: 'pharmaBamboo',
@@ -28,13 +29,12 @@ module.tuviorts = [
     rarity: 'rare',
     maxQuantity: 10,
   },
-
   {
     id: 'spiritGatheringPill',
     name: 'Tụ Linh Đan 🔮',
-    description: 'Đan dược hấp thụ linh khí từ thiên địa, +200 tuvi.',
-    price: 600,
-    sellPrice: 450,
+    description: 'Đan dược hấp thụ linh khí từ thiên địa, +1500 tuvi.',
+    price: 715,
+    sellPrice: 680,
     rarity: 'epic',
     maxQuantity: 5
   },
@@ -42,14 +42,12 @@ module.tuviorts = [
   {
     id: 'iceHeartPill',
     name: 'Băng Tâm Đan ❄️',
-    description: 'Đan dược giúp tâm trí thanh tịnh, +200 tuvi.',
+    description: 'Đan dược giúp tâm trí thanh tịnh, +1800 tuvi.',
     rarity: 'epic',
-    price: 600,
-    sellPrice: 450,
-    maxQuantity: 5
+    price: 850,
+    sellPrice: 810,
+    maxQuantity: 3
   },
-
-
 
   {
     id: 'luckyCharm',

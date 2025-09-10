@@ -103,8 +103,8 @@ module.exports = [
     id: 'iceHeartPill',
     name: 'Băng Tâm Đan ❄️',
     effect: 'gainExp',
-    amount: 1500,
-    description: '+1500 tuvi'
+    amount: 1800,
+    description: '+1800 tuvi'
   },
 
 ];
