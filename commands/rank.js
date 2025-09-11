@@ -167,7 +167,7 @@ async function showRank(interaction) {
   ctx.fillStyle = "#fff";
   ctx.shadowBlur = 20;
   ctx.font = "Italic 24px Comic Sans MS";
-  ctx.fillText(`Level: ${userData.level}`, 250, 110);
+  ctx.fillText(`Cấp độ: ${userData.level}`, 250, 110);
   ctx.fillText(`Tuvi: ${userData.xp} / ${nextXP}`, 250, 150);
   ctx.fillText(`Rank: #${rank}`, 250, 190);
 

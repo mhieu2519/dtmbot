@@ -1,16 +1,16 @@
-const { 
-  SlashCommandBuilder, 
-  MessageFlags, 
-  ActionRowBuilder, 
-  ButtonBuilder, 
-  ButtonStyle, 
-  StringSelectMenuBuilder 
+const {
+  SlashCommandBuilder,
+  MessageFlags,
+  ActionRowBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  StringSelectMenuBuilder
 } = require('discord.js');
 
 const shopItems = require('../shops/shopItems'); // danh sách vật phẩm shop
 const UserXP = require('../models/UserXP');
-const { addItemToInventory, removeItemFromInventory } = require('../utils/inventory'); 
-const { addXP} = require('../utils/xpSystem');
+const { addItemToInventory, removeItemFromInventory } = require('../utils/inventory');
+const { addXP } = require('../utils/xpSystem');
 const sellableItems = require('../shops/sellableItems');
 
 const LOG_CHANNEL_ID = process.env.LOG_CHANNEL_ID;
@@ -39,7 +39,7 @@ async function handleShopBuy(interaction) {
   const options = shopItems.map((item, index) => ({
     label: item.name,
     description: `Giá: ${item.price} linh thạch`,
-   // value: `buy_${item.id}`,
+    // value: `buy_${item.id}`,
     value: item.id
   }));
 
@@ -59,7 +59,7 @@ async function handleShopBuy(interaction) {
 
 // Xử lý sự kiện khi người dùng chọn vật phẩm để mua
 async function handleBuyItemSelection(interaction) {
- 
+
   const selectedItemId = interaction.values[0];
   const item = shopItems.find(i => i.id === selectedItemId);
   if (!item) return await interaction.reply({ content: '❌ Vật phẩm không tồn tại.', flags: MessageFlags.Ephemeral });
@@ -81,26 +81,26 @@ async function handleBuyItemSelection(interaction) {
   );
 
   await interaction.update({
-    content: `🛒 Đạo hữu đã chọn **${item.name}**\n💵 Giá mỗi vật phẩm: ${item.price} linh thạch\n➡️ Đạo hữu vui lòng chọn số lượng muốn mua:`,
+    content: `🛒 Đạo hữu đã chọn **${item.name}**\n🗒️ Mô tả: ${item.description}\n💵 Giá mỗi vật phẩm: ${item.price} linh thạch\n➡️ Đạo hữu vui lòng chọn số lượng muốn mua:`,
     components: [row]
   });
 }
 // Xử lý sự kiện khi người dùng chọn số lượng mua
 async function handleBuyQuantitySelection(interaction, user) {
-  
-  const raw = interaction.values[0]; 
-  const parts = raw.split('::'); 
-  const quantity = parseInt(parts.pop()); 
-  const itemId = parts.slice(1).join('::'); 
+
+  const raw = interaction.values[0];
+  const parts = raw.split('::');
+  const quantity = parseInt(parts.pop());
+  const itemId = parts.slice(1).join('::');
   const item = shopItems.find(i => i.id === itemId);
   if (!item) {
     console.log('❌ Không tìm thấy item:', itemId);
-     return await interaction.update({ content: `❌ Không tìm thấy vật phẩm: ${itemId}`, components: [] });
+    return await interaction.update({ content: `❌ Không tìm thấy vật phẩm: ${itemId}`, components: [] });
   }
 
   const totalCost = item.price * quantity;
   const canAfford = user.stone >= totalCost;
- 
+
   const buyButton = new ButtonBuilder()
     .setCustomId(`confirm::buy::${item.id}::${quantity}`)
     .setLabel(`🛒 Mua x${quantity} (${totalCost} linh thạch)`)
@@ -116,8 +116,8 @@ async function handleBuyQuantitySelection(interaction, user) {
 }
 
 // Xử lý sự kiện khi người dùng xác nhận mua hàng
-async function handleConfirmPurchase(interaction, itemId, quantity=1) {
-  
+async function handleConfirmPurchase(interaction, itemId, quantity = 1) {
+
   const item = shopItems.find(i => i.id === itemId);
   const user = await UserXP.findOne({ userId: interaction.user.id, guildId: interaction.guild.id });
   if (!item || !user) return;
@@ -142,31 +142,31 @@ async function handleConfirmPurchase(interaction, itemId, quantity=1) {
   await user.save();
 
   const senderMember = await interaction.guild.members.fetch(interaction.user.id);
-const senderDisplayName = senderMember.displayName;
+  const senderDisplayName = senderMember.displayName;
 
-const logChannel = await interaction.client.channels.fetch(LOG_CHANNEL_ID);
-if (logChannel && logChannel.isTextBased()) {
-  await logChannel.send({
-    content: `📦 **Log mua vật phẩm**\n` +
-            `Người mua: ${senderDisplayName} - ${interaction.user.tag} (${interaction.user.id})\n` +
-            `Vật phẩm: ${item.name} (ID: ${item.id})\n` +
-            `Số lượng: ${quantity}\n` +
-            `Tổng chi phí: ${totalCost} 💎\n` +
-            `Thời gian: <t:${Math.floor(Date.now() / 1000)}:F>`,
-  });
-} else {
-  console.warn("⚠️ Không thể gửi log – không tìm thấy kênh hoặc không phải kênh text.");
-}
+  const logChannel = await interaction.client.channels.fetch(LOG_CHANNEL_ID);
+  if (logChannel && logChannel.isTextBased()) {
+    await logChannel.send({
+      content: `📦 **Log mua vật phẩm**\n` +
+        `Người mua: ${senderDisplayName} - ${interaction.user.tag} (${interaction.user.id})\n` +
+        `Vật phẩm: ${item.name} (ID: ${item.id})\n` +
+        `Số lượng: ${quantity}\n` +
+        `Tổng chi phí: ${totalCost} 💎\n` +
+        `Thời gian: <t:${Math.floor(Date.now() / 1000)}:F>`,
+    });
+  } else {
+    console.warn("⚠️ Không thể gửi log – không tìm thấy kênh hoặc không phải kênh text.");
+  }
 
   const levelUpChannel = await interaction.client.channels.fetch(process.env.LEVELUP_CHANNEL_ID);
   if (levelUpChannel) {
     await levelUpChannel.send({
-        content: `✅ Đạo hữu ${senderDisplayName} đã mua **${item.name}** x${quantity} thành công!\n` +
-                 `💸 Giá: ${totalCost} 💎`
+      content: `✅ Đạo hữu ${senderDisplayName} đã mua **${item.name}** x${quantity} thành công!\n` +
+        `💸 Giá: ${totalCost} 💎`
     });
-    } else {
-      console.warn("Không tìm thấy kênh thông báo level up!");
-    }
+  } else {
+    console.warn("Không tìm thấy kênh thông báo level up!");
+  }
 
   await interaction.update({
     content: `✅ Đạo hữu đã mua **${item.name}** x${quantity} với giá ${totalCost} linh thạch.`,
@@ -178,13 +178,13 @@ if (logChannel && logChannel.isTextBased()) {
 // Bán hàng
 
 function getSellableItemsFromInventory(inventory) {
-  return inventory.filter(invItem => 
+  return inventory.filter(invItem =>
     sellableItems.some(sellItem => sellItem.id === invItem.itemId)
   );
 }
 // Xử lý sự kiện khi người dùng chọn vật phẩm để bán
 async function handleShopSell(interaction) {
-  
+
   const userId = interaction.user.id;
   const guildId = interaction.guild.id;
   const userData = await UserXP.findOne({ guildId, userId });
@@ -197,20 +197,20 @@ async function handleShopSell(interaction) {
   }
   const sellable = getSellableItemsFromInventory(userData.inventory);
   if (sellable.length === 0) {
-    return interaction.reply({ 
-      content: '❌ Không có vật phẩm nào có thể bán.', 
-      flags: MessageFlags.Ephemeral 
+    return interaction.reply({
+      content: '❌ Không có vật phẩm nào có thể bán.',
+      flags: MessageFlags.Ephemeral
     });
   }
- // chỉ hiện vật phẩm ở túi đồ tương thích với hệ thống
+  // chỉ hiện vật phẩm ở túi đồ tương thích với hệ thống
   const options = sellable.map(invItem => {
-  const sellInfo = sellableItems.find(i => i.id === invItem.itemId);
-  return {
-    label: `${sellInfo.name} x${invItem.quantity}`,
-    description: `Giá bán: ${sellInfo.sellPrice} linh thạch`,
-    value: `sell::${invItem.itemId}`
-  };
-});
+    const sellInfo = sellableItems.find(i => i.id === invItem.itemId);
+    return {
+      label: `${sellInfo.name} x${invItem.quantity}`,
+      description: `Giá bán: ${sellInfo.sellPrice} linh thạch`,
+      value: `sell::${invItem.itemId}`
+    };
+  });
 
   const row = new ActionRowBuilder().addComponents(
     new StringSelectMenuBuilder()
@@ -227,8 +227,8 @@ async function handleShopSell(interaction) {
 }
 
 async function handleSellQuantitySelection(interaction, user) {
-  
-  const raw = interaction.values[0]; 
+
+  const raw = interaction.values[0];
   const parts = raw.split('::');
   const quantity = parseInt(parts.pop());
   const itemId = parts.slice(1).join('::');
@@ -237,10 +237,10 @@ async function handleSellQuantitySelection(interaction, user) {
   const inventoryItem = user.inventory.find(i => i.itemId === itemId);
 
   if (!itemData || !inventoryItem || inventoryItem.quantity < quantity) {
-    return interaction.followUp({ 
+    return interaction.followUp({
       content: '❌ Không hợp lệ hoặc không đủ số lượng.',
       flags: MessageFlags.Ephemeral
-      });
+    });
   }
 
   const totalStone = itemData.sellPrice * quantity;
@@ -260,7 +260,7 @@ async function handleSellQuantitySelection(interaction, user) {
 }
 
 async function handleConfirmSell(interaction, itemId, quantity) {
- 
+
   const userId = interaction.user.id;
   const guildId = interaction.guild.id;
 
@@ -278,7 +278,7 @@ async function handleConfirmSell(interaction, itemId, quantity) {
   const totalStone = sellItem.sellPrice * quantity;
   const totalExp = (sellItem.bonusExp || 0) * quantity;
 
-  await removeItemFromInventory(userData, itemId, quantity );
+  await removeItemFromInventory(userData, itemId, quantity);
 
   // Cộng linh thạch
   userData.stone += totalStone;
@@ -296,11 +296,11 @@ async function handleConfirmSell(interaction, itemId, quantity) {
   if (logChannel && logChannel.isTextBased()) {
     await logChannel.send({
       content: `💰 **Log bán vật phẩm**\n` +
-              `Người bán: ${senderDisplayName} - ${interaction.user.tag} (${interaction.user.id})\n` +
-              `Vật phẩm: ${sellItem.name} (ID: ${itemId})\n` +
-              `Số lượng: ${quantity}\n` +
-              `Tổng giá trị: ${totalStone} linh thạch ${totalExp ? ` và ${totalExp} EXP` : ''}\n` +
-              `Thời gian: <t:${Math.floor(Date.now() / 1000)}:F>`,
+        `Người bán: ${senderDisplayName} - ${interaction.user.tag} (${interaction.user.id})\n` +
+        `Vật phẩm: ${sellItem.name} (ID: ${itemId})\n` +
+        `Số lượng: ${quantity}\n` +
+        `Tổng giá trị: ${totalStone} linh thạch ${totalExp ? ` và ${totalExp} EXP` : ''}\n` +
+        `Thời gian: <t:${Math.floor(Date.now() / 1000)}:F>`,
     });
   } else {
     console.warn("⚠️ Không thể gửi log – không tìm thấy kênh hoặc không phải kênh text.");
@@ -309,12 +309,12 @@ async function handleConfirmSell(interaction, itemId, quantity) {
   const levelUpChannel = await interaction.client.channels.fetch(process.env.LEVELUP_CHANNEL_ID);
   if (levelUpChannel) {
     await levelUpChannel.send({
-        content: `✅ Đạo hữu ${senderDisplayName} đã bán **${sellItem.name}** x${quantity} thành công!\n` +
-                 `💎 Nhận ${totalStone} linh thạch${totalExp ? ` và ${totalExp} EXP` : ''}`
+      content: `✅ Đạo hữu ${senderDisplayName} đã bán **${sellItem.name}** x${quantity} thành công!\n` +
+        `💎 Nhận ${totalStone} linh thạch${totalExp ? ` và ${totalExp} EXP` : ''}`
     });
-    } else {
-      console.warn("Không tìm thấy kênh thông báo level up!");
-    }
+  } else {
+    console.warn("Không tìm thấy kênh thông báo level up!");
+  }
   // Gửi phản hồi thành công
   await interaction.update({
     content: `✅ Đạo hữu đã bán **${sellItem.name}** x${quantity} thành công!\n💎 Nhận ${totalStone} linh thạch${totalExp ? ` và ${totalExp} EXP` : ''}`,
@@ -322,12 +322,12 @@ async function handleConfirmSell(interaction, itemId, quantity) {
     flags: MessageFlags.Ephemeral
   });
 }
-module.exports = { 
-  handleShopCommand, 
-  handleShopBuy, 
-  handleShopSell, 
-  handleBuyItemSelection, 
-  handleBuyQuantitySelection, 
+module.exports = {
+  handleShopCommand,
+  handleShopBuy,
+  handleShopSell,
+  handleBuyItemSelection,
+  handleBuyQuantitySelection,
   handleConfirmPurchase,
   handleConfirmSell,
   handleSellQuantitySelection,

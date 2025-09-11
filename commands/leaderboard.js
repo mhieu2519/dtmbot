@@ -20,10 +20,10 @@ async function showLeaderboard(interaction) {
   const leaderboard = topUsers.map((u, i) => {
     const title = getTitle(u.level);
     const medal = i === 0 ? "🥇" : i === 1 ? "🥈" : i === 2 ? "🥉" : `#${i + 1}`;
-    return `${medal} <@${u.userId}> — **${title}** (Level ${u.level}- ${u.xp} XP)`;
+    return `${medal} <@${u.userId}> — **${title}** (Cấp độ ${u.level}- Tuvi ${u.xp})`;
   }).join("\n");
 
-  const requesterName = interaction.member.displayName ;
+  const requesterName = interaction.member.displayName;
 
   await interaction.reply({
     embeds: [{
