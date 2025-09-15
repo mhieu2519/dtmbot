@@ -108,13 +108,13 @@ async function handleSecretRealm(interaction) {
       break;
     }
     case "gặp cường giả": {
-      const xpGain = getRandom(50, 250) + Math.floor(buffState.xpBonus);
+      const xpGain = getRandom(60, 250) + Math.floor(buffState.xpBonus);
       await addXP(userId, guildId, xpGain, interaction);
       result += `🧙 Cường giả chỉ điểm, tăng ${xpGain} Tuvi.`;
       break;
     }
     case "cuốc trúng mỏ linh thạch": {
-      const stones = getRandom(5, 250) + Math.floor(buffState.stoneBonus);
+      const stones = getRandom(5, 400) + Math.floor(buffState.stoneBonus);
       user.stone += stones;
       result += `⛏️ Khai thác mỏ linh thạch, nhận ${stones} linh thạch.`;
       break;
@@ -128,7 +128,7 @@ async function handleSecretRealm(interaction) {
       break;
     }
     case "gặp đỉnh cấp yêu thú": {
-      const win = Math.random() < (0.25 + buffState.winChance);
+      const win = Math.random() < (0.28 + buffState.winChance);
       if (win) {
         const xpGain = getRandom(300, 550) + Math.floor(buffState.xpBonus);
         const stones = getRandom(100, 400) + Math.floor(buffState.stoneBonus);
@@ -146,7 +146,7 @@ async function handleSecretRealm(interaction) {
       break;
     }
     case "kích hoạt trận pháp ẩn": {
-      const win = Math.random() < 0.25;
+      const win = Math.random() < 0.35;
       if (win) {
         const stones = getRandom(300, 500) + Math.floor(buffState.stoneBonus);
         user.stone += stones;
@@ -220,7 +220,7 @@ async function handleSecretRealm(interaction) {
       break;
     }
     case "gặp phải cạm bẫy linh lực": {
-      const win = Math.random() < 0.35;
+      const win = Math.random() < 0.4;
       if (win) {
         const stones = getRandom(150, 300) + Math.floor(buffState.stoneBonus)
         user.stone += stones

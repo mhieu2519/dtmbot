@@ -144,7 +144,7 @@ async function handleUseItemConfirm(interaction, itemId, quantity) {
       case 'gainExp':
         const xp = itemInfo.amount * quantity;
         await addXP(userId, guildId, xp, interaction.client);
-        effectResultText = `✨ Nhận ${xp} XP.`;
+        effectResultText = `✨ Nhận ${xp} Tuvi.`;
         break;
 
       case 'gainStone':
