@@ -171,7 +171,7 @@ module.exports = [
     description: "Xuất hiện vào thiên cổ thời đại, chứa đựng sức mạnh vô hạn ( mở khóa di tích cổ).",
     rarity: "epic",
     quantity: 1,
-    weight: 1000
+    weight: 15
   },
 
 ];
