@@ -10,7 +10,7 @@ module.exports = [
     {
         id: 'spiritGatheringPill',
         name: 'Tụ Linh Đan 🔮',
-        description: '+1500 tuvi',
+        description: 'Đan dược tích lũy linh khí từ thiên địa, +1500 tuvi',
         rarity: 'epic',
         quantity: 1,
         weight: 5
@@ -23,5 +23,14 @@ module.exports = [
         quantity: 1,
         weight: 15
     },
+    {
+        id: 'iceHeartPill',
+        name: 'Băng Tâm Đan ❄️',
+        description: 'Đan dược giúp tâm trí thanh tịnh, +1800 tuvi.',
+        rarity: 'epic',
+        quantity: 1,
+        weight: 2
+    },
+
 
 ]

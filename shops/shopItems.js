@@ -32,7 +32,7 @@ module.exports = [
   {
     id: 'spiritGatheringPill',
     name: 'Tụ Linh Đan 🔮',
-    description: 'Đan dược hấp thụ linh khí từ thiên địa, +1500 tuvi.',
+    description: 'Đan dược tích lũy linh khí từ thiên địa, +1500 tuvi.',
     price: 715,
     sellPrice: 680,
     rarity: 'epic',
@@ -57,6 +57,16 @@ module.exports = [
     sellPrice: 100,
     rarity: 'uncommon',
     maxQuantity: 10
-  }
+  },
+
+  {
+    id: "heavenJade",
+    name: "Thiên Cổ Ngọc Giản 🗞️",
+    description: "Xuất hiện vào thiên cổ thời đại, chứa đựng sức mạnh vô hạn ( mở khóa di tích cổ).",
+    price: 200,
+    sellPrice: 180,
+    rarity: "epic",
+    maxQuantity: 2
+  },
 
 ];

@@ -5,7 +5,7 @@ const hiddenItem = require("../shops/hiddenItems");
 const BuffClasses = require('../buffs'); // ánh xạ effect -> class
 const { runBuffHook } = require('../buffs/utils/buffEngine');
 const { handleAncientRuin } = require("../utils/ancientRuin");
-const COOLDOWN = 30 * 1000; //giảm= 30S
+const COOLDOWN = 20 * 1000; //giảm= 20S
 
 function chooseWeighted(scenarios) {
   const totalWeight = scenarios.reduce((sum, item) => sum + item.weight, 0);
@@ -67,7 +67,7 @@ async function handleSecretRealm(interaction) {
     { text: "gặp được truyền thừa ẩn giấu", weight: 5 },
     { text: "gặp cường giả Hắc Ảnh Môn", weight: 5 },
     { text: "bị cuốn vào không gian loạn lưu", weight: 1 },
-    { text: "phát hiện di tích cổ bị phong ấn", weight: 1000 },
+    { text: "phát hiện di tích cổ bị phong ấn", weight: 10 },
     { text: "bị đánh lén bởi đệ tử Hắc Ảnh Môn ", weight: 5 },
     //{ text: "phát hiện bí mật cổ xưa", weight: 7 },
     { text: "gặp phải cạm bẫy linh lực", weight: 8 },

@@ -3,11 +3,11 @@
 const AncientRuin = require("../models/AncientRuin");
 const { addItemToInventory, getItemFromInventory, removeItemFromInventory } = require("./inventory");
 const itemsAncient = require("../shops/itemsAncient");
+const itemsSpiritBeast = require("../shops/itemsSpiritBeast");
 const { getRandom, addXP } = require("./xpSystem");
-// defoult sealedCounter = 10
-// defoult entryLimit = 0  
-const SEALED_COUNTER = 3;
-const ENTRY_LIMIT = 2; // số lượt cho phép vào khi mở
+
+const SEALED_COUNTER = 5;
+const ENTRY_LIMIT = 3; // số lượt cho phép vào khi mở
 /**
  * Xử lý khi người chơi gặp di tích cổ.
  * Chu trình:
@@ -64,10 +64,10 @@ async function handleAncientRuin(user, guildId) {
         const key = getItemFromInventory(user, "heavenJade");
         if (key) {
             await removeItemFromInventory(user, "heavenJade", 1);
-            result += `🏦 Đạo hữu dùng **Thiên Cổ Ngọc Giản 🗞️** tiến vào di tích! \n(Di tích còn ${ruin.entryLimit} lượt vào)\n`;
+            result += `🏦 Đạo hữu đã dùng **Thiên Cổ Ngọc Giản 🗞️** tiến vào di tích! \n(Di tích còn ${ruin.entryLimit} lượt vào)\n`;
             // TODO: phát thưởng (XP, item, v.v.)
 
-            const rand = getRandom(0, 1); // 0,1,2
+            const rand = getRandom(0, 5); // 0,1,2
             switch (rand) {
                 case 0: {
                     const chosenItem = chooseWeighted(itemsAncient);
@@ -79,20 +79,34 @@ async function handleAncientRuin(user, guildId) {
                         description: chosenItem.description
                     };
                     await addItemToInventory(user, item);
-                    result += `⚡ Tìm thấy: **${item.name}**.\n${item.description}`;
+                    result += `⚡ Tìm thấy **${item.name}**.\n${item.description}`;
 
                     break;
                 }
-
+                // Tìm được linh thú
+                /*
+                  case 1: { 
+                    const chosenItem = chooseWeighted(itemsSpiritBeast);
+                      const item = {
+                          itemId: chosenItem.id,
+                          name: chosenItem.name,
+                          rarity: chosenItem.rarity,
+                          quantity: 1,
+                          description: chosenItem.description
+                      };
+                      await addItemToInventory(user, item);
+                      result += `⚡ Tìm thấy **${item.name}**.\n${item.description}`;
+  
+                      break;
+                  }
+                    */
                 default: {
-                    const xpGain = getRandom(800, 1500);
+                    const xpGain = getRandom(200, 1500);
                     addXP(user.userId, guildId, xpGain);
                     result += `🍂 Cảm ngộ Thái Huyền Linh bia! Tăng ${xpGain} Tuvi.`;
                     break;
                 }
-
             }
-
         } else {
             result += `⚠️ Đạo hữu cần **Thiên Cổ Ngọc Giản 🗞️** để vào di tích. \n(Di tích còn ${ruin.entryLimit} lượt vào)\n`;
         }
@@ -101,7 +115,7 @@ async function handleAncientRuin(user, guildId) {
         if (ruin.entryLimit <= 0) {
             ruin.isOpen = false;
             ruin.sealedCounter = SEALED_COUNTER;
-            result += "\n🏦 Di tích đã khép lại, hãy chờ lần mở tiếp theo.";
+            result += "\n🏦 Di tích đã khép lại, đạo hữu vui lòng chờ lần mở tiếp theo.";
         }
     }
 
