@@ -130,12 +130,13 @@ bot.on("interactionCreate", async (interaction) => {
                 .setLabel("🪅 Túi linh thú")
                 .setStyle(ButtonStyle.Secondary)
             ),
+            /*
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
                 .setCustomId("open_bicanh")
                 .setLabel("🗝️ Bí cảnh")
                 .setStyle(ButtonStyle.Secondary)
-            ),
+            ),*/
             new ActionRowBuilder().addComponents(
               new ButtonBuilder()
                 .setCustomId("open_shop")
@@ -415,6 +416,7 @@ bot.on("interactionCreate", async (interaction) => {
     if (id === 'open_shop') {
       await handleShopCommand(interaction);
     }
+    /*
     if (id === 'open_bicanh') {
       try {
         await interaction.deferReply(); // Đảm bảo bot có thêm thời gian   
@@ -427,6 +429,7 @@ bot.on("interactionCreate", async (interaction) => {
         await interaction.editReply("😢 Đã xảy ra lỗi khi khám phá bí cảnh. Hãy thử lại sau.");
       }
     }
+    */
     if (id.startsWith('prev_inventory_') || id.startsWith('next_inventory_')) {
       const page = parseInt(interaction.customId.split('_').pop());
       const buffer = await createInventoryImage(displayName, userData.stone, inventory, page);
@@ -463,12 +466,13 @@ bot.on("interactionCreate", async (interaction) => {
             .setLabel("🪅 Túi linh thú")
             .setStyle(ButtonStyle.Secondary)
         ),
+        /*
         new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setCustomId('open_bicanh')
             .setLabel('🗝️ Bí cảnh')
             .setStyle(ButtonStyle.Secondary)
-        ),
+        ),*/
         new ActionRowBuilder().addComponents(
           new ButtonBuilder()
             .setCustomId('open_shop')

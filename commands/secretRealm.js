@@ -4,6 +4,7 @@ const { addItemToInventory } = require("../utils/inventory");
 const hiddenItem = require("../shops/hiddenItems");
 const BuffClasses = require('../buffs'); // ánh xạ effect -> class
 const { runBuffHook } = require('../buffs/utils/buffEngine');
+const { handleAncientRuin } = require("../utils/ancientRuin");
 const COOLDOWN = 30 * 1000; //giảm= 30S
 
 function chooseWeighted(scenarios) {
@@ -66,7 +67,7 @@ async function handleSecretRealm(interaction) {
     { text: "gặp được truyền thừa ẩn giấu", weight: 5 },
     { text: "gặp cường giả Hắc Ảnh Môn", weight: 5 },
     { text: "bị cuốn vào không gian loạn lưu", weight: 1 },
-    { text: "phát hiện di tích cổ bị phong ấn", weight: 10 },
+    { text: "phát hiện di tích cổ bị phong ấn", weight: 1000 },
     { text: "bị đánh lén bởi đệ tử Hắc Ảnh Môn ", weight: 5 },
     //{ text: "phát hiện bí mật cổ xưa", weight: 7 },
     { text: "gặp phải cạm bẫy linh lực", weight: 8 },
@@ -208,8 +209,11 @@ async function handleSecretRealm(interaction) {
       break;
     }
     case "phát hiện di tích cổ bị phong ấn": {
-      result += '🏦 Di tích cổ đã bị phong ấn, chưa đến thời gian khai mở...';
+      // result += '🏦 Di tích cổ đã bị phong ấn, chưa đến thời gian khai mở...';
+      const ruinResult = await handleAncientRuin(user, guildId);
+      result += ruinResult;
       break;
+
     }
     case "bị đánh lén bởi đệ tử Hắc Ảnh Môn ": {
 
