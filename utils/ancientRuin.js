@@ -2,7 +2,10 @@
 
 const AncientRuin = require("../models/AncientRuin");
 const { getItemFromInventory, removeItemFromInventory } = require("./inventory");
-
+// defoult sealedCounter = 10
+// defoult entryLimit = 0  
+const SEALED_COUNTER = 3;
+const ENTRY_LIMIT = 2; // số lượt cho phép vào khi mở
 /**
  * Xử lý khi người chơi gặp di tích cổ.
  * Chu trình:
@@ -19,7 +22,7 @@ async function handleAncientRuin(user, guildId) {
     if (!ruin) {
         ruin = new AncientRuin({
             guildId,
-            sealedCounter: 10,
+            sealedCounter: SEALED_COUNTER,
             entryLimit: 0,
             isOpen: false
         });
@@ -33,10 +36,10 @@ async function handleAncientRuin(user, guildId) {
         ruin.sealedCounter -= 1;
 
         if (ruin.sealedCounter > 0) {
-            result += `🔒 Di tích vẫn bị phong ấn... cần thêm ${ruin.sealedCounter} lần chạm nữa để khai mở.`;
+            result += `🔒 Di tích đang bị phong ấn... cần đủ ${ruin.sealedCounter} người để khai mở.`;
         } else {
             ruin.isOpen = true;
-            ruin.entryLimit = 5; // số lượt cho phép vào khi mở
+            ruin.entryLimit = ENTRY_LIMIT; // số lượt cho phép vào khi mở
             result += "🌌 Di tích cổ đã khai mở! Đạo hữu có thể dùng **Thiên Cổ Ngọc Giản 🗞️** để tiến vào!";
         }
     }
@@ -47,17 +50,17 @@ async function handleAncientRuin(user, guildId) {
         const key = getItemFromInventory(user, "heavenJade");
         if (key) {
             await removeItemFromInventory(user, "heavenJade", 1);
-            result += `🏯 Đạo hữu dùng **Ancient Key** tiến vào di tích! (Còn ${ruin.entryLimit} lượt)\n`;
+            result += `🏯 Đạo hữu dùng **Thiên Cổ Ngọc Giản 🗞️** tiến vào di tích! \n(Di tích còn ${ruin.entryLimit} lượt vào)\n`;
             // TODO: phát thưởng (XP, item, v.v.)
             result += "🎁 Đạo hữu nhận được phần thưởng bí ẩn từ di tích!";
         } else {
-            result += `⚠️ Đạo hữu cần **Ancient Key** để vào di tích. (Lượt vào vẫn bị trừ, còn ${ruin.entryLimit} lượt)`;
+            result += `⚠️ Đạo hữu cần **Thiên Cổ Ngọc Giản 🗞️** để vào di tích. \n(Di tích còn ${ruin.entryLimit} lượt vào)\n`;
         }
 
         // nếu hết lượt thì đóng di tích, reset sealedCounter
         if (ruin.entryLimit <= 0) {
             ruin.isOpen = false;
-            ruin.sealedCounter = 10;
+            ruin.sealedCounter = SEALED_COUNTER;
             result += "\n🏯 Di tích đã khép lại, hãy chờ lần mở tiếp theo.";
         }
     }
