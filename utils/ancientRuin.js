@@ -66,8 +66,8 @@ async function handleAncientRuin(user, guildId) {
             await removeItemFromInventory(user, "heavenJade", 1);
             result += `🏦 Đạo hữu dùng **Thiên Cổ Ngọc Giản 🗞️** tiến vào di tích! \n(Di tích còn ${ruin.entryLimit} lượt vào)\n`;
             // TODO: phát thưởng (XP, item, v.v.)
-            result += "🎁 Đạo hữu nhận được phần thưởng bí ẩn từ di tích!";
-            const rand = getRandom(0, 8); // 0,1,2
+
+            const rand = getRandom(0, 1); // 0,1,2
             switch (rand) {
                 case 0: {
                     const chosenItem = chooseWeighted(itemsAncient);
