@@ -3,7 +3,7 @@
 const AncientRuin = require("../models/AncientRuin");
 const { addItemToInventory, getItemFromInventory, removeItemFromInventory } = require("./inventory");
 const itemsAncient = require("../shops/itemsAncient");
-const itemsSpiritBeast = require("../shops/itemsSpiritBeast");
+const itemsSpiritBeast = require("../shops/spiritBeast");
 const { getRandom, addXP } = require("./xpSystem");
 
 const SEALED_COUNTER = 5;
