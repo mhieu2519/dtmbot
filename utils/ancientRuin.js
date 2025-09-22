@@ -1,7 +1,9 @@
 // utils/ancientRuin.js
 
 const AncientRuin = require("../models/AncientRuin");
-const { getItemFromInventory, removeItemFromInventory } = require("./inventory");
+const { addItemToInventory, getItemFromInventory, removeItemFromInventory } = require("./inventory");
+const itemsAncient = require("../shops/itemsAncient");
+const { getRandom, addXP } = require("./xpSystem");
 // defoult sealedCounter = 10
 // defoult entryLimit = 0  
 const SEALED_COUNTER = 3;
@@ -17,6 +19,18 @@ const ENTRY_LIMIT = 2; // số lượt cho phép vào khi mở
  * @param {string} guildId - Guild ID
  * @returns {Promise<string>} - Thông báo kết quả
  */
+function chooseWeighted(scenarios) {
+    const totalWeight = scenarios.reduce((sum, item) => sum + item.weight, 0);
+    const rand = Math.random() * totalWeight;
+    let cumulative = 0;
+
+    for (const item of scenarios) {
+        cumulative += item.weight;
+        if (rand < cumulative) {
+            return item;
+        }
+    }
+}
 async function handleAncientRuin(user, guildId) {
     let ruin = await AncientRuin.findOne({ guildId });
     if (!ruin) {
@@ -36,7 +50,7 @@ async function handleAncientRuin(user, guildId) {
         ruin.sealedCounter -= 1;
 
         if (ruin.sealedCounter > 0) {
-            result += `🔒 Di tích đang bị phong ấn... cần đủ ${ruin.sealedCounter} người để khai mở.`;
+            result += `🔒 Di tích đang bị phong ấn... cần chờ thêm ${ruin.sealedCounter} người để khai mở.`;
         } else {
             ruin.isOpen = true;
             ruin.entryLimit = ENTRY_LIMIT; // số lượt cho phép vào khi mở
@@ -53,6 +67,32 @@ async function handleAncientRuin(user, guildId) {
             result += `🏦 Đạo hữu dùng **Thiên Cổ Ngọc Giản 🗞️** tiến vào di tích! \n(Di tích còn ${ruin.entryLimit} lượt vào)\n`;
             // TODO: phát thưởng (XP, item, v.v.)
             result += "🎁 Đạo hữu nhận được phần thưởng bí ẩn từ di tích!";
+            const rand = getRandom(0, 8); // 0,1,2
+            switch (rand) {
+                case 0: {
+                    const chosenItem = chooseWeighted(itemsAncient);
+                    const item = {
+                        itemId: chosenItem.id,
+                        name: chosenItem.name,
+                        rarity: chosenItem.rarity,
+                        quantity: 1,
+                        description: chosenItem.description
+                    };
+                    await addItemToInventory(user, item);
+                    result += `⚡ Tìm thấy: **${item.name}**.\n${item.description}`;
+
+                    break;
+                }
+
+                default: {
+                    const xpGain = getRandom(800, 1500);
+                    addXP(user.userId, guildId, xpGain);
+                    result += `🍂 Cảm ngộ Thái Huyền Linh bia! Tăng ${xpGain} Tuvi.`;
+                    break;
+                }
+
+            }
+
         } else {
             result += `⚠️ Đạo hữu cần **Thiên Cổ Ngọc Giản 🗞️** để vào di tích. \n(Di tích còn ${ruin.entryLimit} lượt vào)\n`;
         }
