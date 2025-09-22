@@ -103,7 +103,7 @@ async function handleAncientRuin(user, guildId) {
                 default: {
                     const xpGain = getRandom(200, 1500);
                     addXP(user.userId, guildId, xpGain);
-                    result += `🍂 Cảm ngộ Thái Huyền Linh bia! Tăng ${xpGain} Tuvi.`;
+                    result += `🍂 Cảm ngộ Thái Huyền Linh Bia! Tăng ${xpGain} Tuvi.`;
                     break;
                 }
             }
