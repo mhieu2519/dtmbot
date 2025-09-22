@@ -50,7 +50,7 @@ async function handleAncientRuin(user, guildId) {
         const key = getItemFromInventory(user, "heavenJade");
         if (key) {
             await removeItemFromInventory(user, "heavenJade", 1);
-            result += `🏯 Đạo hữu dùng **Thiên Cổ Ngọc Giản 🗞️** tiến vào di tích! \n(Di tích còn ${ruin.entryLimit} lượt vào)\n`;
+            result += `🏦 Đạo hữu dùng **Thiên Cổ Ngọc Giản 🗞️** tiến vào di tích! \n(Di tích còn ${ruin.entryLimit} lượt vào)\n`;
             // TODO: phát thưởng (XP, item, v.v.)
             result += "🎁 Đạo hữu nhận được phần thưởng bí ẩn từ di tích!";
         } else {
@@ -61,7 +61,7 @@ async function handleAncientRuin(user, guildId) {
         if (ruin.entryLimit <= 0) {
             ruin.isOpen = false;
             ruin.sealedCounter = SEALED_COUNTER;
-            result += "\n🏯 Di tích đã khép lại, hãy chờ lần mở tiếp theo.";
+            result += "\n🏦 Di tích đã khép lại, hãy chờ lần mở tiếp theo.";
         }
     }
 
