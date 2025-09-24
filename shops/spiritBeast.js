@@ -1,3 +1,4 @@
+//shops/spiritBeast.js
 module.exports = [
     // phượng hoàng
     {

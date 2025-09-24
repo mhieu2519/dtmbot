@@ -7,7 +7,7 @@ function getXPForNextLevel(level) {
 }
 
 async function addXP(userId, guildId, xpAmount, context = null) {
-    // Kiểm tra xpAmount hợp lệ
+  // Kiểm tra xpAmount hợp lệ
   if (typeof xpAmount !== 'number' || isNaN(xpAmount)) {
     console.error(`❌ Giá trị xp không hợp lệ:`, xpAmount);
     return;
@@ -73,10 +73,10 @@ async function addXP(userId, guildId, xpAmount, context = null) {
           });
           channel?.send(`🔓 ${nickname} đã mở khóa <#${secret.id}>!`);
         }
-        }
+      }
     }
 
-  // 🏆 CẤP ROLE KHI ĐẠT LEVEL 200
+    // 🏆 CẤP ROLE KHI ĐẠT LEVEL 200
 
 
   }
@@ -108,9 +108,9 @@ async function handleDailyAutoXP(userId, guildId, message) {
   const now = moment().tz("Asia/Ho_Chi_Minh");
   // Lần cuối nhận daily (chuyển sang múi giờ VN luôn)
   const last = moment(user.lastDaily).tz("Asia/Ho_Chi_Minh");
-  
+
   const isNewDay = !last || !now.isSame(last, 'day');
-  const nickname = message.member?.displayName ||message.author.globalName|| message.author.username;
+  const nickname = message.member?.displayName || message.author.globalName || message.author.username;
 
   if (isNewDay) {
     user.xp += DAILY_XP_REWARD;
@@ -128,11 +128,11 @@ async function handleDailyAutoXP(userId, guildId, message) {
 
     // Gửi thông báo lên cấp nếu muốn
     try {
-      const channel = message.guild.channels.cache.get(process.env.LEVELUP_CHANNEL_ID); 
+      const channel = message.guild.channels.cache.get(process.env.LEVELUP_CHANNEL_ID);
       if (leveledUp) {
         channel.send(`🎉 ${nickname} đã lên cấp nhờ chăm chỉ mỗi ngày!`);
       } else {
-        channel.send(`📅Chúc mừng ${nickname} đạo hữu đã nhận ${DAILY_XP_REWARD} XP và ${daily_stone_reward} 💎 cho lần hoạt động đầu tiên hôm nay!`);
+        channel.send(`📅Chúc mừng ${nickname} đạo hữu đã nhận ${DAILY_XP_REWARD} tuvi và ${daily_stone_reward} 💎 cho lần hoạt động đầu tiên hôm nay!`);
       }
     } catch (e) {
       console.warn("Không tìm thấy kênh để gửi thông báo daily.");

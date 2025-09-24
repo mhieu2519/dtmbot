@@ -63,8 +63,8 @@ module.exports = [
     id: "heavenJade",
     name: "Thiên Cổ Ngọc Giản 🗞️",
     description: "Xuất hiện vào thiên cổ thời đại, chứa đựng sức mạnh vô hạn ( mở khóa di tích cổ).",
-    price: 200,
-    sellPrice: 180,
+    price: 150,
+    sellPrice: 100,
     rarity: "epic",
     maxQuantity: 2
   },

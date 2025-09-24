@@ -33,8 +33,6 @@ function chonKichBanNgauNhien(scenarios) {
   }
 }
 
-
-
 async function handleSecretRealm(interaction) {
   const userId = interaction.user.id;
   const guildId = interaction.guild.id;
@@ -52,7 +50,6 @@ async function handleSecretRealm(interaction) {
   if (user.stone < ENTRY_FEE) {
     return `💎 Đạo hữu không đủ ${ENTRY_FEE} linh thạch để vào bí cảnh!`;
   }
-
   user.stone -= ENTRY_FEE;
   user.lastSecretRealmTime = now;
 
