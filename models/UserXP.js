@@ -29,6 +29,8 @@ const userXPSchema = new mongoose.Schema({
       level: { type: Number, default: 1 }, // Cấp độ linh thú
       rarity: String,         // Độ hiếm (ví dụ: "thường", "hiếm", "truyền thuyết")
       description: String,    // Mô tả linh thú
+      imageUrl: String,       // đường dẫn gif/png của linh thú
+      quantity: { type: Number, default: 1 },
       obtainedAt: { type: Date, default: Date.now } // Ngày nhận
     }
   ],
