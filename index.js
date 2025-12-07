@@ -48,10 +48,20 @@ const { canUseCommand } = require('./utils/cooldown');
 const { createCanvas, loadImage } = require("canvas");
 const { addXP, getRandom, handleDailyAutoXP } = require("./utils/xpSystem");
 const { showRank, createInventoryImage, createInventoryButtons } = require("./commands/rank");
-const { createPetInventoryImage, createInventoryPetButtons } = require("./commands/petInventory");
+const { renderPetInventoryGif, showPetInventory } = require("./commands/petInventory");
 const { showLeaderboard } = require("./commands/leaderboard");
 const { handleSecretRealm } = require("./commands/secretRealm");
 const { handleBuffCheck } = require("./utils/buttonActiveBuffs");
+const pets = require("./shops/spiritBeast");
+const { handleGiftCode,
+  handleGiftCodeSelect,
+  handleSetupGiftCode,
+  handleGiftcodeAdminMenu,
+  handleGiftcodeAdminLogin,
+  handleGiftcodeAdminAdd,
+  handleGiftcodeDeleteSelect,
+} = require("./commands/giftcode");
+
 
 const {
   handleShopCommand,
@@ -68,11 +78,12 @@ const {
   handleUseItemSelection,
   handleUseItemConfirm
 } = require("./utils/useInventory");
-
+const path = require("path");
 // Load các event
 //const shopInteraction = require('./shops/interactionCreate');
 
 const mongoose = require("mongoose");
+const { addPetToInventory } = require("./utils/petInventory");
 
 // Kết nối đến MongoDB Atlas
 mongoose.connect(process.env.MONGODB_URI)
@@ -271,6 +282,15 @@ bot.on("interactionCreate", async (interaction) => {
         await interaction.reply(`🎲 Số mà lão phu quay ra là: ${randomNumber}`);
         break;
       }
+      case "giftcode": {
+        await handleGiftCode(interaction);
+        break;
+      }
+      /*
+      case "setupgiftcode": {
+        await handleSetupGiftCode(interaction);
+        break;
+      }*/
 
 
     }
@@ -284,7 +304,24 @@ bot.on("interactionCreate", async (interaction) => {
     const userId = interaction.user.id;
     const guildId = interaction.guild.id;
     const userData = await UserXP.findOne({ guildId, userId });
+    //giftcode
 
+    // 🎁 Người chơi chọn giftcode
+    if (id === "select_giftcode") {
+      return handleGiftCodeSelect(interaction);
+    }
+
+    // ⚙️ Menu quản trị giftcode
+    if (id === "giftcode_admin_menu") {
+      return handleGiftcodeAdminMenu(interaction);
+    }
+
+    // 🗑️ Xóa giftcode
+    if (id === "giftcode_admin_delete_select") {
+      return handleGiftcodeDeleteSelect(interaction);
+    }
+
+    // 🛒 Các menu cửa hàng
     if (id === 'select_buy_item') {
       return handleBuyItemSelection(interaction);
     }
@@ -342,8 +379,6 @@ bot.on("interactionCreate", async (interaction) => {
       return handleSellQuantitySelection(interaction, user); // chọn số lượng
     }
 
-
-
     // Chọn vật phẩm để dùng
     if (id === "select_use_item") {
       await handleUseItemSelection(interaction);
@@ -355,6 +390,8 @@ bot.on("interactionCreate", async (interaction) => {
       await handleUseItemConfirm(interaction, itemId, quantity);
 
     }
+    // ⛔ Nếu menu không có định dạng "::" (ví dụ giftcode admin), bỏ qua
+    if (!values[0] || !values[0].includes("::")) return;
 
     const [action, itemId, quantityStr] = values[0]?.split('::') || [];
 
@@ -402,34 +439,31 @@ bot.on("interactionCreate", async (interaction) => {
       });
     }
     if (id === 'open_petinventory') {
-      // await interaction.deferUpdate(); // tránh lỗi Unknown interaction
-      const page = 1;
-      const buffer = await createPetInventoryImage(displayName, inventoryPet, page);
-      const buttons = createInventoryPetButtons(page, Math.ceil(inventory.length / 3));
-      await interaction.update({
-        files: [{ attachment: buffer, name: 'pet_inventory.png' }],
-        components: buttons
-      });
 
+      const pet = {
+        petId: "phoenix",
+        name: "🔥 Phượng Hoàng",
+        description: "Thần thú phượng hoàng, có thể hồi sinh sau khi chết.",
+        rarity: "Epic",
+        level: 1,
+        type: "pet",
+        quantity: 1,
+        imageUrl: "./assets/animal/phonix.gif"
+      };
+
+      await interaction.deferReply(); // giữ cho interaction không hết hạn
+      const inventoryPet = Array.isArray(userData.inventoryPet) ? userData.inventoryPet : []; // Đảm bảo inventory là mảng
+      await showPetInventory(interaction, displayName, inventoryPet);
+
+    }
+    if (id === 'upgrade_petinventory') {
+      await interaction.reply(` Tính năng nâng cấp linh thú đang được thử nghiệm.\n ${displayName} đạo hữu vui lòng chờ phiên bản sau nhé!`);
 
     }
     if (id === 'open_shop') {
       await handleShopCommand(interaction);
     }
-    /*
-    if (id === 'open_bicanh') {
-      try {
-        await interaction.deferReply(); // Đảm bảo bot có thêm thời gian   
 
-        const result = await handleSecretRealm(interaction);
-        const mess = `🔑 **${displayName} đạo hữu đã sử dụng bí cảnh!**\n\n${result}`;
-        await interaction.editReply(mess); // Trả kết quả sau khi xử lý xong
-      } catch (error) {
-        console.error("❌ Lỗi khi xử lý bí cảnh:", error);
-        await interaction.editReply("😢 Đã xảy ra lỗi khi khám phá bí cảnh. Hãy thử lại sau.");
-      }
-    }
-    */
     if (id.startsWith('prev_inventory_') || id.startsWith('next_inventory_')) {
       const page = parseInt(interaction.customId.split('_').pop());
       const buffer = await createInventoryImage(displayName, userData.stone, inventory, page);
@@ -529,6 +563,23 @@ bot.on("interactionCreate", async (interaction) => {
     }
 
   }
+  // 🧩 Khi dùng lệnh chat input
+  if (interaction.isChatInputCommand()) {
+    if (interaction.commandName === "setupgiftcode") {
+      await handleSetupGiftCode(interaction);
+    }
+  }
+
+  // 🧩 Khi submit modal
+  if (interaction.isModalSubmit()) {
+    if (interaction.customId === "giftcode_admin_login")
+      await handleGiftcodeAdminLogin(interaction);
+
+    else if (interaction.customId === "giftcode_admin_add")
+      await handleGiftcodeAdminAdd(interaction);
+  }
+
+
 });
 
 // Chào bạn mới

@@ -15,13 +15,32 @@ module.exports = [
     quantity: 1,
     weight: 1
   },
+
+  {
+    id: "phoenixTear",
+    name: "Phượng Hoàng chi tinh 💧",
+    description: "Giọt nước mắt được cường giả viễn cổ thu thập từ Phượng Hoàng.",
+    rarity: "legendary",
+    quantity: 1,
+    weight: 1
+  },
+
+  {
+    id: "phoenixClaw",
+    name: "Móng vuốt 🦅",
+    description: "Nghi ngờ là móng vuốt sắc bén của di chủng Phượng Hoàng.",
+    rarity: "epic",
+    quantity: 1,
+    weight: 2
+  },
+
   {
     id: "spiritStone",
     name: "Đá thiên nhiên 🪨",
     description: "Đá chứa linh khí của đất trời.",
     rarity: "common",
     quantity: 1,
-    weight: 50 // rơi thường xuyên
+    weight: 10 // rơi thường xuyên
   },
   {
     id: "rareGem",
@@ -29,7 +48,7 @@ module.exports = [
     description: "Đá tồn tại từ thượng cổ.",
     rarity: "common",
     quantity: 2,
-    weight: 20
+    weight: 5
   },
   {
     id: "shield",
@@ -63,7 +82,7 @@ module.exports = [
     description: "Chứa sức mạnh linh khí đặc biệt.",
     rarity: "common",
     quantity: 1,
-    weight: 30
+    weight: 10
   },
   // mảnh ghép tàn đồ
   {
@@ -90,7 +109,7 @@ module.exports = [
     description: "Tăng 35% tỉ lệ thắng yêu thú trong 3 lượt",
     rarity: "epic",
     quantity: 1,
-    weight: 30,
+    weight: 10,
   },
   {
     id: "witheredHerb",
@@ -98,7 +117,7 @@ module.exports = [
     description: "Thảo dược từng có linh tính, nay đã mất đi sinh khí.",
     rarity: "common",
     quantity: 1,
-    weight: 50
+    weight: 10
   },
   {
     id: "brokenMirror",
@@ -130,7 +149,7 @@ module.exports = [
     description: "Lá cây lạnh như băng, mọc ở vùng cực hàn.",
     rarity: "rare",
     quantity: 1,
-    weight: 10
+    weight: 5
   },
   {
     id: "sevenColorFlower",
@@ -146,7 +165,7 @@ module.exports = [
     description: "Thảo dược giúp thanh lọc tâm trí, ổn định linh hồn.",
     rarity: "common",
     quantity: 1,
-    weight: 40
+    weight: 10
   },
   {
     id: "dragonScale",
@@ -171,7 +190,7 @@ module.exports = [
     description: "Xuất hiện vào thiên cổ thời đại, chứa đựng sức mạnh vô hạn ( mở khóa di tích cổ).",
     rarity: "epic",
     quantity: 1,
-    weight: 25
+    weight: 8
   },
 
 ];

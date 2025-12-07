@@ -5,7 +5,7 @@ const hiddenItem = require("../shops/hiddenItems");
 const BuffClasses = require('../buffs'); // ánh xạ effect -> class
 const { runBuffHook } = require('../buffs/utils/buffEngine');
 const { handleAncientRuin } = require("../utils/ancientRuin");
-const COOLDOWN = 20 * 1000; //giảm= 20S
+const COOLDOWN = 15 * 1000; //giảm= 20S
 
 function chooseWeighted(scenarios) {
   const totalWeight = scenarios.reduce((sum, item) => sum + item.weight, 0);
@@ -55,18 +55,18 @@ async function handleSecretRealm(interaction) {
 
   const scenarios = [
     { text: "gặp yêu thú", weight: 20 },
-    { text: "gặp cường giả", weight: 30 },
+    { text: "gặp cường giả", weight: 25 },
     { text: "kích hoạt trận pháp ẩn", weight: 5 },
-    { text: "cuốc trúng mỏ linh thạch", weight: 45 },
+    { text: "cuốc trúng mỏ linh thạch", weight: 40 },
     { text: "mở được kho báu bí cảnh", weight: 25 },
     { text: "gặp đỉnh cấp yêu thú", weight: 25 },
-    { text: "tìm thấy vật phẩm ẩn giấu", weight: 15 },
+    { text: "tìm thấy vật phẩm ẩn giấu", weight: 25 },
     { text: "gặp được truyền thừa ẩn giấu", weight: 5 },
     { text: "gặp cường giả Hắc Ảnh Môn", weight: 5 },
     { text: "bị cuốn vào không gian loạn lưu", weight: 1 },
     { text: "phát hiện di tích cổ bị phong ấn", weight: 10 },
     { text: "bị đánh lén bởi đệ tử Hắc Ảnh Môn ", weight: 5 },
-    //{ text: "phát hiện bí mật cổ xưa", weight: 7 },
+    { text: "phát hiện di tích chiến trường thượng cổ", weight: 7 },
     { text: "gặp phải cạm bẫy linh lực", weight: 8 },
     { text: "gặp cơ duyên ngộ đạo", weight: 1 },
 
@@ -211,6 +211,10 @@ async function handleSecretRealm(interaction) {
       result += ruinResult;
       break;
 
+    }
+    case "phát hiện di tích chiến trường thượng cổ": {
+      result += '⚔️ Đạo hữu phát hiện di tích chiến trường thượng cổ... ';
+      break;
     }
     case "bị đánh lén bởi đệ tử Hắc Ảnh Môn ": {
 

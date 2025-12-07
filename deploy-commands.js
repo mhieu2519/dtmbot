@@ -33,6 +33,15 @@ const commands = [
   new SlashCommandBuilder()
     .setName('shop')
     .setDescription('🛒 Mở giao diện shop để mua hoặc bán vật phẩm'),
+  // 🧩 Người dùng — hiển thị danh sách giftcode còn hạn
+  new SlashCommandBuilder()
+    .setName('giftcode')
+    .setDescription('🎁 Nhận quà từ các mã giftcode có sẵn'),
+  // ⚙️ Admin — setup / thêm / xóa giftcode
+  new SlashCommandBuilder()
+    .setName('setupgiftcode')
+    .setDescription('🧩 Quản lý giftcode ( dành cho admin)')
+
 
 ].map((command) => command.toJSON());
 

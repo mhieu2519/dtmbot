@@ -34,7 +34,7 @@ module.exports = [
     name: 'Tụ Linh Đan 🔮',
     description: 'Đan dược tích lũy linh khí từ thiên địa, +1500 tuvi.',
     price: 715,
-    sellPrice: 680,
+    sellPrice: 650,
     rarity: 'epic',
     maxQuantity: 5
   },
@@ -45,8 +45,18 @@ module.exports = [
     description: 'Đan dược giúp tâm trí thanh tịnh, +1800 tuvi.',
     rarity: 'epic',
     price: 850,
-    sellPrice: 810,
+    sellPrice: 800,
+    maxQuantity: 5
+  },
+  {
+    id: 'fireSoulPill',
+    name: 'Hỏa Hồn Đan 🔥',
+    description: 'Đan dược rèn luyện tinh thần trí lực, +2800 tuvi.',
+    price: 1320,
+    sellPrice: 1200,
+    rarity: 'legendary',
     maxQuantity: 3
+
   },
 
   {
@@ -63,10 +73,10 @@ module.exports = [
     id: "heavenJade",
     name: "Thiên Cổ Ngọc Giản 🗞️",
     description: "Xuất hiện vào thiên cổ thời đại, chứa đựng sức mạnh vô hạn ( mở khóa di tích cổ).",
-    price: 150,
+    price: 120,
     sellPrice: 100,
     rarity: "epic",
-    maxQuantity: 2
+    maxQuantity: 5
   },
 
 ];

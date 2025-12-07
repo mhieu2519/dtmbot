@@ -6,8 +6,8 @@ const itemsAncient = require("../shops/itemsAncient");
 const itemsSpiritBeast = require("../shops/spiritBeast");
 const { getRandom, addXP } = require("./xpSystem");
 
-const SEALED_COUNTER = 5;
-const ENTRY_LIMIT = 3; // số lượt cho phép vào khi mở
+const SEALED_COUNTER = 3;
+const ENTRY_LIMIT = 4; // số lượt cho phép vào khi mở
 /**
  * Xử lý khi người chơi gặp di tích cổ.
  * Chu trình:
@@ -67,7 +67,7 @@ async function handleAncientRuin(user, guildId) {
             result += `🏦 Đạo hữu đã dùng **Thiên Cổ Ngọc Giản 🗞️** tiến vào di tích! \n(Di tích còn ${ruin.entryLimit} lượt vào)\n`;
             // TODO: phát thưởng (XP, item, v.v.)
 
-            const rand = getRandom(0, 5); // 0,1,2
+            const rand = getRandom(0, 2); // 0,1,2
             switch (rand) {
                 case 0: {
                     const chosenItem = chooseWeighted(itemsAncient);

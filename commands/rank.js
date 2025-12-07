@@ -8,7 +8,7 @@ registerFont(path.join(__dirname, "../assets/fonts/Allura-Regular.ttf"), { famil
 registerFont(path.join(__dirname, "../assets/fonts/WindSong-Medium.ttf"), { family: "WindSong" });
 registerFont(path.join(__dirname, "../assets/fonts/MeowScript-Regular.ttf"), { family: "MeowScript" });
 registerFont(path.join(__dirname, "../assets/fonts/Qwigley-Regular.ttf"), { family: "Qwigley" });
-registerFont(path.join(__dirname, "../assets/fonts/comici.ttf"), { family: "Comic Sans MS" });
+registerFont(path.join(__dirname, "../assets/fonts/ComicSans.ttf"), { family: "Comic Sans MS" });
 registerFont(path.join(__dirname, "../assets/fonts/Updock-Regular.ttf"), { family: "Updock" });
 registerFont(path.join(__dirname, "../assets/fonts/Pacifico-Regular.ttf"), { family: "Pacifico" });
 function getBackgroundByLevel(level) {

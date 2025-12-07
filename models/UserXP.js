@@ -1,5 +1,19 @@
 const mongoose = require("mongoose");
 
+// 🐾 Định nghĩa schema con cho inventoryPet
+const petSchema = new mongoose.Schema({
+  petId: String, // ID duy nhất của linh thú
+  name: String,  // Tên linh thú
+  type: String,  // Loại linh thú (ví dụ: "thú cưng", "huyền thoại")
+  level: { type: Number, default: 1 },
+  rarity: String,
+  description: String,
+  imageUrl: String,
+  quantity: { type: Number, default: 1 },
+  obtainedAt: { type: Date, default: Date.now },
+}, { _id: false }); // ⚠️ Không cần _id riêng cho từng pet
+
+
 const userXPSchema = new mongoose.Schema({
   guildId: String,
   userId: String,
@@ -21,19 +35,7 @@ const userXPSchema = new mongoose.Schema({
       obtainedAt: { type: Date, default: Date.now } // Ngày nhận
     }
   ],
-  inventoryPet: [
-    {
-      petId: String,          // ID duy nhất của linh thú
-      name: String,           // Tên linh thú
-      type: String,           // Loại linh thú (ví dụ: "thú cưng", "huyền thoại")
-      level: { type: Number, default: 1 }, // Cấp độ linh thú
-      rarity: String,         // Độ hiếm (ví dụ: "thường", "hiếm", "truyền thuyết")
-      description: String,    // Mô tả linh thú
-      imageUrl: String,       // đường dẫn gif/png của linh thú
-      quantity: { type: Number, default: 1 },
-      obtainedAt: { type: Date, default: Date.now } // Ngày nhận
-    }
-  ],
+  inventoryPet: [petSchema],
   // ✅ Thêm phần buff ở đây
   // ✅ Lưu danh sách buff đang hoạt động
   activeBuffs: [
@@ -47,3 +49,4 @@ const userXPSchema = new mongoose.Schema({
 });
 
 module.exports = mongoose.model("UserXP", userXPSchema);
+//module.exports = mongoose.models.UserXP || mongoose.model("UserXP", userXPSchema);

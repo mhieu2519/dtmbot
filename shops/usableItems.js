@@ -106,5 +106,12 @@ module.exports = [
     amount: 1800,
     description: '+1800 tuvi'
   },
+  {
+    id: 'fireSoulPill',
+    name: 'Hỏa Hồn Đan 🔥',
+    effect: 'gainExp',
+    amount: 2800,
+    description: '+2800 tuvi'
+  },
 
 ];

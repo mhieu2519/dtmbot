@@ -21,7 +21,7 @@ module.exports = [
         description: '+500 tuvi',
         rarity: 'rare',
         quantity: 1,
-        weight: 15
+        weight: 10
     },
     {
         id: 'iceHeartPill',
@@ -29,8 +29,16 @@ module.exports = [
         description: 'Đan dược giúp tâm trí thanh tịnh, +1800 tuvi.',
         rarity: 'epic',
         quantity: 1,
-        weight: 2
+        weight: 4
     },
+    {
+        id: 'fireSoulPill',
+        name: 'Hỏa Hồn Đan 🔥',
+        description: 'Đan dược rèn luyện tinh thần trí lực, +2800 tuvi.',
+        rarity: 'legendary',
+        quantity: 1,
+        weight: 2
 
+    },
 
 ]
