@@ -701,6 +701,10 @@ bot.on("messageCreate", async (message) => {
     // 📌 Lệnh xem bảng dữ liệu 
     case "t": {
       message.channel.send(
+        `⏳ Tính năng đã tạm dừng cập nhật dữ liệu, ${nickname} đạo hữu vui lòng dùng các lựa chọn khác...`
+      );
+      /*
+      message.channel.send(
         `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
       );
       processData().then((data) => {
@@ -728,12 +732,16 @@ bot.on("messageCreate", async (message) => {
         console.error("Lỗi khi đọc Google Sheets:", error);
         message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
       });
-
+*/
       break;
     }
 
     // 📌 Lệnh xem biểu đồ kết quả
     case "c": {
+      message.channel.send(
+        `⏳ Tính năng đã tạm dừng cập nhật dữ liệu, ${nickname} đạo hữu vui lòng dùng các lựa chọn khác...`
+      );
+      /*
       message.channel.send(
         `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
       );
@@ -762,11 +770,15 @@ bot.on("messageCreate", async (message) => {
         console.error("Lỗi khi đọc Google Sheets:", error);
         message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
       });
-
+*/
       break;
     }
     // 📌 Lệnh xem biểu đồ kết quả 2
     case "cr": {
+      message.channel.send(
+        `⏳ Tính năng đã tạm dừng cập nhật dữ liệu, ${nickname} đạo hữu vui lòng dùng các lựa chọn khác...`
+      );
+      /*
       message.channel.send(
         `⏳ Đang tải dữ liệu biểu đồ, ${nickname} đạo hữu vui lòng chờ...`
       );
@@ -797,7 +809,7 @@ bot.on("messageCreate", async (message) => {
         console.error("Lỗi khi đọc Google Sheets:", error);
         message.channel.send("❌ Đã xảy ra lỗi khi tải dữ liệu!");
       });
-
+*/
       break;
     }
     default:
