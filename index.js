@@ -823,16 +823,19 @@ bot.on('error', (err) => {
   console.error('❌ Discord bot error:', err);
 });
 
-keepAlive()
-bot.once("ready", async () => {
-  console.log("✅ Bot is now online!");
-  scheduleMessages(bot);
 
-});
 console.log("🚀 START APP");
 bot.login(process.env.DISCORD_TOKEN) // Sử dụng token từ biến môi trường
   .then(() => console.log("🔑 LOGIN CALLED"))
   .catch((err) => console.error("❌ Login failed:", err));
+
+
+bot.once("ready", async () => {
+  console.log("✅ Bot is now online!");
+  keepAlive()
+  scheduleMessages(bot);
+
+});
 bot.on("error", console.error);
 bot.on("shardError", console.error);
 
