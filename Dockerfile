@@ -1,6 +1,6 @@
 # Sử dụng image Node chính thức
-FROM node:22-slim
-
+#FROM node:22-slim
+FROM node:24
 # Cài các thư viện cần cho canvas + emoji
 RUN apt-get update && apt-get install -y \
     build-essential \
