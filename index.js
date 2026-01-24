@@ -18,10 +18,10 @@ const { processData, drawTable, drawChart, drawRatioChart } = require("./utils/r
 const bot = new Client({
   intents: [
     GatewayIntentBits.Guilds,
-    //GatewayIntentBits.GuildMessages,
-    //GatewayIntentBits.GuildMembers,
-    //GatewayIntentBits.MessageContent,
-    //GatewayIntentBits.GuildVoiceStates, // Để xử lý âm thanh
+    GatewayIntentBits.GuildMessages,
+    GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.MessageContent,
+    GatewayIntentBits.GuildVoiceStates, // Để xử lý âm thanh
   ],
 });
 
@@ -823,12 +823,8 @@ bot.on('error', (err) => {
   console.error('❌ Discord bot error:', err);
 });
 
-
-console.log("🚀 START APP");
 bot.login(process.env.DISCORD_TOKEN) // Sử dụng token từ biến môi trường
-  .then(() => console.log("🔑 LOGIN CALLED"))
   .catch((err) => console.error("❌ Login failed:", err));
-
 
 bot.once("ready", async () => {
   console.log("✅ Bot is now online!");
@@ -842,3 +838,4 @@ bot.on("shardError", console.error);
 process.on("unhandledRejection", err => {
   console.error("UNHANDLED:", err);
 });
+
