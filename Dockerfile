@@ -3,6 +3,7 @@
 FROM node:24
 # Cài các thư viện cần cho canvas + emoji
 RUN apt-get update && apt-get install -y \
+    ffmpeg \
     build-essential \
     libcairo2 \
     libcairo2-dev \
