@@ -25,7 +25,7 @@ RUN npm install
 COPY . .
 
 # Port (nếu bạn dùng express)
-EXPOSE 3000
+EXPOSE 4000
 
 # Lệnh chạy bot
 CMD ["node", "index.js"]
