@@ -818,15 +818,16 @@ bot.on("messageCreate", async (message) => {
 
 });
 
-bot.once("ready", async () => {
-  console.log("✅ Bot is now online!");
-  scheduleMessages(bot);
 
-});
 bot.on('error', (err) => {
   console.error('❌ Discord bot error:', err);
 });
 
 keepAlive()
+bot.once("ready", async () => {
+  console.log("✅ Bot is now online!");
+  scheduleMessages(bot);
+
+});
 bot.login(process.env.DISCORD_TOKEN) // Sử dụng token từ biến môi trường
   .catch((err) => console.error("❌ Login failed:", err));
