@@ -65,9 +65,9 @@ module.exports = [
     effect: {
       type: 'winRateVsMonster',
       value: 0.5,
-      duration: 5
+      duration: 8
     },
-    description: 'Tăng 50% tỉ lệ chiến thắng khi gặp yêu thú các loại trong 5 lượt.'
+    description: 'Tăng 50% tỉ lệ chiến thắng khi gặp yêu thú các loại trong 8 lượt.'
 
   },
   {
@@ -76,9 +76,9 @@ module.exports = [
     effect: {
       type: 'winRateVsMonster',
       value: 0.62,
-      duration: 2
+      duration: 5
     },
-    description: 'Tăng 62% tỉ lệ chiến thắng khi gặp yêu thú các loại trong 2 lượt.'
+    description: 'Tăng 62% tỉ lệ chiến thắng khi gặp yêu thú các loại trong 5 lượt.'
 
   },
   {
@@ -113,5 +113,21 @@ module.exports = [
     amount: 2800,
     description: '+2800 tuvi'
   },
+  // Bổ Nguyên Đan
+  {
+    id: 'nourishingElixirPill',
+    name: 'Bổ Nguyên Đan 🍃',
+    effect: 'gainExp',
+    amount: 4200,
+    description: '+4200 tuvi'
+  },
+  // Thần Nguyên Đan
+  {
+    id: 'primordialElixirPill',
+    name: 'Thần Nguyên Đan 🌌',
+    effect: 'gainExp',
+    amount: 6300,
+    description: '+6300 tuvi'
+  }
 
 ];

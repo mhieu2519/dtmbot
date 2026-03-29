@@ -96,8 +96,8 @@ function getRandom(min, max) {
 
 
 async function handleDailyAutoXP(userId, guildId, message) {
-  const DAILY_XP_REWARD = getRandom(100, 200); // XP ngẫu nhiên từ 100 đến 200
-  const daily_stone_reward = getRandom(150, 300); // Phần thưởng linh thạch ngẫu nhiên từ 150 đến 300
+  const DAILY_XP_REWARD = getRandom(200, 500); // XP ngẫu nhiên từ 200 đến 500
+  const daily_stone_reward = getRandom(300, 600); // Phần thưởng linh thạch ngẫu nhiên từ 300 đến 600
   let user = await UserXP.findOne({ userId, guildId });
   if (!user) user = new UserXP({ userId, guildId });
 

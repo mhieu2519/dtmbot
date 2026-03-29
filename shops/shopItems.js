@@ -1,7 +1,7 @@
 // 📁 shops/shopItems.js
 //module.tuviorts = [
 module.exports = [
-  {
+  /*{
     // trúc cơ đan
     id: 'pharmaBamboo',
     name: 'Trúc Cơ Đan 🎍',
@@ -19,7 +19,7 @@ module.exports = [
     sellPrice: 250,
     rarity: 'rare',
     maxQuantity: 5,
-  },
+  },*/
   {
     id: 'pharmaPure',
     name: 'Thanh Tâm Đan 🥑',
@@ -55,15 +55,35 @@ module.exports = [
     price: 1320,
     sellPrice: 1200,
     rarity: 'legendary',
+    maxQuantity: 5
+
+  },
+  // Bổ Nguyên Đan
+  {
+    id: 'nourishingElixirPill',
+    name: 'Bổ Nguyên Đan 🍃',
+    description: 'Đan dược bổ sung nguyên khí, khôi phục nhanh sau khi tiêu hao, +4200 tuvi.',
+    price: 2020,
+    sellPrice: 1800,
+    rarity: 'legendary',
     maxQuantity: 3
 
   },
-
+  // Thần Nguyên Đan
+  {
+    id: 'primordialElixirPill',
+    name: 'Thần Nguyên Đan 🌌',
+    description: 'Đan dược giúp tăng cường linh khí, +6300 tuvi.',
+    price: 3050,
+    sellPrice: 2800,
+    rarity: 'legendary',
+    maxQuantity: 1
+  },
   {
     id: 'luckyCharm',
     name: 'Bùa May Mắn 🍀',
     description: 'Tăng 35% tỉ lệ thắng yêu thú trong 3 lượt',
-    price: 160,
+    price: 260,
     sellPrice: 100,
     rarity: 'uncommon',
     maxQuantity: 10
@@ -73,10 +93,10 @@ module.exports = [
     id: "heavenJade",
     name: "Thiên Cổ Ngọc Giản 🗞️",
     description: "Xuất hiện vào thiên cổ thời đại, chứa đựng sức mạnh vô hạn ( mở khóa di tích cổ).",
-    price: 120,
+    price: 220,
     sellPrice: 100,
     rarity: "epic",
-    maxQuantity: 5
+    maxQuantity: 10
   },
 
 ];
