@@ -26,10 +26,11 @@ async function chatWithGemini(prompt) {
       {
         headers: {
           "Content-Type": "application/json",
+          "x-goog-api-key": geminiApiKey,
         },
-        params: {
-          key: geminiApiKey,
-        },
+        // params: {
+        //  key: geminiApiKey,
+        // },
       },
 
     );
