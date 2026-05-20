@@ -692,12 +692,23 @@ bot.on("messageCreate", async (message) => {
       // Phản hồi ngay lập tức để tránh bot có vẻ bị lag
       const sentMessage = await message.reply("Lão phu đang suy ngẫm...");
 
-      const reply = await chatWithGemini(query);
+      // --- SỬA TẠI ĐÂY: Đóng gói câu hỏi thành cấu trúc mảng đối tượng ---
+      const promptPayload = [
+        {
+          role: "user",
+          parts: [
+            { text: query }
+          ]
+        }
+      ];
+
+      // Truyền mảng vừa đóng gói vào hàm chat
+      const reply = await chatWithGemini(promptPayload);
+
       // Gọi hàm để gửi tin nhắn
       await sendMessageInChunks(sentMessage, reply);
       break;
     }
-
     // 📌 Lệnh xem bảng dữ liệu 
     case "t": {
       message.channel.send(
