@@ -237,43 +237,26 @@ async function showRank(interaction) {
   ctx.textBaseline = "middle";
   ctx.fillText(`~ ${getTitle(userData.level)} ~`, 125, 230);
 
-  // Thanh XP
 
-  // 📊 Thanh XP (Đã áp dụng dải màu Cyan & Hiệu ứng đốm sáng Particles)
+  // 📊 Thanh XP (Sử dụng Canvas API chuẩn tương thích Node.js)
   const barX = 250;
   const barY = 210;
   const barWidth = 500;
   const barHeight = 20;
-  const xpWidth = barWidth * Math.min(Math.max(percent, 0), 1); // Đảm bảo percent nằm trong khoảng 0 - 1
+  const xpWidth = barWidth * Math.min(Math.max(percent, 0), 1); // Giới hạn percent trong khoảng 0 - 1
 
   if (xpWidth > 0) {
-    // 1. Tạo path cho phần tiến độ XP
-    const barPath = new Path2D();
-    const radius = 10;
-
-    // Hàm tạo path bo tròn chính xác
-    barPath.moveTo(barX + radius, barY);
-    barPath.lineTo(barX + xpWidth - radius, barY);
-    barPath.quadraticCurveTo(barX + xpWidth, barY, barX + xpWidth, barY + radius);
-    barPath.lineTo(barX + xpWidth, barY + barHeight - radius);
-    barPath.quadraticCurveTo(barX + xpWidth, barY + barHeight, barX + xpWidth - radius, barY + barHeight);
-    barPath.lineTo(barX + radius, barY + barHeight);
-    barPath.quadraticCurveTo(barX, barY + barHeight, barX, barY + barHeight - radius);
-    barPath.lineTo(barX, barY + radius);
-    barPath.quadraticCurveTo(barX, barY, barX + radius, barY);
-    barPath.closePath();
-
-    // 2. Tạo hiệu ứng tỏa sáng (Glow)
+    // 1. Tạo hiệu ứng tỏa sáng (Glow)
     ctx.save();
     ctx.shadowColor = "rgba(54, 207, 255, 0.8)";
     ctx.shadowBlur = 15;
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
     ctx.fillStyle = "rgba(54, 207, 255, 0.2)";
-    ctx.fill(barPath);
+    drawRoundedRect(ctx, barX, barY, xpWidth, barHeight, 10);
     ctx.restore();
 
-    // 3. Đổ màu Gradient chiều dọc (Sáng trên, đậm dưới)
+    // 2. Đổ màu Gradient chiều dọc (Sáng trên, đậm dưới)
     ctx.save();
     const xpGradient = ctx.createLinearGradient(barX, barY, barX, barY + barHeight);
     xpGradient.addColorStop(0, "#85E7FF");   // Mép trên sáng rực
@@ -281,11 +264,26 @@ async function showRank(interaction) {
     xpGradient.addColorStop(1, "#1894EA");   // Đáy dưới xanh đậm
 
     ctx.fillStyle = xpGradient;
-    ctx.fill(barPath);
+
+    // Tự định nghĩa đường Path để clip các đốm sáng
+    ctx.beginPath();
+    ctx.moveTo(barX + 10, barY);
+    ctx.lineTo(barX + xpWidth - 10, barY);
+    ctx.quadraticCurveTo(barX + xpWidth, barY, barX + xpWidth, barY + 10);
+    ctx.lineTo(barX + xpWidth, barY + barHeight - 10);
+    ctx.quadraticCurveTo(barX + xpWidth, barY + barHeight, barX + xpWidth - 10, barY + barHeight);
+    ctx.lineTo(barX + 10, barY + barHeight);
+    ctx.quadraticCurveTo(barX, barY + barHeight, barX, barY + barHeight - 10);
+    ctx.lineTo(barX, barY + 10);
+    ctx.quadraticCurveTo(barX, barY, barX + 10, barY);
+    ctx.closePath();
+    ctx.fill();
+
+    // 3. Giới hạn vùng vẽ đốm sáng (Clipping)
+    ctx.clip();
 
     // 4. Vẽ các đốm sáng lấp lánh (Particles)
-    ctx.clip(barPath); // Chỉ vẽ bên trong thanh XP
-    const particleCount = Math.floor((xpWidth / barWidth) * 50); // Số đốm điều chỉnh theo %
+    const particleCount = Math.floor((xpWidth / barWidth) * 40);
     for (let i = 0; i < particleCount; i++) {
       const pX = barX + Math.random() * xpWidth;
       const pY = barY + Math.random() * barHeight;
@@ -300,13 +298,15 @@ async function showRank(interaction) {
     ctx.restore();
   }
 
-  // 5. Viền bao quanh toàn bộ khung thanh XP
+  // 5. Viền bao quanh khung thanh XP
   ctx.save();
   ctx.shadowBlur = 0;
   ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
   ctx.lineWidth = 2;
   strokeRoundedRect(ctx, barX, barY, barWidth, barHeight, 10);
   ctx.restore();
+
+
 
   const buffer = canvas.toBuffer("image/png");
 

@@ -27,7 +27,7 @@ module.exports = [
     price: 480,
     sellPrice: 400,
     rarity: 'rare',
-    maxQuantity: 50,
+    maxQuantity: 10,
   },
   {
     id: 'spiritGatheringPill',
@@ -36,7 +36,7 @@ module.exports = [
     price: 715,
     sellPrice: 650,
     rarity: 'epic',
-    maxQuantity: 30
+    maxQuantity: 10
   },
 
   {
@@ -46,7 +46,7 @@ module.exports = [
     rarity: 'epic',
     price: 850,
     sellPrice: 800,
-    maxQuantity: 20
+    maxQuantity: 10
   },
   {
     id: 'fireSoulPill',
@@ -96,7 +96,7 @@ module.exports = [
     price: 220,
     sellPrice: 100,
     rarity: "epic",
-    maxQuantity: 12
+    maxQuantity: 10
   },
 
 ];
