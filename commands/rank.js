@@ -16,39 +16,94 @@ function getBackgroundByLevel(level) {
   if (level >= 3 && level < 5) return "./assets/backgrounds/level_1_5.png";
   if (level >= 5 && level < 15) return "./assets/backgrounds/level_5_10.png";
   if (level >= 15 && level < 50) return "./assets/backgrounds/level_10_50.png";
-  if (level >= 50 && level < 100) return "./assets/backgrounds/level_50_100.png";
-  if (level >= 100 && level < 300) return "./assets/backgrounds/level_100_300.png";
+  //if (level >= 50 && level < 70) return "./assets/backgrounds/level_50_100.png";
+  if (level >= 50 && level < 70) return "./assets/backgrounds/nguyenanh.png";
+  if (level >= 70 && level < 90) return "./assets/backgrounds/nguyenanh.png";
+  if (level >= 90 && level < 120) return "./assets/backgrounds/hoathan.png";
+  if (level >= 120 && level < 175) return "./assets/backgrounds/nguyenanh.png";
+  if (level >= 175 && level < 235) return "./assets/backgrounds/nguyenanh.png";
+  if (level >= 235 && level < 285) return "./assets/backgrounds/nguyenanh.png";
+  if (level >= 285 && level < 330) return "./assets/backgrounds/nguyenanh.png";
+  if (level >= 330 && level < 380) return "./assets/backgrounds/nguyenanh.png";
+  if (level >= 380 && level < 420) return "./assets/backgrounds/nguyenanh.png";
+  if (level >= 420 && level < 499) return "./assets/backgrounds/nguyenanh.png";
+
+
   return "./assets/backgrounds/level_300_plus.png";
 }
 function getTitle(level) {
   if (level < 5) return "Phàm Nhân";
   if (level < 15) return `Luyện Khí tầng ${level - 4}`;
+
   if (level < 26) return "Trúc Cơ sơ kỳ";
   if (level < 37) return "Trúc Cơ trung kỳ";
   if (level < 50) return "Trúc Cơ hậu kỳ";
+
   if (level < 60) return "Kết Đan sơ kỳ";
-  if (level < 70) return "Kết Đan trung kỳ";
-  if (level < 80) return "Kết Đan hậu kỳ";
-  if (level < 100) return "Nguyên Anh sơ kỳ";
-  if (level < 200) return "Nguyên Anh trung kỳ";
-  if (level < 300) return "Nguyên Anh hậu kỳ";
-  return "Hoá Thần";
+  if (level < 65) return "Kết Đan trung kỳ";
+  if (level < 70) return "Kết Đan hậu kỳ";
+
+  if (level < 80) return "Nguyên Anh sơ kỳ";
+  if (level < 85) return "Nguyên Anh trung kỳ";
+  if (level < 90) return "Nguyên Anh hậu kỳ";
+
+  if (level < 100) return "Hóa Thần sơ kỳ";
+  if (level < 110) return "Hóa Thần trung kỳ";
+  if (level < 120) return "Hóa Thần hậu kỳ";
+
+  if (level < 150) return "Luyện Hư sơ kỳ";
+  if (level < 160) return "Luyện Hư trung kỳ";
+  if (level < 175) return "Luyện Hư hậu kỳ";
+
+  if (level < 198) return "Hợp Thể sơ kỳ";
+  if (level < 210) return "Hợp Thể trung kỳ";
+  if (level < 235) return "Hợp Thể hậu kỳ";
+
+  if (level < 250) return "Đại Thừa sơ kỳ";
+  if (level < 273) return "Đại Thừa trung kỳ";
+  if (level < 285) return "Đại Thừa hậu kỳ";
+
+  if (level < 300) return "Độ Kiếp sơ kỳ";
+  if (level < 310) return "Độ Kiếp trung kỳ";
+  if (level < 330) return "Độ Kiếp hậu kỳ";
+
+  if (level < 350) return "Chân Tiên sơ kỳ";
+  if (level < 365) return "Chân Tiên trung kỳ";
+  if (level < 380) return "Chân Tiên hậu kỳ";
+
+  if (level < 400) return "Kim Tiên sơ kỳ";
+  if (level < 410) return "Kim Tiên trung kỳ";
+  if (level < 420) return "Kim Tiên hậu kỳ";
+
+  if (level < 450) return "Thái Ất sơ kỳ";
+  if (level < 470) return "Thái Ất trung kỳ";
+  if (level < 499) return "Thái Ất hậu kỳ";
+
+  return "Đại La";
 }
 function getGlowColor(level) {
   if (level < 5) return "#c0c0c0";          // Xám nhẹ bạc
   if (level < 15) return "#00bbff";         // Xanh biển
-  if (level < 50) return "#66ff66";         // Lục nhạt
-  if (level < 100) return "#ffcc00";        // Vàng rực
-  if (level < 300) return "#ff0000";        // Đỏ rực
-  return "#ff00ff";                         // Hồng tím huyền ảo
+  if (level < 50) return "#66ff66";         // Lục nhạt kết đan
+  if (level < 70) return "#e1e430";      // nguyên anh
+  if (level < 90) return "#0c3ea8";     // hóa thần
+  if (level < 120) return "#17532b";     // luyện hư
+  if (level < 175) return "#edf397";    // hợp thể
+  if (level < 235) return "#d33c0e";   // đại thừa
+  if (level < 285) return "#7114bd";    // độ kiếp
+  if (level < 330) return "#dd73c3";    // chân tiên
+  if (level < 380) return "#eed12b";   // kim tiên
+  if (level < 420) return "#a70b0b";     // thái ất
+
+  return "#ff0000";                         // đại la
 }
 // set font theo level
 function setFont(level) {
   if (level < 5) return "40px arial";
   if (level < 15) return "40px Qwigley";
   if (level < 50) return "40px WindSong";
-  if (level < 100) return "40px MeowScript";
-  if (level < 300) return "40px Updock";
+  if (level < 90) return "40px MeowScript";
+  if (level < 120) return "40px Updock";
   return "40px Allura";
 }
 
@@ -182,25 +237,76 @@ async function showRank(interaction) {
   ctx.textBaseline = "middle";
   ctx.fillText(`~ ${getTitle(userData.level)} ~`, 125, 230);
 
-  // 📊 Thanh XP
-  ctx.shadowColor = getGlowColor(userData.level);
-  ctx.shadowBlur = 10;
+  // Thanh XP
+
+  // 📊 Thanh XP (Đã áp dụng dải màu Cyan & Hiệu ứng đốm sáng Particles)
   const barX = 250;
   const barY = 210;
   const barWidth = 500;
   const barHeight = 20;
-  /*// nền
-    ctx.fillStyle = "#333";
-    drawRoundedRect(ctx, barX, barY, barWidth, barHeight, 10); // 10 là độ bo góc
-  */
-  // Vẽ phần tiến độ XP
-  ctx.fillStyle = "#34a853"; // màu thanh xp
-  drawRoundedRect(ctx, barX, barY, barWidth * percent, barHeight, 10); // radius = 10
+  const xpWidth = barWidth * Math.min(Math.max(percent, 0), 1); // Đảm bảo percent nằm trong khoảng 0 - 1
 
-  // Viền bar
-  ctx.strokeStyle = "#fff";
+  if (xpWidth > 0) {
+    // 1. Tạo path cho phần tiến độ XP
+    const barPath = new Path2D();
+    const radius = 10;
+
+    // Hàm tạo path bo tròn chính xác
+    barPath.moveTo(barX + radius, barY);
+    barPath.lineTo(barX + xpWidth - radius, barY);
+    barPath.quadraticCurveTo(barX + xpWidth, barY, barX + xpWidth, barY + radius);
+    barPath.lineTo(barX + xpWidth, barY + barHeight - radius);
+    barPath.quadraticCurveTo(barX + xpWidth, barY + barHeight, barX + xpWidth - radius, barY + barHeight);
+    barPath.lineTo(barX + radius, barY + barHeight);
+    barPath.quadraticCurveTo(barX, barY + barHeight, barX, barY + barHeight - radius);
+    barPath.lineTo(barX, barY + radius);
+    barPath.quadraticCurveTo(barX, barY, barX + radius, barY);
+    barPath.closePath();
+
+    // 2. Tạo hiệu ứng tỏa sáng (Glow)
+    ctx.save();
+    ctx.shadowColor = "rgba(54, 207, 255, 0.8)";
+    ctx.shadowBlur = 15;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    ctx.fillStyle = "rgba(54, 207, 255, 0.2)";
+    ctx.fill(barPath);
+    ctx.restore();
+
+    // 3. Đổ màu Gradient chiều dọc (Sáng trên, đậm dưới)
+    ctx.save();
+    const xpGradient = ctx.createLinearGradient(barX, barY, barX, barY + barHeight);
+    xpGradient.addColorStop(0, "#85E7FF");   // Mép trên sáng rực
+    xpGradient.addColorStop(0.35, "#36CFFF"); // Thân giữa xanh cyan
+    xpGradient.addColorStop(1, "#1894EA");   // Đáy dưới xanh đậm
+
+    ctx.fillStyle = xpGradient;
+    ctx.fill(barPath);
+
+    // 4. Vẽ các đốm sáng lấp lánh (Particles)
+    ctx.clip(barPath); // Chỉ vẽ bên trong thanh XP
+    const particleCount = Math.floor((xpWidth / barWidth) * 50); // Số đốm điều chỉnh theo %
+    for (let i = 0; i < particleCount; i++) {
+      const pX = barX + Math.random() * xpWidth;
+      const pY = barY + Math.random() * barHeight;
+      const pSize = Math.random() * 1.8 + 0.5;
+      const pOpacity = Math.random() * 0.6 + 0.2;
+
+      ctx.fillStyle = `rgba(255, 255, 255, ${pOpacity})`;
+      ctx.beginPath();
+      ctx.arc(pX, pY, pSize, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  // 5. Viền bao quanh toàn bộ khung thanh XP
+  ctx.save();
+  ctx.shadowBlur = 0;
+  ctx.strokeStyle = "rgba(255, 255, 255, 0.9)";
   ctx.lineWidth = 2;
-  strokeRoundedRect(ctx, barX, barY, barWidth, barHeight, 10); // bo góc 10px
+  strokeRoundedRect(ctx, barX, barY, barWidth, barHeight, 10);
+  ctx.restore();
 
   const buffer = canvas.toBuffer("image/png");
 

@@ -27,7 +27,7 @@ module.exports = [
     price: 480,
     sellPrice: 400,
     rarity: 'rare',
-    maxQuantity: 10,
+    maxQuantity: 50,
   },
   {
     id: 'spiritGatheringPill',
@@ -36,7 +36,7 @@ module.exports = [
     price: 715,
     sellPrice: 650,
     rarity: 'epic',
-    maxQuantity: 5
+    maxQuantity: 30
   },
 
   {
@@ -46,7 +46,7 @@ module.exports = [
     rarity: 'epic',
     price: 850,
     sellPrice: 800,
-    maxQuantity: 5
+    maxQuantity: 20
   },
   {
     id: 'fireSoulPill',
@@ -55,7 +55,7 @@ module.exports = [
     price: 1320,
     sellPrice: 1200,
     rarity: 'legendary',
-    maxQuantity: 5
+    maxQuantity: 10
 
   },
   // Bổ Nguyên Đan
@@ -66,7 +66,7 @@ module.exports = [
     price: 2020,
     sellPrice: 1800,
     rarity: 'legendary',
-    maxQuantity: 3
+    maxQuantity: 10
 
   },
   // Thần Nguyên Đan
@@ -77,7 +77,7 @@ module.exports = [
     price: 3050,
     sellPrice: 2800,
     rarity: 'legendary',
-    maxQuantity: 1
+    maxQuantity: 10
   },
   {
     id: 'luckyCharm',
@@ -96,7 +96,7 @@ module.exports = [
     price: 220,
     sellPrice: 100,
     rarity: "epic",
-    maxQuantity: 10
+    maxQuantity: 12
   },
 
 ];
