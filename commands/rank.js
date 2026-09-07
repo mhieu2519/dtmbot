@@ -16,8 +16,7 @@ function getBackgroundByLevel(level) {
   if (level >= 3 && level < 5) return "./assets/backgrounds/level_1_5.png";
   if (level >= 5 && level < 15) return "./assets/backgrounds/level_5_10.png";
   if (level >= 15 && level < 50) return "./assets/backgrounds/level_10_50.png";
-  //if (level >= 50 && level < 70) return "./assets/backgrounds/level_50_100.png";
-  if (level >= 50 && level < 70) return "./assets/backgrounds/nguyenanh.png";
+  if (level >= 50 && level < 70) return "./assets/backgrounds/level_50_100.png";
   if (level >= 70 && level < 90) return "./assets/backgrounds/nguyenanh.png";
   if (level >= 90 && level < 120) return "./assets/backgrounds/hoathan.png";
   if (level >= 120 && level < 175) return "./assets/backgrounds/nguyenanh.png";
@@ -85,8 +84,8 @@ function getGlowColor(level) {
   if (level < 5) return "#c0c0c0";          // Xám nhẹ bạc
   if (level < 15) return "#00bbff";         // Xanh biển
   if (level < 50) return "#66ff66";         // Lục nhạt kết đan
-  if (level < 70) return "#e1e430";      // nguyên anh
-  if (level < 90) return "#0c3ea8";     // hóa thần
+  if (level < 70) return "#20518a";      // nguyên anh
+  if (level < 90) return "#61b414";     // hóa thần
   if (level < 120) return "#17532b";     // luyện hư
   if (level < 175) return "#edf397";    // hợp thể
   if (level < 235) return "#d33c0e";   // đại thừa

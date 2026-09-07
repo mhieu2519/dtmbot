@@ -248,13 +248,13 @@ async function handleSellQuantitySelection(interaction, user) {
 
   const sellButton = new ButtonBuilder()
     .setCustomId(`confirm::sell::${itemId}::${quantity}`)
-    .setLabel(`💰 Bán x${quantity} (${totalStone} 💎 ${totalExp ? ` + ${totalExp} EXP` : ''})`)
+    .setLabel(`💰 Bán x${quantity} (${totalStone} 💎 ${totalExp ? ` + ${totalExp} tuvi` : ''})`)
     .setStyle(ButtonStyle.Danger);
 
   const row = new ActionRowBuilder().addComponents(sellButton);
 
   await interaction.update({
-    content: `📦 Đạo hữu chọn bán **${itemData.name}** x${quantity}\n💎 Nhận: ${totalStone} linh thạch${totalExp ? ` và ${totalExp} EXP` : ''}`,
+    content: `📦 Đạo hữu chọn bán **${itemData.name}** x${quantity}\n💎 Nhận: ${totalStone} linh thạch${totalExp ? ` và ${totalExp} tuvi` : ''}`,
     components: [row]
   });
 }
@@ -299,7 +299,7 @@ async function handleConfirmSell(interaction, itemId, quantity) {
         `Người bán: ${senderDisplayName} - ${interaction.user.tag} (${interaction.user.id})\n` +
         `Vật phẩm: ${sellItem.name} (ID: ${itemId})\n` +
         `Số lượng: ${quantity}\n` +
-        `Tổng giá trị: ${totalStone} linh thạch ${totalExp ? ` và ${totalExp} EXP` : ''}\n` +
+        `Tổng giá trị: ${totalStone} linh thạch ${totalExp ? ` và ${totalExp} tuvi` : ''}\n` +
         `Thời gian: <t:${Math.floor(Date.now() / 1000)}:F>`,
     });
   } else {
@@ -310,14 +310,14 @@ async function handleConfirmSell(interaction, itemId, quantity) {
   if (levelUpChannel) {
     await levelUpChannel.send({
       content: `✅ Đạo hữu ${senderDisplayName} đã bán **${sellItem.name}** x${quantity} thành công!\n` +
-        `💎 Nhận ${totalStone} linh thạch${totalExp ? ` và ${totalExp} EXP` : ''}`
+        `💎 Nhận ${totalStone} linh thạch${totalExp ? ` và ${totalExp} tuvi` : ''}`
     });
   } else {
     console.warn("Không tìm thấy kênh thông báo level up!");
   }
   // Gửi phản hồi thành công
   await interaction.update({
-    content: `✅ Đạo hữu đã bán **${sellItem.name}** x${quantity} thành công!\n💎 Nhận ${totalStone} linh thạch${totalExp ? ` và ${totalExp} EXP` : ''}`,
+    content: `✅ Đạo hữu đã bán **${sellItem.name}** x${quantity} thành công!\n💎 Nhận ${totalStone} linh thạch${totalExp ? ` và ${totalExp} tuvi` : ''}`,
     components: [],
     flags: MessageFlags.Ephemeral
   });
