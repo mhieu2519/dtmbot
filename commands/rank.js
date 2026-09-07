@@ -84,15 +84,16 @@ function getGlowColor(level) {
   if (level < 5) return "#c0c0c0";          // Xám nhẹ bạc
   if (level < 15) return "#00bbff";         // Xanh biển
   if (level < 50) return "#66ff66";         // Lục nhạt kết đan
-  if (level < 70) return "#20518a";      // nguyên anh
-  if (level < 90) return "#61b414";     // hóa thần
-  if (level < 120) return "#17532b";     // luyện hư
-  if (level < 175) return "#edf397";    // hợp thể
-  if (level < 235) return "#d33c0e";   // đại thừa
-  if (level < 285) return "#7114bd";    // độ kiếp
-  if (level < 330) return "#dd73c3";    // chân tiên
-  if (level < 380) return "#eed12b";   // kim tiên
-  if (level < 420) return "#a70b0b";     // thái ất
+  if (level < 70) return "#d3c22d";      // kết đan
+  if (level < 90) return "#20518a";     // nguyên anh   
+  if (level < 120) return "#17532b";     // hóa thần
+  if (level < 175) return "#edf397";    //  luyện hư
+  if (level < 235) return "#d33c0e";   //   hợp thể
+  if (level < 285) return "#7114bd";    //  đại thừa
+  if (level < 330) return "#dd73c3";    //  độ kiếp
+  if (level < 380) return "#eed12b";   //   chân tiên
+  if (level < 420) return "#a70b0b";     //   kim tiên
+  if (level < 499) return "#ff8c00";     // thái ất
 
   return "#ff0000";                         // đại la
 }
